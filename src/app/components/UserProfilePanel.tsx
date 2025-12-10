@@ -67,7 +67,7 @@ const UserProfilePanel = ({ user, role }: Props) => {
             İlan Listesi
           </DropdownItem>
         </DropdownSection>
-        {isAdmin && (
+        {isAdmin ? (
           <DropdownSection title="Yönetim">
             <DropdownItem 
               key="admin-organizations-link"
@@ -84,7 +84,7 @@ const UserProfilePanel = ({ user, role }: Props) => {
               Admin Paneli
             </DropdownItem>
           </DropdownSection>
-        )}
+        ) : null}
         <DropdownSection>
           <DropdownItem key="logout" color="danger" onClick={handleLogout}>
             Çıkış

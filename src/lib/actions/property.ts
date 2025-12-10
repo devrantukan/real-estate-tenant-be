@@ -4,6 +4,7 @@ import { AddPropertyInputType } from "@/app/user/properties/add/_components/AddP
 import prisma from "../prisma";
 import { Property } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { getCurrentUser } from "../auth";
 
 export async function managePropertyDescriptor(descriptorId: number) {
   const descriptorDetails = await prisma.propertyDescriptor.findUnique({
@@ -57,6 +58,17 @@ export async function saveProperty(
   imagesUrls: string[],
   userId: string
 ) {
+  // Get user to obtain organizationId
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    throw new Error("User not found");
+  }
+  
+  const organizationId = currentUser.dbUser.organizationId;
+  if (!organizationId) {
+    throw new Error("User organization not found");
+  }
+
   const basic: Omit<Property, "id"> = {
     name: propertyData.name,
     description: propertyData.description,
@@ -66,12 +78,11 @@ export async function saveProperty(
       : 0,
     statusId: propertyData.statusId,
     typeId: propertyData.typeId,
-
     subTypeId: propertyData.subTypeId ?? 0,
     contractId: propertyData.contractId,
     userId: userId,
+    organizationId: organizationId,
     agentId: propertyData.agentId ?? 0,
-
     videoSource: propertyData.videoSource ?? "",
     threeDSource: propertyData.threeDSource ?? "",
   };

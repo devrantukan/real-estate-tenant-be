@@ -1,10 +1,8 @@
-import SubmitButton from "@/app/components/SubmitButton";
 import { deleteProperty } from "@/lib/actions/property";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { Button } from "@nextui-org/react";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import DeletePropertyContent from "./_components/DeletePropertyContent";
 
 interface Props {
   params: { id: string };
@@ -32,23 +30,7 @@ async function DeletePropertyPage({ params }: Props) {
     }
   };
 
-  return (
-    <form action={deleteAction} className="mt-9 flex f flex-col items-center justify-center gap-3">
-      <p>Are you sure to delete this property?</p>
-      <p>
-        <span className="text-slate-400">Name: </span>{" "}
-        <span className="text-slate-700">{property.name}</span>
-      </p>
-      <div className="flex justify-center gap-3">
-        <Link href={"/user/properties"}>
-          <Button>Cancel</Button>
-        </Link>
-        <SubmitButton type="submit" color="danger" variant="light">
-          Delete
-        </SubmitButton>
-      </div>
-    </form>
-  );
+  return <DeletePropertyContent propertyName={property.name} deleteAction={deleteAction} />;
 }
 
 export default DeletePropertyPage;
