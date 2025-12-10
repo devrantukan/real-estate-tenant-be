@@ -38,9 +38,9 @@ const Appbar = ({ children }: Props) => {
           >
             <Image
               src={"/real-estate-tenant-logo.png"}
-              width={200}
-              height={60}
               alt="Real Estate Tenant Panel Logo"
+              width={0}
+              height={60}
               style={{ width: "auto", height: "60px" }}
               loading="eager"
               priority

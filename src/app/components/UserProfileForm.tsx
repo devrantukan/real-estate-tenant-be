@@ -30,10 +30,8 @@ import {
 
 import { z } from "zod";
 import { toast } from "react-toastify";
-import dynamic from "next/dynamic";
 import { OfficeWorker } from "@prisma/client";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
+import RichTextEditor from "@/app/user/properties/add/_components/RichTextEditor";
 
 interface UserProfileFormProps {
   officeWorker: OfficeWorker;
@@ -85,8 +83,8 @@ export default function UserProfileForm({ officeWorker }: UserProfileFormProps) 
       setSurname(officeWorker.surname);
       form.setValue("phone", officeWorker.phone);
       setPhone(officeWorker.phone);
-      form.setValue("about", officeWorker.about);
-      setAbout(officeWorker.about);
+      form.setValue("about", officeWorker.about || "");
+      setAbout(officeWorker.about || "");
 
       form.setValue("commercialDocumentId", officeWorker.commercialDocumentId);
       setCommercialDocumentId(officeWorker.commercialDocumentId);
@@ -237,25 +235,10 @@ export default function UserProfileForm({ officeWorker }: UserProfileFormProps) 
 
           <div className="w-full flex flex-col md:col-span-3">
             <p className="text-sm mb-1 font-semibold">Detaylı Bilgi</p>
-            <ReactQuill
-              modules={{
-                toolbar: [
-                  [{ header: [1, 2, false] }],
-                  ["bold", "italic", "underline", "strike", "blockquote"],
-                  [
-                    { list: "ordered" },
-                    { list: "bullet" },
-                    { indent: "-1" },
-                    { indent: "+1" },
-                  ],
-                  ["link", "image"],
-                  ["clean"],
-                ],
-              }}
-              className="h-[280px] border-gray-200 mb-6 "
-              theme="snow"
-              value={about}
+            <RichTextEditor
+              value={about || ""}
               onChange={onEditorStateChange}
+              placeholder="Detaylı bilgi yazın..."
             />
           </div>
         </div>
