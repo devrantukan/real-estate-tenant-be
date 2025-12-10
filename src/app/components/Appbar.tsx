@@ -34,7 +34,7 @@ const Appbar = ({ children }: Props) => {
         <NavbarBrand>
           <Link
             href={"/"}
-            className="flex items-center text-primary-400 hover:text-primary-600 transition-colors"
+            className="flex items-center gap-3 text-primary-400 hover:text-primary-600 transition-colors"
           >
             <Image
               src={"/real-estate-tenant-logo.png"}
@@ -45,6 +45,9 @@ const Appbar = ({ children }: Props) => {
               loading="eager"
               priority
             />
+            <span className="hidden sm:block text-lg font-semibold text-gray-800">
+              Real Estate Tenant Panel
+            </span>
           </Link>
         </NavbarBrand>
       </NavbarContent>
