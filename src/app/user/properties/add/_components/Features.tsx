@@ -64,7 +64,7 @@ const Features = (props: Props) => {
           <div className="lg:w-1/2 w-full flex flex-col gap-4 ">
             <Select
               {...register("propertyFeature.bedrooms", {
-                setValueAs: (v: any) => v.toString(),
+                setValueAs: (v: string | number) => v.toString(),
               })}
               errorMessage={errors.propertyFeature?.bedrooms?.message}
               isInvalid={!!errors.propertyFeature?.bedrooms}
@@ -89,7 +89,7 @@ const Features = (props: Props) => {
 
             <Select
               {...register("propertyFeature.bathrooms", {
-                setValueAs: (v: any) => v.toString(),
+                setValueAs: (v: string | number) => v.toString(),
               })}
               errorMessage={errors.propertyFeature?.bathrooms?.message}
               isInvalid={!!errors.propertyFeature?.bathrooms}

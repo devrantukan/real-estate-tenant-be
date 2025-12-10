@@ -32,9 +32,9 @@ import {
   saveProperty,
   managePropertyDescriptor,
 } from "@/lib/actions/property";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { redirect, useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
+import { createClient } from "@/lib/supabase/client";
 
 const steps = [
   {
@@ -62,7 +62,7 @@ interface Props {
   agents: OfficeWorker[];
   countries: Country[];
   cities: City[];
-  citiesObj: Record<any, any[]>; // Add this line
+  citiesObj: Record<string, string[]>; // Add this line
   //  districtsObj: Record<any, any[]>;
   //  districts: District[];
   // neighborhoods: Neighborhood[];
@@ -130,11 +130,20 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
 
   const [step, setStep] = useState(0);
 
-  const { user } = useKindeBrowserClient();
+  const supabase = createClient();
 
   const onSubmit: SubmitHandler<AddPropertyInputType> = async (data) => {
     console.log({ data });
     const imageUrls = await uploadImages(images);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      toast.error("Giriş yapmanız gerekiyor!");
+      return;
+    }
 
     try {
       if (isEdit && props.property) {
@@ -151,7 +160,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
 
         toast.success("İlan Güncellendi!");
       } else {
-        await saveProperty(data, imageUrls, user?.id!);
+        await saveProperty(data, imageUrls, user.id);
 
         toast.success("İlan Eklendi!");
       }
@@ -205,7 +214,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
             role={role}
             agents={props.agents}
             dbDescriptors={
-              (props.property?.descriptors as PropertyDescriptor[]) ?? []
+              (props.property?.descriptors.map(d => ({ descriptorId: d.descriptorId })) ?? [])
             }
             //  descriptorCategories={props.descriptorCategories}
             prev={() => setStep((prev) => prev - 1)}

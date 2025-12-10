@@ -28,9 +28,12 @@ const Picture = (props: Props) => {
   return (
     <Card className={cn("p-3", props.className)}>
       <FileInput
-        onSelect={(e) =>
-          props.setImages([(e as any).target.files[0], ...props.images])
+        onSelect={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            props.setImages([file, ...props.images]);
         }
+        }}
       />
       <div className="flex gap-3 flex-wrap">
         {props.savedImagesUrl!! &&
@@ -71,7 +74,7 @@ const Picture = (props: Props) => {
       <div className="mt-4 flex flex-col gap-y-4">
         <Input
           {...register("videoSource", {
-            setValueAs: (v: any) => v.toString(),
+            setValueAs: (v: string | number) => v.toString(),
           })}
           errorMessage={errors.videoSource?.message}
           isInvalid={!!errors.videoSource}
@@ -83,7 +86,7 @@ const Picture = (props: Props) => {
         />
         <Input
           {...register("threeDSource", {
-            setValueAs: (v: any) => v.toString(),
+            setValueAs: (v: string | number) => v.toString(),
           })}
           errorMessage={errors.threeDSource?.message}
           isInvalid={!!errors.threeDSource}

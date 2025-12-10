@@ -1,8 +1,9 @@
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import React from "react";
 import PropertiesTable from "./_components/PropertiesTable";
 import { getUserById } from "@/lib/actions/user";
+import { getCurrentUser, getUserRole } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 const PAGE_SIZE = 12;
 
@@ -11,17 +12,14 @@ interface Props {
 }
 
 const PropertiesPage = async ({ searchParams }: Props) => {
-  const { getUser } = await getKindeServerSession();
-  const user = await getUser();
+  const currentUser = await getCurrentUser();
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  if (!currentUser) {
+    redirect("/login");
+  }
 
-  const dbUser = await getUserById(user ? user.id : "");
-  console.log("user is:", user);
-  console.log("dbuser is:", dbUser);
-  console.log("act", role);
+  const { dbUser } = currentUser;
+  const role = await getUserRole(dbUser.id);
 
   const pagenum = searchParams.pagenum ?? 0;
   const propertiesPromise = prisma.property.findMany({
@@ -38,7 +36,7 @@ const PropertiesPage = async ({ searchParams }: Props) => {
 
   const totalPropertiesPromise = prisma.property.count({
     where: {
-      userId: user?.id,
+      userId: dbUser.id,
     },
   });
 

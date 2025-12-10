@@ -1,8 +1,7 @@
 import prisma from "@/lib/prisma";
 import AddPropertyForm from "../../add/_components/AddPropertyForm";
 import { notFound, redirect } from "next/navigation";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { getUserById } from "@/lib/actions/user";
+import { getCurrentUser, getUserRole } from "@/lib/auth";
 
 interface Props {
   params: { id: string };
@@ -91,22 +90,17 @@ const EditPropertyPage = async ({ params }: Props) => {
 
   //   neighborhoodsObj[district.district_name] = neighborhoodNames;
   // }
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const currentUser = await getCurrentUser();
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  if (!currentUser) {
+    redirect("/login");
+  }
 
-  const dbUser = await getUserById(user ? user.id : "");
-  console.log("user is:", user);
-  console.log("dbuser is:", dbUser);
-  console.log("act", role);
-
-  console.log("db properties", property);
+  const { dbUser } = currentUser;
+  const role = await getUserRole(dbUser.id);
 
   if (!property) return notFound();
-  if (!user || property.userId !== user.id) redirect("/unauthorized");
+  if (property.userId !== dbUser.id) redirect("/unauthorized");
   return (
     <AddPropertyForm
       countries={countries}
@@ -116,7 +110,7 @@ const EditPropertyPage = async ({ params }: Props) => {
       // districtsObj={districtsObj}
       // neighborhoods={neighborhoods}
       // neighborhoodsObj={neighborhoodsObj}
-      role={role}
+      role={role ?? ""}
       agents={agents}
       types={propertyTypes}
       subTypes={propertySubTypes}

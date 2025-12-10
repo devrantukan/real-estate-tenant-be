@@ -37,10 +37,13 @@ const Appbar = ({ children }: Props) => {
             className="flex items-center text-primary-400 hover:text-primary-600 transition-colors"
           >
             <Image
-              src={"/retroia-logo.png"}
-              width={128}
-              height={96}
-              alt="Retroia Logo"
+              src={"/real-estate-tenant-logo.png"}
+              width={200}
+              height={60}
+              alt="Real Estate Tenant Panel Logo"
+              style={{ width: "auto", height: "60px" }}
+              loading="eager"
+              priority
             />
           </Link>
         </NavbarBrand>

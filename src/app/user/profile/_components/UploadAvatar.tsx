@@ -37,7 +37,12 @@ const UploadAvatar = ({ userId }: { userId: string }) => {
               </ModalHeader>
               <ModalBody>
                 <FileInput
-                  onChange={(e) => setImage((e as any).target.files[0])}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setImage(file);
+                    }
+                  }}
                   className="h-full"
                 />
                 {image && <Image src={URL.createObjectURL(image)} />}

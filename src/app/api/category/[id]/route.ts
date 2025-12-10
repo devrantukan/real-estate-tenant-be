@@ -4,12 +4,12 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: number } },
-  response: NextResponse
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const category = await prisma.propertyDescriptorCategory.findFirst({
     where: {
-      id: +params.id,
+      id: +id,
     },
     include: {
       descriptors: true,

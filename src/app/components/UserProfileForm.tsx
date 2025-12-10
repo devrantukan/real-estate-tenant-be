@@ -31,10 +31,15 @@ import {
 import { z } from "zod";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
+import { OfficeWorker } from "@prisma/client";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 
-export default function UserProfileForm({ officeWorker }: any) {
+interface UserProfileFormProps {
+  officeWorker: OfficeWorker;
+}
+
+export default function UserProfileForm({ officeWorker }: UserProfileFormProps) {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [phone, setPhone] = useState("");

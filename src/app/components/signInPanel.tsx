@@ -1,34 +1,48 @@
-import {
-  LoginLink,
-  LogoutLink,
-  RegisterLink,
-  getKindeServerSession,
-} from "@kinde-oss/kinde-auth-nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { Button } from "@nextui-org/react";
-import React from "react";
+import Link from "next/link";
 import UserProfilePanel from "./UserProfilePanel";
 import prisma from "@/lib/prisma";
+import { getUserRole } from "@/lib/auth";
 
 const signInPanel = async () => {
-  const { isAuthenticated, getUser } = await getKindeServerSession();
-  if (await isAuthenticated()) {
-    const user = await getUser();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
     const dbUser = await prisma.user.findUnique({
       where: {
-        id: user?.id,
+        id: user.id,
       },
     });
 
-    return <>{dbUser!! && <UserProfilePanel user={dbUser} />}</>;
+    if (!dbUser) {
+      // Create user in database if doesn't exist
+      const newUser = await prisma.user.create({
+        data: {
+          id: user.id,
+          firstName: user.user_metadata?.first_name || user.email?.split("@")[0] || "",
+          lastName: user.user_metadata?.last_name || "",
+          email: user.email || "",
+        },
+      });
+      const role = await getUserRole(newUser.id);
+      return <>{newUser && <UserProfilePanel user={newUser} role={role} />}</>;
+    }
+
+    const role = await getUserRole(dbUser.id);
+    return <>{dbUser && <UserProfilePanel user={dbUser} role={role} />}</>;
   }
 
   return (
     <div className="flex gap-3">
-      <Button color="primary">
-        <LoginLink>Sign In</LoginLink>
+      <Button color="primary" as={Link} href="/login">
+        Giriş Yap
       </Button>
-      <Button>
-        <RegisterLink>Sign Up</RegisterLink>
+      <Button as={Link} href="/login">
+        Kayıt Ol
       </Button>
     </div>
   );

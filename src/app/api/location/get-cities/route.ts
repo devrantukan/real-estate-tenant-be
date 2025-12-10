@@ -3,7 +3,7 @@ import axios from "axios";
 import prisma from "@/lib/prisma";
 import slugify from "slugify";
 
-export async function GET(request: NextRequest, response: NextResponse) {
+export async function GET(request: NextRequest) {
   const projectLocations = await prisma.propertyLocation.findMany({
     distinct: ["city"],
   });
@@ -17,7 +17,14 @@ export async function GET(request: NextRequest, response: NextResponse) {
   function capitalize(s: string): string {
     return String(s[0]).toLocaleUpperCase("tr") + String(s).slice(1);
   }
-  const data: any[] = [];
+  interface CityData {
+    city_id: number;
+    label: string;
+    value: string;
+    country_name: string;
+    country_slug: string;
+  }
+  const data: CityData[] = [];
   await Promise.all(
     cities.map(async (city) => {
       const cityData = await prisma.city.findFirst({

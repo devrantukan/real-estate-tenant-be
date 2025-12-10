@@ -16,12 +16,16 @@ export async function getUserById(id: string) {
 }
 
 export async function getUserAsOfficeWorker(id: string) {
-  console.log(id);
-  return await prisma.officeWorker.findFirst({
-    where: {
-      userId: id,
-    },
-  });
+  try {
+    return await prisma.officeWorker.findFirst({
+      where: {
+        userId: id,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching office worker:", error);
+    return null;
+  }
 }
 
 export async function updateUserAvatar(avatarUrl: string, userId: string) {

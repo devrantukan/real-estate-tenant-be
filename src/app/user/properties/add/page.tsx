@@ -1,8 +1,9 @@
 import React from "react";
 import AddPropertyForm from "./_components/AddPropertyForm";
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getCurrentUser, getUserRole } from "@/lib/auth";
 import { getUserById } from "@/lib/actions/user";
+import { redirect } from "next/navigation";
 
 const AddPropertyPage = async () => {
   const [
@@ -73,17 +74,14 @@ const AddPropertyPage = async () => {
   // }
 
   //console.log(neighborhoodsObj);
-  const { getUser } = await getKindeServerSession();
-  const user = await getUser();
+  const currentUser = await getCurrentUser();
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  if (!currentUser) {
+    redirect("/login");
+  }
 
-  const dbUser = await getUserById(user ? user.id : "");
-  console.log("user is:", user);
-  console.log("dbuser is:", dbUser);
-  console.log("act", role);
+  const { dbUser } = currentUser;
+  const role = await getUserRole(dbUser.id);
 
   //console.log("contracts", propertyContracts);
   return (
@@ -95,7 +93,7 @@ const AddPropertyPage = async () => {
       // districtsObj={districtsObj}
       // neighborhoods={neighborhoods}
       // neighborhoodsObj={neighborhoodsObj}
-      role={role}
+      role={role ?? ""}
       agents={agents}
       types={propertyTypes}
       subTypes={propertySubTypes}

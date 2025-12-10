@@ -5,22 +5,29 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { district: string } },
-  response: NextResponse
+  { params }: { params: Promise<{ district: string }> }
 ) {
+  const { district } = await params;
   const projectLocations = await prisma.propertyLocation.findMany({
     distinct: ["neighborhood"],
   });
 
-  // console.log(params.district);
+  // console.log(district);
 
   function capitalize(s: string): string {
     return String(s[0]).toLocaleUpperCase("tr") + String(s).slice(1);
   }
-  const data: any[] = [];
+  interface NeighborhoodData {
+    neighborhood_id: number;
+    label: string;
+    value: string;
+    district_name: string;
+    district_slug: string;
+  }
+  const data: NeighborhoodData[] = [];
 
   const neighborhoodData = await prisma.neighborhood.findMany({
-    where: { district_name: capitalize(params.district) },
+    where: { district_name: capitalize(district) },
   });
 
   if (neighborhoodData) {

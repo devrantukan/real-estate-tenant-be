@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import prisma from "@/lib/prisma";
 
-export async function GET(request: NextRequest, response: NextResponse) {
+export async function GET(request: NextRequest) {
   const projectLocations = await prisma.propertyLocation.findMany({
     distinct: ["country"],
   });
@@ -13,7 +13,12 @@ export async function GET(request: NextRequest, response: NextResponse) {
     countries.push(location.country);
   });
 
-  const data: any[] = [];
+  interface CountryData {
+    country_id: number;
+    country_name: string;
+    country_slug: string;
+  }
+  const data: CountryData[] = [];
   await Promise.all(
     countries.map(async (country) => {
       const countryData = await prisma.country.findFirst({

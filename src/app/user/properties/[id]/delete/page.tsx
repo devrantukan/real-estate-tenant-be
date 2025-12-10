@@ -1,7 +1,7 @@
 import SubmitButton from "@/app/components/SubmitButton";
 import { deleteProperty } from "@/lib/actions/property";
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -11,16 +11,16 @@ interface Props {
 }
 
 async function DeletePropertyPage({ params }: Props) {
-  const { getUser } = getKindeServerSession();
+  const currentUser = await getCurrentUser();
   const propertyPromise = prisma.property.findUnique({
     where: {
       id: +params.id,
     },
   });
-  const [property, user] = await Promise.all([propertyPromise, getUser()]);
+  const [property] = await Promise.all([propertyPromise]);
 
   if (!property) return notFound();
-  if (!user || property.userId !== user.id) redirect("/unauthorized");
+  if (!currentUser || property.userId !== currentUser.dbUser.id) redirect("/unauthorized");
 
   const deleteAction = async () => {
     "use server";

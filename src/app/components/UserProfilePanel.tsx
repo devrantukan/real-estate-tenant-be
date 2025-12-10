@@ -1,20 +1,42 @@
 "use client";
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 import {
   Dropdown,
   DropdownTrigger,
   User,
   DropdownMenu,
   DropdownItem,
+  DropdownSection,
 } from "@nextui-org/react";
 import { User as PrismaUser } from "@prisma/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import React from "react";
 
 interface Props {
   user: PrismaUser;
+  role: string | null;
 }
-const UserProfilePanel = ({ user }: Props) => {
+const UserProfilePanel = ({ user, role }: Props) => {
+  const router = useRouter();
+  const supabase = createClient();
+  const isAdmin = role === "site-admin";
+
+  // Debug: Console'da role bilgisini göster
+  React.useEffect(() => {
+    console.log("UserProfilePanel - Role:", role);
+    console.log("UserProfilePanel - isAdmin:", isAdmin);
+    console.log("UserProfilePanel - Admin section should render:", isAdmin);
+  }, [role, isAdmin]);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      router.push("/");
+      router.refresh();
+    }
+  };
+
   return (
     <Dropdown placement="bottom-start">
       <DropdownTrigger>
@@ -29,15 +51,45 @@ const UserProfilePanel = ({ user }: Props) => {
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
-        <DropdownItem>
-          <Link href="/user/profile">Profil</Link>
-        </DropdownItem>
-        <DropdownItem>
-          <Link href="/user/properties">İlan Listesi</Link>
-        </DropdownItem>
-        <DropdownItem key="logout" color="danger">
-          <LogoutLink>Çıkış</LogoutLink>
-        </DropdownItem>
+        <DropdownSection title="Hesap">
+          <DropdownItem 
+            key="profile-link"
+            as={Link}
+            href="/user/profile"
+          >
+            Profil
+          </DropdownItem>
+          <DropdownItem 
+            key="property-list-link"
+            as={Link}
+            href="/user/properties"
+          >
+            İlan Listesi
+          </DropdownItem>
+        </DropdownSection>
+        {isAdmin && (
+          <DropdownSection title="Yönetim">
+            <DropdownItem 
+              key="admin-organizations-link"
+              as={Link}
+              href="/admin/organizations"
+            >
+              Organizasyonlar
+            </DropdownItem>
+            <DropdownItem 
+              key="admin-dashboard-link"
+              as={Link}
+              href="/admin"
+            >
+              Admin Paneli
+            </DropdownItem>
+          </DropdownSection>
+        )}
+        <DropdownSection>
+          <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+            Çıkış
+          </DropdownItem>
+        </DropdownSection>
       </DropdownMenu>
     </Dropdown>
   );

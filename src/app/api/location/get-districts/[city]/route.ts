@@ -5,9 +5,9 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { city: string } },
-  response: NextResponse
+  { params }: { params: Promise<{ city: string }> }
 ) {
+  const { city } = await params;
   // const projectLocations = await prisma.propertyLocation.findMany({
   //   distinct: ["district"],
   // });
@@ -18,16 +18,23 @@ export async function GET(
   //   districts.push(location.district);
   // });
 
-  console.log("params city", params.city);
+  console.log("params city", city);
   const districts = await prisma.district.findMany({
-    where: { city_name: params.city },
+    where: { city_name: city },
   });
 
   // console.log(districts);
   function capitalize(s: string): string {
     return String(s[0]).toLocaleUpperCase("tr") + String(s).slice(1);
   }
-  const data: any[] = [];
+  interface DistrictData {
+    district_id: number;
+    label: string;
+    value: string;
+    city_name: string;
+    city_slug: string;
+  }
+  const data: DistrictData[] = [];
   await Promise.all(
     districts.map(async (district) => {
       data.push({

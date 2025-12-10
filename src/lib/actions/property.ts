@@ -18,7 +18,7 @@ export async function managePropertyDescriptor(descriptorId: number) {
   return null;
 }
 export async function manageDescriptorData(
-  descriptorData: Record<string, any>,
+  descriptorData: Record<string, string | boolean>,
   propertyId: number
 ) {
   let updateData: { propertyId: number; descriptorId: number }[] = [];
@@ -30,7 +30,10 @@ export async function manageDescriptorData(
   console.log(deletePropertyDescriptors);
   await Promise.all(
     Object.entries(descriptorData)
-      .filter((data) => JSON.parse(data[1]) === true)
+      .filter((data) => {
+        const value = typeof data[1] === 'string' ? JSON.parse(data[1]) : data[1];
+        return value === true;
+      })
 
       .map(async ([key]) => {
         const descriptors = await prisma.propertyDescriptor.findMany({

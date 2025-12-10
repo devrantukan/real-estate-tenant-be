@@ -21,9 +21,7 @@ import { useForm, useFormContext, useFormState } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
 import { format } from "path";
 
-import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
+import RichTextEditor from "./RichTextEditor";
 
 interface Props {
   className?: string;
@@ -115,27 +113,12 @@ const Basic = (props: Props) => {
         defaultValue={getValues().name}
       />
 
-      <div className="w-full  h-[460px] p-2 bg-gray-100 rounded-xl">
+      <div className="w-full h-[460px] p-2 bg-gray-100 rounded-xl">
         <p className="text-xs mb-1">Detaylı Bilgi</p>
-        <ReactQuill
-          modules={{
-            toolbar: [
-              [{ header: [1, 2, false] }],
-              ["bold", "italic", "underline", "strike", "blockquote"],
-              [
-                { list: "ordered" },
-                { list: "bullet" },
-                { indent: "-1" },
-                { indent: "+1" },
-              ],
-              ["link", "image"],
-              ["clean"],
-            ],
-          }}
-          className="h-[380px] rounded-lg border-gray-200"
-          theme="snow"
+        <RichTextEditor
           value={description}
           onChange={onEditorStateChange}
+          className="h-[380px]"
         />
       </div>
 
@@ -152,7 +135,7 @@ const Basic = (props: Props) => {
       />
       <div className="flex lg:flex-row flex-col gap-4 ">
         <Select
-          {...register("contractId", { setValueAs: (v: any) => v.toString() })}
+          {...register("contractId", { setValueAs: (v: string | number) => v.toString() })}
           errorMessage={errors.contractId?.message}
           isInvalid={!!errors.contractId}
           label="Kontrat Tipi"
@@ -172,7 +155,7 @@ const Basic = (props: Props) => {
         </Select>
 
         <Select
-          {...register("typeId", { setValueAs: (v: any) => v.toString() })}
+          {...register("typeId", { setValueAs: (v: string | number) => v.toString() })}
           errorMessage={errors.typeId?.message}
           isInvalid={!!errors.typeId}
           label="Gayrimenkul Tipi"
@@ -191,7 +174,7 @@ const Basic = (props: Props) => {
           ))}
         </Select>
         <Select
-          {...register("subTypeId", { setValueAs: (v: any) => v.toString() })}
+          {...register("subTypeId", { setValueAs: (v: string | number) => v.toString() })}
           errorMessage={errors.subTypeId?.message}
           isInvalid={!!errors.subTypeId}
           label="Gayrimenkul Alt Tipi"
@@ -216,7 +199,7 @@ const Basic = (props: Props) => {
       </div>
       <div className="flex lg:flex-row flex-col gap-4 ">
         <Select
-          {...register("statusId", { setValueAs: (v: any) => v.toString() })}
+          {...register("statusId", { setValueAs: (v: string | number) => v.toString() })}
           errorMessage={errors.statusId?.message}
           isInvalid={!!errors.statusId}
           label="Durum"
@@ -234,7 +217,7 @@ const Basic = (props: Props) => {
         </Select>
         <Input
           {...register("discountedPrice", {
-            setValueAs: (v: any) => v.toString(),
+            setValueAs: (v: string | number) => v.toString(),
           })}
           errorMessage={errors.discountedPrice?.message}
           isInvalid={!!errors.discountedPrice}
@@ -243,7 +226,7 @@ const Basic = (props: Props) => {
           defaultValue={getValues().discountedPrice?.toString()}
         />
         <Input
-          {...register("price", { setValueAs: (v: any) => v.toString() })}
+          {...register("price", { setValueAs: (v: string | number) => v.toString() })}
           errorMessage={errors.price?.message}
           isInvalid={!!errors.price}
           label="Fiyat"
@@ -261,7 +244,7 @@ const Basic = (props: Props) => {
           Geri
         </Button>
         <Button
-          onClick={handleNext}
+          onPress={handleNext}
           endContent={<ChevronRightIcon className="w-6" />}
           color="primary"
           className="w-36"

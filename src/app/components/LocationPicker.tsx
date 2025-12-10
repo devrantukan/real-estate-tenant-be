@@ -7,8 +7,7 @@ import { useFormContext } from "react-hook-form";
 import { AddPropertyInputType } from "../user/properties/add/_components/AddPropertyForm";
 import { Input } from "@nextui-org/react";
 
-// Replace with your actual Google Maps API key
-const GOOGLE_MAPS_API_KEY = "AIzaSyDMTvXdDIxkmlxtPmBRBEUvpwX1PtWQTr4";
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
 const containerStyle = {
   width: "100%",

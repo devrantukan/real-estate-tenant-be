@@ -1,76 +1,40 @@
 import PageTitle from "@/app/components/pageTitle";
-import { getUserAsOfficeWorker, getUserById } from "@/lib/actions/user";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import React, { ReactNode } from "react";
-import SectionTitle from "./_components/sectionTitle";
-import { Avatar, Button, Card } from "@nextui-org/react";
-import UploadAvatar from "./_components/UploadAvatar";
-import Link from "next/link";
-import prisma from "@/lib/prisma";
-import UserProfileForm from "@/app/components/UserProfileForm";
+import { getUserAsOfficeWorker } from "@/lib/actions/user";
+import { getCurrentUser, getUserRole } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import ProfileContent from "./_components/ProfileContent";
 
 const ProfilePage = async () => {
-  const { getUser } = await getKindeServerSession();
-  const user = await getUser();
+  const currentUser = await getCurrentUser();
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  if (!currentUser) {
+    redirect("/login");
+  }
 
-  const dbUser = await getUserById(user ? user.id : "");
-  console.log("user is:", user);
-  console.log("dbuser is:", dbUser);
-  console.log("act", role);
+  const { dbUser } = currentUser;
+  
+  // Role'ü güvenli bir şekilde al
+  let role: string | null = null;
+  try {
+    role = await getUserRole(dbUser.id);
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+  }
 
-  const officeWorker = await getUserAsOfficeWorker(user ? user.id : "");
-
-  //console.log(officeWorker);
+  // OfficeWorker'ı güvenli bir şekilde al
+  let officeWorker = null;
+  try {
+    officeWorker = await getUserAsOfficeWorker(dbUser.id);
+  } catch (error) {
+    console.error("Error fetching office worker:", error);
+  }
 
   return (
     <div>
       <PageTitle title="Profilim" linkCaption="Ana sayfaya geri dön" href="/" />
-      <Card className="m-4 p-4  flex flex-col gap-5">
-        <SectionTitle title="Kullanıcı Bilgileri" />
-        <div className="flex lg:flex-row flex-col">
-          <div className="flex flex-col items-center lg:w-1/3 w-full mb-6">
-            <Avatar
-              className="w-40 h-40 border-1 border-gray-200"
-              src={officeWorker?.avatarUrl ?? "/profile.png"}
-            />
-            <UploadAvatar userId={dbUser?.id!} />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:w-2/3 w-full">
-            <Attribute
-              title="Adı Soyadı"
-              value={`${dbUser?.firstName} ${dbUser?.lastName}`}
-            />
-            <Attribute title="E-posta" value={dbUser?.email} />
-            <Attribute
-              title="Kayıt Tarihi"
-              value={dbUser?.createdAt.toLocaleDateString()}
-            />
-
-            <Attribute title="Kullanıcı Rolü" value={role} />
-            <Attribute title="Emlak sayısı" value={1} />
-          </div>
-        </div>
-      </Card>
-      {role === "office-workers" && (
-        <Card className="m-4 p-4  flex flex-col gap-5">
-          <SectionTitle title="Danışman Bilgileri" />
-
-          <UserProfileForm officeWorker={officeWorker} />
-        </Card>
-      )}
+      <ProfileContent dbUser={dbUser} role={role} officeWorker={officeWorker} />
     </div>
   );
 };
-export default ProfilePage;
 
-const Attribute = ({ title, value }: { title: string; value: ReactNode }) => (
-  <div className="flex flex-col text-sm">
-    <span className="text-slate-800 font-semibold">{title}</span>
-    <span className="text-slate-600">{value}</span>
-  </div>
-);
+export default ProfilePage;

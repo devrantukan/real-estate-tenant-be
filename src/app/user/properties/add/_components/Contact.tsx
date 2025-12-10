@@ -24,8 +24,8 @@ interface Props {
   className?: string;
   agents: OfficeWorker[];
   role: string;
-  // descriptorCategories: any[];
-  dbDescriptors: any[];
+  // descriptorCategories: PropertyDescriptorCategory[];
+  dbDescriptors: { descriptorId: number }[];
 }
 const Contact = ({
   prev,
@@ -43,9 +43,9 @@ const Contact = ({
   } = useFormContext<AddPropertyInputType>();
 
   const [agentId, setAgentId] = React.useState<number>(0);
-  const [descriptors, setDescriptors] = React.useState<any[]>([]);
+  const [descriptors, setDescriptors] = React.useState<{ id: string | number; value: string; slug: string }[]>([]);
 
-  const [descriptorCategories, setDescriptorCategories] = React.useState<any[]>(
+  const [descriptorCategories, setDescriptorCategories] = React.useState<(PropertyDescriptorCategory & { descriptors: { id: number; value: string; slug: string }[] })[]>(
     []
   );
 
@@ -63,7 +63,11 @@ const Contact = ({
     fetchDescriptors(values.typeId);
   }, [getValues]);
 
-  async function fetchDescriptors(typeId: number) {
+  async function fetchDescriptors(typeId: number | undefined) {
+    if (!typeId) {
+      setDescriptorCategories([]);
+      return;
+    }
     try {
       const response = await axios.get(
         `/api/property/get-property-descriptor-categories/${typeId}`
@@ -71,13 +75,14 @@ const Contact = ({
       setDescriptorCategories(response.data);
     } catch (error) {
       console.error("Error fetching descriptors:", error);
+      setDescriptorCategories([]);
     }
   }
   const typeId = getValues().typeId;
   const [selectedTypeId, setSelectedTypeId] = React.useState(typeId);
 
   const [descriptorsGrouped, setDescriptorsGrouped] = React.useState<
-    Record<string, any[]>
+    Record<string, { id: string | number; value: string; slug: string }[]>
   >({});
 
   console.log(typeId);
@@ -116,7 +121,7 @@ const Contact = ({
         )}
         {role == "site-admin" && (
           <Select
-            {...register("agentId", { setValueAs: (v: any) => v.toString() })}
+            {...register("agentId", { setValueAs: (v: string | number) => v.toString() })}
             errorMessage={errors.agentId?.message}
             isInvalid={!!errors.agentId}
             label="Gayrimenkul Danışmanı"

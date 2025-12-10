@@ -24,7 +24,7 @@ interface Props {
   countries: Country[];
   cities: City[];
   //  districts: District[];
-  citiesObj: Record<any, any[]>; // Add this line
+  citiesObj: Record<string, string[]>; // Add this line
   // districtsObj: Record<any, any[]>;
   // neighborhoods: Neighborhood[];
   // neighborhoodsObj: Record<any, any[]>;
@@ -50,8 +50,8 @@ const Location = (props: Props) => {
   );
 
   const [cityOptions, setCityOptions] = React.useState<string[]>([]);
-  const [districtOptions, setDistrictOptions] = React.useState<any[]>([]);
-  const [neighborhoodOptions, setNeighborhoodOptions] = React.useState<any[]>(
+  const [districtOptions, setDistrictOptions] = React.useState<{ label: string; value: string }[]>([]);
+  const [neighborhoodOptions, setNeighborhoodOptions] = React.useState<{ label: string; value: string }[]>(
     []
   );
 
@@ -122,8 +122,9 @@ const Location = (props: Props) => {
     setValue("location.neighborhood", e.target.value);
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
       const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=izmir%20karaburun%20hasseki&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyBf_hX4WicWgAHxKSjeBD29dLXjB0xm3C4`,
+        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=izmir%20karaburun%20hasseki&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=${apiKey}`,
         {
           headers: {
             accept:
@@ -259,7 +260,7 @@ const Location = (props: Props) => {
         <div className="w-full flex flex-col gap-y-4">
           <Select
             {...register("location.country", {
-              setValueAs: (v: any) => v.toString(),
+              setValueAs: (v: string | number) => v.toString(),
             })}
             errorMessage={errors.location?.country?.message}
             isInvalid={!!errors.location?.country}
@@ -285,7 +286,7 @@ const Location = (props: Props) => {
 
           <Select
             {...register("location.city", {
-              setValueAs: (v: any) => v.toString(),
+              setValueAs: (v: string | number) => v.toString(),
             })}
             errorMessage={errors.location?.city?.message}
             isInvalid={!!errors.location?.city}
@@ -318,7 +319,7 @@ const Location = (props: Props) => {
 
           <Select
             {...register("location.district", {
-              setValueAs: (v: any) => v.toString(),
+              setValueAs: (v: string | number) => v.toString(),
             })}
             errorMessage={errors.location?.district?.message}
             isInvalid={!!errors.location?.district}
@@ -345,7 +346,7 @@ const Location = (props: Props) => {
 
           <Select
             {...register("location.neighborhood", {
-              setValueAs: (v: any) => v.toString(),
+              setValueAs: (v: string | number) => v.toString(),
             })}
             errorMessage={errors.location?.neighborhood?.message}
             isInvalid={!!errors.location?.neighborhood}
