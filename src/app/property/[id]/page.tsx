@@ -8,7 +8,7 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const headersList = headers();
+  const headersList = await headers();
   const domain = headersList.get("host") || "";
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
   const baseUrl = `${protocol}://${domain}`;

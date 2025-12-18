@@ -5,11 +5,12 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { country: string } }
+  { params }: { params: Promise<{ country: string }> }
 ) {
+  const { country } = await params;
   const cities = await prisma.city.findMany({
     where: {
-      country_id: parseInt(params.country),
+      country_id: parseInt(country),
     },
   });
 

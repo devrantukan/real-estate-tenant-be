@@ -3,32 +3,20 @@
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button } from "@nextui-org/button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-} from "@nextui-org/table";
+import { Button } from "@heroui/react";
 import {
   PropertyDescriptor,
   PropertyDescriptorCategory,
   PropertyType,
 } from "@prisma/client";
-import { EditIcon, DeleteIcon } from "@nextui-org/shared-icons";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import AddCategoryModal from "./AddCategoryModal";
 import AddDescriptorModal from "./AddDescriptorModal";
 import EditCategoryModal from "./EditCategoryModal";
 import EditDescriptorModal from "./EditDescriptorModal";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/modal";
+} from "@heroui/react";
 import {
   deleteCategory,
   deleteDescriptor,
@@ -135,10 +123,10 @@ export default function DescriptorsList({
     <>
       <div className="space-y-6">
         <div className="flex gap-4">
-          <Button color="primary" onPress={() => setShowAddCategory(true)}>
+          <Button variant="primary" onPress={() => setShowAddCategory(true)}>
             Yeni Kategori Ekle
           </Button>
-          <Button color="primary" onPress={() => setShowAddDescriptor(true)}>
+          <Button variant="primary" onPress={() => setShowAddDescriptor(true)}>
             Yeni Tanımlayıcı Ekle
           </Button>
         </div>
@@ -147,87 +135,109 @@ export default function DescriptorsList({
           {/* Categories Table */}
           <div className="border rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-4">Kategoriler</h2>
-            <Table aria-label="Kategoriler">
-              <TableHeader>
-                <TableColumn>Ad</TableColumn>
-                <TableColumn>Slug</TableColumn>
-                <TableColumn>Mülk Tipi</TableColumn>
-                <TableColumn>İşlemler</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category) => (
-                  <TableRow key={category.id}>
-                    <TableCell>{category.value}</TableCell>
-                    <TableCell>{category.slug}</TableCell>
-                    <TableCell>{category.type?.value || "N/A"}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="light"
-                          onPress={() => setEditingCategory(category)}
-                        >
-                          <EditIcon />
-                        </Button>
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="light"
-                          color="danger"
-                          onPress={() => setDeletingCategory(category.id)}
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mülk Tipi</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {categories.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">
+                        Kategori bulunamadı
+                      </td>
+                    </tr>
+                  ) : (
+                    categories.map((category) => (
+                      <tr key={category.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{category.value}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.slug}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.type?.value || "N/A"}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex gap-2">
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="ghost"
+                              onPress={() => setEditingCategory(category)}
+                            >
+                              <PencilIcon />
+                            </Button>
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="danger-soft"
+                              onClick={() => setDeletingCategory(category.id)}
+                            >
+                              <TrashIcon />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Descriptors Table */}
           <div className="border rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-4">Tanımlayıcılar</h2>
-            <Table aria-label="Tanımlayıcılar">
-              <TableHeader>
-                <TableColumn>Ad</TableColumn>
-                <TableColumn>Slug</TableColumn>
-                <TableColumn>Kategori</TableColumn>
-                <TableColumn>İşlemler</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {descriptors.map((descriptor) => (
-                  <TableRow key={descriptor.id}>
-                    <TableCell>{descriptor.value}</TableCell>
-                    <TableCell>{descriptor.slug}</TableCell>
-                    <TableCell>{descriptor.category?.value || "N/A"}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="light"
-                          onPress={() => setEditingDescriptor(descriptor)}
-                        >
-                          <EditIcon />
-                        </Button>
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="light"
-                          color="danger"
-                          onPress={() => setDeletingDescriptor(descriptor.id)}
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {descriptors.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">
+                        Tanımlayıcı bulunamadı
+                      </td>
+                    </tr>
+                  ) : (
+                    descriptors.map((descriptor) => (
+                      <tr key={descriptor.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{descriptor.value}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{descriptor.slug}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{descriptor.category?.value || "N/A"}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex gap-2">
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="ghost"
+                              onPress={() => setEditingDescriptor(descriptor)}
+                            >
+                              <PencilIcon />
+                            </Button>
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              variant="danger-soft"
+                              onClick={() => setDeletingDescriptor(descriptor.id)}
+                            >
+                              <TrashIcon />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -264,20 +274,21 @@ export default function DescriptorsList({
         {/* Delete Confirmation Modals */}
         <Modal
           isOpen={!!deletingCategory}
-          onClose={() => setDeletingCategory(null)}
+          onOpenChange={(open) => !open && setDeletingCategory(null)}
         >
-          <ModalContent>
-            <ModalHeader>Kategoriyi Sil</ModalHeader>
-            <ModalBody>
+          <Modal.Container>
+          <Modal.Dialog>
+            <Modal.Header>Kategoriyi Sil</Modal.Header>
+            <Modal.Body>
               Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri
               alınamaz.
-            </ModalBody>
-            <ModalFooter>
-              <Button variant="light" onPress={() => setDeletingCategory(null)}>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="ghost" onPress={() => setDeletingCategory(null)}>
                 İptal
               </Button>
               <Button
-                color="danger"
+                variant="danger"
                 onPress={() => {
                   if (deletingCategory) handleDeleteCategory(deletingCategory);
                   setDeletingCategory(null);
@@ -285,29 +296,31 @@ export default function DescriptorsList({
               >
                 Sil
               </Button>
-            </ModalFooter>
-          </ModalContent>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
         </Modal>
 
         <Modal
           isOpen={!!deletingDescriptor}
-          onClose={() => setDeletingDescriptor(null)}
+          onOpenChange={(open) => !open && setDeletingDescriptor(null)}
         >
-          <ModalContent>
-            <ModalHeader>Tanımlayıcıyı Sil</ModalHeader>
-            <ModalBody>
+          <Modal.Container>
+          <Modal.Dialog>
+            <Modal.Header>Tanımlayıcıyı Sil</Modal.Header>
+            <Modal.Body>
               Bu tanımlayıcıyı silmek istediğinizden emin misiniz? Bu işlem geri
               alınamaz.
-            </ModalBody>
-            <ModalFooter>
+            </Modal.Body>
+            <Modal.Footer>
               <Button
-                variant="light"
+                variant="ghost"
                 onPress={() => setDeletingDescriptor(null)}
               >
                 İptal
               </Button>
               <Button
-                color="danger"
+                variant="danger"
                 onPress={() => {
                   if (deletingDescriptor)
                     handleDeleteDescriptor(deletingDescriptor);
@@ -316,8 +329,9 @@ export default function DescriptorsList({
               >
                 Sil
               </Button>
-            </ModalFooter>
-          </ModalContent>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
         </Modal>
       </div>
       <ToastContainer />

@@ -122,6 +122,7 @@ export async function saveProperty(
     videoSource: propertyData.videoSource ?? "",
     threeDSource: propertyData.threeDSource ?? "",
     publishingStatus: "PENDING",
+    organizationId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

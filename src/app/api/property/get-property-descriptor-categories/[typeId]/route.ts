@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { typeId: string } }
+  { params }: { params: Promise<{ typeId: string }> }
 ) {
   try {
-    const typeId = parseInt(params.typeId);
+    const { typeId: typeIdParam } = await params;
+    const typeId = parseInt(typeIdParam);
 
     const descriptorCategories =
       await prisma.propertyDescriptorCategory.findMany({

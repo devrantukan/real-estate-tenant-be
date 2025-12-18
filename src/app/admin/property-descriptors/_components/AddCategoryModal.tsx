@@ -4,14 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/modal";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { Select, SelectItem } from "@nextui-org/select";
+} from "@heroui/react";
+import { Button } from "@heroui/react";
+import { Input } from "@heroui/react";
+import { Select, ListBox } from "@heroui/react";
 import { Form } from "@/components/ui/form";
 import {
   CategoryFormData,
@@ -74,57 +70,78 @@ export default function AddCategoryModal({
   };
 
   return (
-    <Modal isOpen={open} onClose={onClose}>
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader>Yeni Kategori Ekle</ModalHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <ModalBody>
-                  <Input
-                    label="Kategori Adı"
-                    {...form.register("value")}
-                    errorMessage={form.formState.errors.value?.message}
-                  />
-                  <Input
-                    label="Slug"
-                    {...form.register("slug")}
-                    errorMessage={form.formState.errors.slug?.message}
-                  />
-                  <Select
-                    label="Mülk Tipi"
-                    onChange={(e) =>
-                      form.setValue("typeId", Number(e.target.value))
-                    }
-                    selectedKeys={[form.getValues("typeId").toString()]}
-                  >
-                    {propertyTypes.map((type) => (
-                      <SelectItem
-                        key={type.id.toString()}
-                        value={type.id.toString()}
+    <Modal isOpen={open} onOpenChange={(open) => !open && onClose()}>
+      <Modal.Container>
+          <Modal.Dialog>
+        {(renderProps) => {
+          const handleClose = () => {
+            onClose();
+          };
+          return (
+            <>
+              <Modal.Header>Yeni Kategori Ekle</Modal.Header>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  <Modal.Body>
+                    <div>
+                      <label htmlFor="value" className="block text-sm font-medium mb-2">Kategori Adı</label>
+                      <Input
+                        id="value"
+                        value={form.watch("value") || ""}
+                        onChange={(e) => form.setValue("value", e.target.value)}
+                        onBlur={() => form.trigger("value")}
+                      />
+                      {form.formState.errors.value && (
+                        <p className="text-danger text-sm mt-1">{form.formState.errors.value.message}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="slug" className="block text-sm font-medium mb-2">Slug</label>
+                      <Input
+                        id="slug"
+                        value={form.watch("slug") || ""}
+                        onChange={(e) => form.setValue("slug", e.target.value)}
+                        onBlur={() => form.trigger("slug")}
+                      />
+                      {form.formState.errors.slug && (
+                        <p className="text-danger text-sm mt-1">{form.formState.errors.slug.message}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="typeId" className="block text-sm font-medium mb-2">Mülk Tipi</label>
+                      <Select
+                        selectedKey={form.getValues("typeId")?.toString() || undefined}
+                        onSelectionChange={(key) => {
+                          const selectedKey = key?.toString() || "";
+                          form.setValue("typeId", Number(selectedKey));
+                        }}
                       >
-                        {type.value}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    İptal
-                  </Button>
-                  <Button color="primary" type="submit">
-                    Ekle
-                  </Button>
-                </ModalFooter>
-              </form>
-            </Form>
-          </>
-        )}
-      </ModalContent>
+                        {propertyTypes.map((type) => (
+                          <ListBox.Item key={type.id.toString()}>
+                            {type.value}
+                          </ListBox.Item>
+                        ))}
+                      </Select>
+                    </div>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="danger-soft" onClick={handleClose}>
+                      İptal
+                    </Button>
+                    <Button variant="primary" type="submit">
+                      Ekle
+                    </Button>
+                  </Modal.Footer>
+                </form>
+              </Form>
+            </>
+          );
+        }}
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

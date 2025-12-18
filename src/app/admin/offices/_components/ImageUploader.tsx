@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -105,8 +105,7 @@ export default function ImageUploader({
 
       {previewUrl && (
         <Button
-          color="danger"
-          variant="light"
+          variant="danger-soft"
           size="sm"
           onClick={() => {
             setPreviewUrl("");

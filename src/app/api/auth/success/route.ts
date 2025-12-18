@@ -1,15 +1,15 @@
 export const dynamic = "force-dynamic";
 
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const { getUser } = await getKindeServerSession();
   const user = await getUser();
 
-  if (!user || user === null || !user.id)
-    throw new Error("Something went wrong with authentication" + user);
+  if (!user || !user.id) {
+    throw new Error("Something went wrong with authentication");
+  }
 
   const dbUser = await prisma.user.findUnique({
     where: {
@@ -18,11 +18,13 @@ export async function GET() {
   });
 
   if (!dbUser) {
+    // Get user metadata from Supabase
+    const userMetadata = user.user_metadata || {};
     await prisma.user.create({
       data: {
         id: user.id,
-        firstName: user.given_name ?? "",
-        lastName: user.family_name ?? "",
+        firstName: userMetadata.first_name || userMetadata.given_name || user.email?.split("@")[0] || "",
+        lastName: userMetadata.last_name || userMetadata.family_name || "",
         email: user.email ?? "",
       },
     });

@@ -2,13 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Textarea } from "@nextui-org/react";
+import { Button, Input, Label } from "@heroui/react";
 import { ContentInputType, contentSchema } from "@/lib/validations/content";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
-import { revalidatePath } from "next/cache";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
@@ -93,6 +92,7 @@ export function ContentForm({ initialData }: ContentFormProps) {
     handleSubmit,
     setValue,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<ContentInputType>({
     resolver: zodResolver(contentSchema),
@@ -166,22 +166,25 @@ export function ContentForm({ initialData }: ContentFormProps) {
       <style>{quillStyles}</style>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <Input
-            label="Anahtar"
+          <label htmlFor="key" className="block text-sm font-medium mb-2">Anahtar</label>
+          <input
+            id="key"
+            type="text"
             {...register("key")}
-            isInvalid={!!errors.key}
-            errorMessage={errors.key?.message}
-            classNames={{
-              inputWrapper: "bg-content1",
-            }}
+            className={`w-full px-3 py-2 border rounded-md ${
+              errors.key ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {errors.key && (
+            <p className="text-red-500 text-sm mt-1">{errors.key.message}</p>
+          )}
         </div>
 
         <div>
           <div className="mb-4">
             <ReactQuill
               theme="snow"
-              value={richTextValue || ""}
+              
               onChange={(value) => setValue("value", value)}
               placeholder="Değer"
               modules={{
@@ -203,26 +206,28 @@ export function ContentForm({ initialData }: ContentFormProps) {
         </div>
 
         <div>
-          <Textarea
-            label="Açıklama"
+          <label htmlFor="description" className="block text-sm font-medium mb-2">Açıklama</label>
+          <textarea
+            id="description"
             {...register("description")}
-            isInvalid={!!errors.description}
-            errorMessage={errors.description?.message}
-            classNames={{
-              inputWrapper: "bg-content1",
-            }}
+            className={`w-full px-3 py-2 border rounded-md ${
+              errors.description ? "border-red-500" : "border-gray-300"
+            }`}
+            rows={4}
           />
+          {errors.description && (
+            <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+          )}
         </div>
 
         <div className="flex justify-end gap-2">
           <Button
-            color="danger"
-            variant="light"
+            variant="danger-soft"
             onPress={() => router.push("/admin/contents")}
           >
             İptal
           </Button>
-          <Button type="submit" color="primary" isLoading={isSubmitting}>
+          <Button type="submit" variant="primary" isDisabled={isSubmitting}>
             {initialData ? "Güncelle" : "Oluştur"}
           </Button>
         </div>

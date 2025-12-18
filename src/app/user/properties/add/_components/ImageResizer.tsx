@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import Image from "next/image";
 
 // Add custom CSS to hide crop layer
@@ -154,7 +154,7 @@ const ImageResizer: React.FC<ImageResizerProps> = ({
         />
         <canvas ref={canvasRef} className="hidden" />
         <div className="mt-4 flex justify-end gap-2">
-          <Button color="danger" onClick={onCancel}>
+          <Button variant="danger" onClick={onCancel}>
             Cancel
           </Button>
         </div>

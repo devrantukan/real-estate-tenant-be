@@ -15,11 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  ListBox,
+} from "@heroui/react";
 import { Textarea } from "@/components/ui/textarea";
 import {
   createOfficeWorker,
@@ -152,19 +149,9 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
         // Try to parse the error message as JSON
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        const errorJson = JSON.parse(
-          errorMessage.split("Failed to create Kinde user: ")[1] || "{}"
+        toast.error(
+          "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
         );
-
-        if (errorJson.errors?.[0]?.code === "USER_ALREADY_EXISTS") {
-          toast.error(
-            "Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut. Lütfen farklı bir e-posta adresi kullanın."
-          );
-        } else {
-          toast.error(
-            "Kinde kullanıcısı oluşturulurken bir hata oluştu. Lütfen daha sonra tekrar deneyin."
-          );
-        }
       } catch (parseError) {
         // If JSON parsing fails, show generic error
         toast.error("Bir hata oluştu!");
@@ -277,22 +264,14 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
               <FormItem>
                 <FormLabel>Ofis</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
-                  value={field.value?.toString()}
-                  defaultValue={worker?.officeId?.toString()}
+                  selectedKey={worker?.officeId?.toString() || undefined}
+                  onSelectionChange={(key) => field.onChange(key?.toString() || "")}
                 >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Ofis seçiniz" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {offices?.map((office) => (
-                      <SelectItem key={office.id} value={office.id.toString()}>
-                        {office.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  {offices?.map((office) => (
+                    <ListBox.Item key={office.id.toString()}>
+                      {office.name}
+                    </ListBox.Item>
+                  ))}
                 </Select>
                 <FormMessage />
               </FormItem>
@@ -306,22 +285,14 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
               <FormItem>
                 <FormLabel>Rol</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
-                  value={field.value?.toString()}
-                  defaultValue={worker?.roleId?.toString()}
+                  selectedKey={worker?.roleId?.toString() || undefined}
+                  onSelectionChange={(key) => field.onChange(key?.toString() || "")}
                 >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Rol seçiniz" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {roles?.map((role) => (
-                      <SelectItem key={role.id} value={role.id.toString()}>
-                        {role.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  {roles?.map((role) => (
+                    <ListBox.Item key={role.id.toString()}>
+                      {role.title}
+                    </ListBox.Item>
+                  ))}
                 </Select>
                 <FormMessage />
               </FormItem>
@@ -445,7 +416,7 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
             name="userId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Kinde User</FormLabel>
+                <FormLabel>User ID</FormLabel>
                 <FormControl>
                   <Input {...field} disabled />
                 </FormControl>

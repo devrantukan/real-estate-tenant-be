@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import React from "react";
 import PropertiesTable from "./_components/PropertiesTable";
 import { getUserById } from "@/lib/actions/user";
@@ -13,15 +13,10 @@ interface Props {
 }
 
 const PropertySharePage = async ({ searchParams }: Props) => {
-  const { getUser } = await getKindeServerSession();
   const user = await getUser();
   if (!user) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
-
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
 
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },

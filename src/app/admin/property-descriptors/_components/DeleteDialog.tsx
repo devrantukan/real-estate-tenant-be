@@ -1,11 +1,7 @@
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/modal";
-import { Button } from "@nextui-org/button";
+  Button,
+} from "@heroui/react";
 
 interface Props {
   open: boolean;
@@ -24,22 +20,32 @@ export default function DeleteDialog({
 }: Props) {
   return (
     <Modal isOpen={open} onOpenChange={onClose}>
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader>{title}</ModalHeader>
-            <ModalBody>{description}</ModalBody>
-            <ModalFooter>
-              <Button color="default" variant="light" onPress={onClose}>
-                İptal
-              </Button>
-              <Button color="danger" onPress={onConfirm}>
-                Sil
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
+      <Modal.Container>
+          <Modal.Dialog>
+        {(renderProps) => {
+          const handleClose = () => {
+            onClose();
+          };
+          const handleConfirm = () => {
+            onConfirm();
+          };
+          return (
+            <>
+              <Modal.Header>{title}</Modal.Header>
+              <Modal.Body>{description}</Modal.Body>
+              <Modal.Footer>
+                <Button variant="ghost" onClick={handleClose}>
+                  İptal
+                </Button>
+                <Button variant="danger" onClick={handleConfirm}>
+                  Sil
+                </Button>
+              </Modal.Footer>
+            </>
+          );
+        }}
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

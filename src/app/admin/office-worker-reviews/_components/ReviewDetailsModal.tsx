@@ -1,12 +1,8 @@
 "use client";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { formatDate } from "@/lib/utils";
 
 interface Review {
@@ -43,10 +39,11 @@ export default function ReviewDetailsModal({ review, onClose }: Props) {
   if (!review) return null;
 
   return (
-    <Modal isOpen={!!review} onClose={onClose} size="2xl">
-      <ModalContent>
-        <ModalHeader>Değerlendirme Detayları</ModalHeader>
-        <ModalBody>
+    <Modal isOpen={!!review} onOpenChange={(open) => !open && onClose()}>
+      <Modal.Container>
+          <Modal.Dialog>
+        <Modal.Header>Değerlendirme Detayları</Modal.Header>
+        <Modal.Body>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="font-semibold mb-2">Değerlendirilen Danışman</h3>
@@ -116,13 +113,14 @@ export default function ReviewDetailsModal({ review, onClose }: Props) {
               </p>
             </div>
           </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="danger" variant="light" onPress={onClose}>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger-soft" onPress={onClose}>
             Kapat
           </Button>
-        </ModalFooter>
-      </ModalContent>
+        </Modal.Footer>
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

@@ -32,7 +32,7 @@ export const projectSchema = z.object({
   officeId: z.number().min(1, "Ofis seçimi zorunludur"),
   assignedAgents: z.string().min(1, "En az bir danışman seçilmelidir"),
   publishingStatus: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"], {
-    required_error: "Yayın durumu zorunludur",
+    message: "Yayın durumu zorunludur",
   }),
   startDate: z.date(),
   endDate: z.date(),

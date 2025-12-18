@@ -1,14 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const { getUser, getAccessToken } = getKindeServerSession();
   const user = await getUser();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  if (!user) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
 
-  if (!user || role !== "site-admin") {
+  const role = await getUserRole(user.id);
+  if (role !== "site-admin") {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 

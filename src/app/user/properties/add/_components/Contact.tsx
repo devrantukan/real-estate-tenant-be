@@ -9,16 +9,16 @@ import {
   Checkbox,
   Input,
   Select,
-  SelectItem,
+  ListBox,
   cn,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
 import { OfficeWorker, PropertyDescriptorCategory, User } from "@prisma/client";
 
 import axios from "axios";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+// Removed Kinde import - using Supabase auth instead
 
 interface Props {
   prev: () => void;
@@ -141,13 +141,13 @@ const Contact = ({
             }}
           >
             {agents.map((item) => (
-              <SelectItem
+              <ListBox
                 key={item.id}
-                value={item.id}
+                
                 textValue={`${item.name} ${item.surname}`}
               >
                 {item.name} {item.surname}
-              </SelectItem>
+              </ListBox>
             ))}
           </Select>
         )}
@@ -179,12 +179,12 @@ const Contact = ({
                             <Checkbox
                               id={String(descriptor.id)}
                               {...field}
-                              value={descriptor.slug}
+                              
                               isSelected={
                                 field.value ||
                                 descriptorsList.includes(Number(descriptor.id))
                               }
-                              onValueChange={field.onChange}
+                              onChange={field.onChange}
                             >
                               {descriptor.value}
                             </Checkbox>
@@ -201,7 +201,7 @@ const Contact = ({
         <Button
           onClick={prev}
           startContent={<ChevronLeftIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           Geri

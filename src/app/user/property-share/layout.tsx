@@ -1,4 +1,4 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getUserById } from "@/lib/actions/user";
 
@@ -7,21 +7,16 @@ export default async function PropertyShareLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   if (!user) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
-
-  const dbUser = await getUserById(user ? user.id : "");
+  const dbUser = await getUserById(user.id);
 
   if (!dbUser) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
 
   return (

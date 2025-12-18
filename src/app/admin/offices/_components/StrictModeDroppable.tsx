@@ -18,5 +18,5 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
     return null;
   }
 
-  return <Droppable {...props}>{children}</Droppable>;
+  return <Droppable {...(props as any)}>{children as any}</Droppable>;
 };

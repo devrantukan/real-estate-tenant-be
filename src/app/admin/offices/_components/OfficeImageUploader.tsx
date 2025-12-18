@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, cn, Spinner } from "@nextui-org/react";
+import { Button, Card, cn, Spinner } from "@heroui/react";
 import React, { useState, useCallback, useEffect } from "react";
 import { OfficeImage } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";

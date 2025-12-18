@@ -1,4 +1,4 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import TabsWrapper from "./_components/TabsWrapper";
@@ -13,11 +13,10 @@ interface Props {
 export default async function ProjectPropertySharePage({
   searchParams,
 }: Props) {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   if (!user) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
 
   const dbUser = await prisma.user.findUnique({

@@ -4,13 +4,14 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { city: string; district: string } }
+  { params }: { params: Promise<{ city: string; district: string }> }
 ) {
+  const { city, district } = await params;
   //  console.log(params);
   const neighborhoodData = await prisma.neighborhood.findMany({
     where: {
-      district_name: params.district,
-      city_name: params.city,
+      district_name: district,
+      city_name: city,
     },
     orderBy: {
       neighborhood_name: "asc",

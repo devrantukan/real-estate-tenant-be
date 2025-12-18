@@ -4,14 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/modal";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { Select, SelectItem } from "@nextui-org/select";
+} from "@heroui/react";
+import { Button } from "@heroui/react";
+import { Input } from "@heroui/react";
+import { Select, ListBox } from "@heroui/react";
 import {
   Form,
   FormControl,
@@ -85,19 +81,24 @@ export default function EditDescriptorModal({
   };
 
   return (
-    <Modal isOpen={true} onOpenChange={onClose} size="2xl">
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1 text-xl font-semibold">
-              Tanımlayıcı Düzenle
-            </ModalHeader>
+    <Modal isOpen={true} onOpenChange={onClose} >
+      <Modal.Container>
+          <Modal.Dialog>
+        {(renderProps) => {
+          const handleClose = () => {
+            onClose();
+          };
+          return (
+            <>
+              <Modal.Header className="flex flex-col gap-1 text-xl font-semibold">
+                Tanımlayıcı Düzenle
+              </Modal.Header>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                <ModalBody className="space-y-6">
+                <Modal.Body className="space-y-6">
                   <FormField
                     control={form.control}
                     name="value"
@@ -108,8 +109,6 @@ export default function EditDescriptorModal({
                           <Input
                             {...field}
                             placeholder="Tanımlayıcı adını giriniz"
-                            errorMessage={form.formState.errors.value?.message}
-                            isInvalid={!!form.formState.errors.value}
                           />
                         </FormControl>
                         <FormMessage />
@@ -126,8 +125,6 @@ export default function EditDescriptorModal({
                           <Input
                             {...field}
                             placeholder="Slug değerini giriniz"
-                            errorMessage={form.formState.errors.slug?.message}
-                            isInvalid={!!form.formState.errors.slug}
                           />
                         </FormControl>
                         <FormMessage />
@@ -142,52 +139,44 @@ export default function EditDescriptorModal({
                         <FormLabel>Kategori</FormLabel>
                         <FormControl>
                           <Select
-                            {...field}
                             placeholder="Kategori seçiniz"
-                            selectedKeys={
-                              field.value ? [field.value.toString()] : []
-                            }
-                            onChange={(e) => {
-                              const value = e.target.value
-                                ? Number(e.target.value)
-                                : null;
+                            selectedKey={field.value?.toString() || undefined}
+                            onSelectionChange={(key) => {
+                              const selectedKey = key?.toString() || "";
+                              const value = selectedKey ? Number(selectedKey) : null;
                               field.onChange(value);
                             }}
-                            errorMessage={
-                              form.formState.errors.categoryId?.message
-                            }
-                            isInvalid={!!form.formState.errors.categoryId}
                             className="max-w-full"
-                            value={field.value?.toString()}
                           >
-                            {categories.map((category) => (
-                              <SelectItem
-                                key={category.id.toString()}
-                                value={category.id.toString()}
-                              >
-                                {category.value}
-                              </SelectItem>
-                            ))}
+                              {categories.map((category) => (
+                               <ListBox.Item
+                                  key={category.id.toString()}
+                                >
+                                  {category.value}
+                               </ListBox.Item>
+                              ))}
                           </Select>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger-soft" onClick={handleClose}>
                     İptal
                   </Button>
-                  <Button color="primary" type="submit">
+                  <Button variant="primary" type="submit">
                     Güncelle
                   </Button>
-                </ModalFooter>
+                </Modal.Footer>
               </form>
             </Form>
           </>
-        )}
-      </ModalContent>
+        );
+        }}
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

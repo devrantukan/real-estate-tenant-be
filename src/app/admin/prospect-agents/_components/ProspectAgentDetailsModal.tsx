@@ -1,5 +1,5 @@
 "use client";
-import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
+import { Modal } from "@heroui/react";
 import { formatDate } from "@/lib/utils";
 
 interface ProspectAgent {
@@ -24,12 +24,13 @@ interface Props {
 
 export default function ProspectAgentDetailsModal({ agent, onClose }: Props) {
   return (
-    <Modal isOpen={!!agent} onClose={onClose}>
-      <ModalContent>
+    <Modal isOpen={!!agent} onOpenChange={(open) => !open && onClose()}>
+      <Modal.Container>
+          <Modal.Dialog>
         {agent && (
           <>
-            <ModalHeader>Prospect Agent Details</ModalHeader>
-            <ModalBody className="gap-4">
+            <Modal.Header>Prospect Agent Details</Modal.Header>
+            <Modal.Body className="gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold">Personal Information</h3>
@@ -58,10 +59,11 @@ export default function ProspectAgentDetailsModal({ agent, onClose }: Props) {
               <p className="text-sm text-gray-500">
                 Created: {formatDate(agent.createdAt)}
               </p>
-            </ModalBody>
+            </Modal.Body>
           </>
         )}
-      </ModalContent>
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

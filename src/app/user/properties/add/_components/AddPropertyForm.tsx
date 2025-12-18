@@ -18,7 +18,7 @@ import {
   PropertyDescriptorCategory,
   PropertyDeedStatus,
 } from "@prisma/client";
-import { cn } from "@nextui-org/react";
+import { cn } from "@heroui/react";
 import Location from "./Location";
 import Features from "./Features";
 import Picture from "./Picture";
@@ -33,10 +33,10 @@ import {
   saveProperty,
   managePropertyDescriptor,
 } from "@/lib/actions/property";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { redirect, useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 
 const steps = [
   {
@@ -80,7 +80,7 @@ interface Props {
     };
   }>;
   isEdit?: boolean;
-  role: string;
+  role: string | null;
   // descriptorCategories: PropertyDescriptorCategory[];
 }
 
@@ -97,7 +97,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
   const [schema, setSchema] = useState<z.ZodObject<any>>();
 
   const methods = useForm<AddPropertyInputType>({
-    resolver: schema ? zodResolver(schema) : undefined,
+    resolver: schema ? (zodResolver(schema) as any) : undefined,
     defaultValues: {
       location: props.property?.location ?? undefined,
       propertyFeature: props.property?.feature
@@ -141,7 +141,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
 
   const [step, setStep] = useState(0);
 
-  const { user } = useKindeBrowserClient();
+  const [user, setUser] = useState<any>(null);
   const [dbUser, setDbUser] = useState<any>(null);
 
   const [existingImages, setExistingImages] = useState<PropertyImage[]>(
@@ -150,15 +150,19 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch("/api/user");
-      const data = await response.json();
-      setDbUser(data);
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      
+      if (user?.id) {
+        const response = await fetch("/api/user");
+        const data = await response.json();
+        setDbUser(data);
+      }
     };
 
-    if (user?.id) {
-      fetchUser();
-    }
-  }, [user?.id]);
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     async function loadSchema() {
@@ -270,7 +274,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
             subTypes={props.subTypes}
           />
           <Contact
-            role={role}
+            role={role || ""}
             user={dbUser}
             agents={props.agents}
             dbDescriptors={

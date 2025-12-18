@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { CitySchema } from "@/lib/validations/location";
 
@@ -65,12 +66,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { getUser } = getKindeServerSession();
     const user = await getUser();
-    const { getAccessToken } = await getKindeServerSession();
-    const accessToken: any = await getAccessToken();
-    const role = accessToken?.roles?.[0]?.key;
-    if (!user?.id || role !== "site-admin") {
+    if (!user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const role = await getUserRole(user.id);
+    if (role !== "site-admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

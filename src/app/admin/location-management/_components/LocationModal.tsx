@@ -3,15 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Input,
   Select,
-  SelectItem,
-} from "@nextui-org/react";
+  ListBox,
+} from "@heroui/react";
 import {
   CountrySchema,
   CitySchema,
@@ -162,215 +158,160 @@ export default function LocationModal({
       case "cities":
         return (
           <>
+            <label htmlFor="city_name" className="block text-sm font-medium mb-2">Şehir Adı</label>
             <Input
-              label="Şehir Adı"
+              id="city_name"
               value={formData.city_name || ""}
               onChange={(e) =>
                 setFormData({ ...formData, city_name: e.target.value })
               }
-              required
             />
+            <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
             <Select
-              label="Ülke"
-              selectedKeys={
-                formData.country_id ? [formData.country_id.toString()] : []
-              }
-              onChange={(e) =>
-                setFormData({ ...formData, country_id: e.target.value })
-              }
-              required
+              selectedKey={formData.country_id ? String(formData.country_id) : undefined}
+              onSelectionChange={(key) => {
+                setFormData({ ...formData, country_id: key ? String(key) : "" });
+              }}
             >
               {countries.map((country) => (
-                <SelectItem key={country.country_id} value={country.country_id}>
+                <ListBox.Item key={country.country_id} >
                   {country.country_name}
-                </SelectItem>
+                </ListBox.Item>
               ))}
             </Select>
+            <label htmlFor="slug-country" className="block text-sm font-medium mb-2">Slug</label>
             <Input
-              label="Slug"
+              id="slug-country"
               value={formData.slug || ""}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              required
             />
           </>
         );
       case "countries":
         return (
           <>
+            <label htmlFor="country_name" className="block text-sm font-medium mb-2">Ülke Adı</label>
             <Input
-              label="Ülke Adı"
-              value={formData.country_name}
+              id="country_name"
+              value={formData.country_name || ""}
               onChange={(e) =>
                 setFormData({ ...formData, country_name: e.target.value })
               }
-              isRequired
-              errorMessage={errors.country_name?.message?.toString()}
             />
+            {(errors as any).country_name?.message && (
+              <p className="text-sm text-red-500 mt-1">{(errors as any).country_name.message.toString()}</p>
+            )}
+            <label htmlFor="slug" className="block text-sm font-medium mb-2 mt-4">Slug</label>
             <Input
-              label="Slug"
-              value={formData.slug}
+              id="slug"
+              value={formData.slug || ""}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              isRequired
-              errorMessage={errors.slug?.message?.toString()}
             />
+            {(errors as any).slug?.message && (
+              <p className="text-sm text-red-500 mt-1">{(errors as any).slug.message.toString()}</p>
+            )}
           </>
         );
       case "districts":
         return (
           <>
+            <label htmlFor="district_name" className="block text-sm font-medium mb-2">İlçe Adı</label>
             <Input
-              label="İlçe Adı"
+              id="district_name"
               value={formData.district_name || ""}
               onChange={(e) =>
                 setFormData({ ...formData, district_name: e.target.value })
               }
-              required
             />
+            <label htmlFor="country-select" className="block text-sm font-medium mb-2">Ülke</label>
             <Select
-              label="Ülke"
-              selectedKeys={
-                formData.country_id ? [formData.country_id.toString()] : []
-              }
-              onChange={(e) => {
+              selectedKey={formData.country_id ? formData.country_id.toString() : undefined}
+              onSelectionChange={(key) => {
                 setFormData({
                   ...formData,
-                  country_id: e.target.value,
+                  country_id: key ? key.toString() : "",
                   city_id: "", // Reset city when country changes
                 });
               }}
-              required
-              scrollShadowProps={{
-                isEnabled: true,
-                hideScrollBar: false,
-                offset: 15,
-              }}
-              className="max-h-[200px]"
             >
               {countries.map((country) => (
-                <SelectItem key={country.country_id} value={country.country_id}>
+                <ListBox.Item key={country.country_id.toString()}>
                   {country.country_name}
-                </SelectItem>
+                </ListBox.Item>
               ))}
             </Select>
+            <label htmlFor="city-select" className="block text-sm font-medium mb-2">Şehir</label>
             <Select
-              label="Şehir"
-              selectedKeys={
-                formData.city_id ? [formData.city_id.toString()] : []
-              }
-              onChange={(e) =>
-                setFormData({ ...formData, city_id: e.target.value })
-              }
-              required
-              isDisabled={!formData.country_id}
-              scrollShadowProps={{
-                isEnabled: true,
-                hideScrollBar: false,
-                offset: 15,
+              selectedKey={formData.city_id ? formData.city_id.toString() : undefined}
+              onSelectionChange={(key) => {
+                setFormData({ ...formData, city_id: key ? key.toString() : "" });
               }}
-              className="max-h-[200px]"
+              isDisabled={!formData.country_id}
             >
               {cities
                 .filter(
                   (city) => city.country_id === parseInt(formData.country_id)
                 )
                 .map((city) => (
-                  <SelectItem key={city.city_id} value={city.city_id}>
+                  <ListBox.Item key={city.city_id.toString()}>
                     {city.city_name}
-                  </SelectItem>
+                  </ListBox.Item>
                 ))}
             </Select>
+            <label htmlFor="slug-district" className="block text-sm font-medium mb-2">Slug</label>
             <Input
-              label="Slug"
+              id="slug-district"
               value={formData.slug || ""}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              required
             />
           </>
         );
       case "neighborhoods":
         return (
           <>
+            <label htmlFor="neighborhood_name" className="block text-sm font-medium mb-2">Mahalle Adı</label>
             <Input
-              label="Mahalle Adı"
+              id="neighborhood_name"
               value={formData.neighborhood_name || ""}
               onChange={(e) =>
                 setFormData({ ...formData, neighborhood_name: e.target.value })
               }
-              required
             />
+            <label htmlFor="country-select-2" className="block text-sm font-medium mb-2">Ülke</label>
             <Select
-              label="Ülke"
-              selectedKeys={
-                formData.country_id ? [formData.country_id.toString()] : []
-              }
-              onChange={(e) => {
+              selectedKey={formData.country_id ? formData.country_id.toString() : undefined}
+              onSelectionChange={(key) => {
                 setFormData({
                   ...formData,
-                  country_id: e.target.value,
+                  country_id: key ? key.toString() : "",
                   city_id: "", // Reset city when country changes
                   district_id: "", // Reset district when country changes
                 });
               }}
-              required
-              scrollShadowProps={{
-                isEnabled: true,
-                hideScrollBar: false,
-                offset: 15,
-              }}
-              listboxProps={{
-                itemClasses: {
-                  base: "data-[hover=true]:bg-default-100/80",
-                },
-              }}
-              popoverProps={{
-                classNames: {
-                  base: "before:bg-default-200",
-                  content: "p-0 border-small border-divider bg-background",
-                },
-              }}
             >
               {countries.map((country) => (
-                <SelectItem key={country.country_id} value={country.country_id}>
+                <ListBox.Item key={country.country_id} >
                   {country.country_name}
-                </SelectItem>
+                </ListBox.Item>
               ))}
             </Select>
+            <label htmlFor="city-select-2" className="block text-sm font-medium mb-2">Şehir</label>
             <Select
-              label="Şehir"
-              selectedKeys={
-                formData.city_id ? [formData.city_id.toString()] : []
-              }
-              onChange={(e) => {
+              selectedKey={formData.city_id ? formData.city_id.toString() : undefined}
+              onSelectionChange={(key) => {
                 setFormData({
                   ...formData,
-                  city_id: e.target.value,
+                  city_id: key ? key.toString() : "",
                   district_id: "", // Reset district when city changes
                 });
               }}
-              required
               isDisabled={!formData.country_id}
-              scrollShadowProps={{
-                isEnabled: true,
-                hideScrollBar: false,
-                offset: 15,
-              }}
-              listboxProps={{
-                itemClasses: {
-                  base: "data-[hover=true]:bg-default-100/80",
-                },
-              }}
-              popoverProps={{
-                classNames: {
-                  base: "before:bg-default-200",
-                  content: "p-0 border-small border-divider bg-background",
-                },
-              }}
             >
               {cities
                 .filter((city) => {
@@ -379,37 +320,18 @@ export default function LocationModal({
                 })
                 .sort((a, b) => a.city_name.localeCompare(b.city_name))
                 .map((city) => (
-                  <SelectItem key={city.city_id} value={city.city_id}>
+                  <ListBox.Item key={city.city_id} >
                     {city.city_name}
-                  </SelectItem>
+                  </ListBox.Item>
                 ))}
             </Select>
+            <label htmlFor="district-select" className="block text-sm font-medium mb-2">İlçe</label>
             <Select
-              label="İlçe"
-              selectedKeys={
-                formData.district_id ? [formData.district_id.toString()] : []
+              selectedKey={formData.district_id ? formData.district_id.toString() : undefined}
+              onSelectionChange={(key) =>
+                setFormData({ ...formData, district_id: key ? key.toString() : "" })
               }
-              onChange={(e) =>
-                setFormData({ ...formData, district_id: e.target.value })
-              }
-              required
               isDisabled={!formData.city_id}
-              scrollShadowProps={{
-                isEnabled: true,
-                hideScrollBar: false,
-                offset: 15,
-              }}
-              listboxProps={{
-                itemClasses: {
-                  base: "data-[hover=true]:bg-default-100/80",
-                },
-              }}
-              popoverProps={{
-                classNames: {
-                  base: "before:bg-default-200",
-                  content: "p-0 border-small border-divider bg-background",
-                },
-              }}
             >
               {districts
                 .filter((district) => {
@@ -418,21 +340,20 @@ export default function LocationModal({
                 })
                 .sort((a, b) => a.district_name.localeCompare(b.district_name))
                 .map((district) => (
-                  <SelectItem
+                  <ListBox.Item
                     key={district.district_id}
-                    value={district.district_id}
                   >
                     {district.district_name}
-                  </SelectItem>
+                  </ListBox.Item>
                 ))}
             </Select>
+            <label htmlFor="slug-neighborhood" className="block text-sm font-medium mb-2">Slug</label>
             <Input
-              label="Slug"
+              id="slug-neighborhood"
               value={formData.slug || ""}
               onChange={(e) =>
                 setFormData({ ...formData, slug: e.target.value })
               }
-              required
             />
           </>
         );
@@ -442,21 +363,23 @@ export default function LocationModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalContent>
+    <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Modal.Container>
+          <Modal.Dialog>
         <form onSubmit={onSubmit}>
-          <ModalHeader>{getTitle()}</ModalHeader>
-          <ModalBody>{renderFields()}</ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="light" onPress={onClose}>
+          <Modal.Header>{getTitle()}</Modal.Header>
+          <Modal.Body>{renderFields()}</Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger-soft" onPress={onClose}>
               İptal
             </Button>
-            <Button color="primary" type="submit" isLoading={isLoading}>
+            <Button variant="primary" type="submit" isDisabled={isLoading}>
               Kaydet
             </Button>
-          </ModalFooter>
+          </Modal.Footer>
         </form>
-      </ModalContent>
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

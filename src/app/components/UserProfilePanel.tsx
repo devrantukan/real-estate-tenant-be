@@ -7,8 +7,9 @@ import {
   DropdownItem,
   Avatar,
   DropdownSection,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function UserProfilePanel({
   user,
@@ -20,18 +21,27 @@ export default function UserProfilePanel({
   const router = useRouter();
   const isAdmin = role === "site-admin";
 
+  const displayName = user?.firstName && user?.lastName 
+    ? `${user.firstName} ${user.lastName}`
+    : user?.email?.split("@")[0] || "Kullanıcı";
+
   return (
     <Dropdown placement="bottom-end">
       <DropdownTrigger>
-        <Avatar
-          isBordered
-          as="button"
-          className="transition-transform"
-          src={user?.picture || ""}
-          size="sm"
-        />
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+          <Avatar
+            isBordered
+            className="transition-transform"
+            src={user?.avatarUrl || undefined}
+            size="sm"
+            name={displayName}
+          />
+          <span className="text-sm font-medium text-gray-700 hidden sm:inline">
+            {displayName}
+          </span>
+        </div>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Profile Actions" variant="flat">
+      <DropdownMenu aria-label="Profile Actions" variant="ghost">
         <DropdownItem
           key="profile"
           onPress={() => router.push("/user/profile")}
@@ -55,6 +65,12 @@ export default function UserProfilePanel({
 
         {isAdmin ? (
           <DropdownSection title="Admin">
+            <DropdownItem
+              key="admin-organizations"
+              onPress={() => router.push("/admin/organizations")}
+            >
+              Organizasyonlar
+            </DropdownItem>
             <DropdownItem
               key="admin-offices"
               onPress={() => router.push("/admin/offices")}
@@ -120,12 +136,13 @@ export default function UserProfilePanel({
 
         <DropdownItem
           key="logout"
-          color="danger"
+          variant="danger"
           className="text-danger p-2 h-full"
-          onPress={() =>
-            (window.location.href =
-              "/api/auth/logout?post_logout_redirect_url=/")
-          }
+          onPress={async () => {
+            const supabase = createClient();
+            await supabase.auth.signOut();
+            window.location.href = "/";
+          }}
         >
           Çıkış Yap
         </DropdownItem>

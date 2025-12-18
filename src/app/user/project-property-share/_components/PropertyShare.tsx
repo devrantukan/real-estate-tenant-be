@@ -2,16 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Pagination,
   Input,
   Tooltip,
-} from "@nextui-org/react";
+  Button,
+} from "@heroui/react";
 import { toast } from "react-toastify";
 import {
   ShareIcon,
@@ -114,106 +108,13 @@ export default function PropertyShare({ user }: PropertyShareProps) {
     router.push(`/user/project-property-share?${params.toString()}`);
   };
 
-  const columns = [
-    {
-      key: "id",
-      label: "ID",
-      render: (property: Property) => (
-        <TableCell className="text-center">{property.id}</TableCell>
-      ),
-    },
-    {
-      key: "name",
-      label: "BAŞLIK",
-      render: (property: Property) => (
-        <TableCell className="text-left">{property.name}</TableCell>
-      ),
-    },
-    {
-      key: "price",
-      label: "FİYAT",
-      render: (property: Property) => (
-        <TableCell className="text-right">
-          {new Intl.NumberFormat("tr-TR", {
-            style: "currency",
-            currency: "TRY",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(property.price)}
-        </TableCell>
-      ),
-    },
-    {
-      key: "type",
-      label: "TİP",
-      render: (property: Property) => (
-        <TableCell className="text-center">{property.type.value}</TableCell>
-      ),
-    },
-    {
-      key: "status",
-      label: "DURUM",
-      render: (property: Property) => (
-        <TableCell className="text-center">{property.status.value}</TableCell>
-      ),
-    },
-    {
-      key: "agent",
-      label: "DANIŞMAN",
-      render: (property: Property) => (
-        <TableCell>
-          {property.agent
-            ? `${property.agent.name} ${property.agent.surname}`
-            : "-"}
-        </TableCell>
-      ),
-    },
-    {
-      key: "createdAt",
-      label: "OLUŞTURMA TARİHİ",
-      render: (property: Property) => (
-        <TableCell className="text-center">
-          {new Date(property.createdAt).toLocaleDateString("tr-TR")}
-        </TableCell>
-      ),
-    },
-    {
-      key: "updatedAt",
-      label: "SON GÜNCELLEME TARİHİ",
-      render: (property: Property) => (
-        <TableCell className="text-center">
-          {new Date(property.updatedAt).toLocaleDateString("tr-TR")}
-        </TableCell>
-      ),
-    },
-    {
-      key: "actions",
-      label: "İŞLEMLER",
-      render: (property: Property) => (
-        <TableCell>
-          <div className="flex items-center justify-end gap-4">
-            <Tooltip content="Ön İzleme">
-              <Link href={`/property/${property.id}`}>
-                <EyeIcon className="w-5 text-slate-500" />
-              </Link>
-            </Tooltip>
-            <Tooltip content="İlanı Paylaş">
-              <button onClick={() => handleShare(property.id)}>
-                <ShareIcon className="w-5 text-blue-500" />
-              </button>
-            </Tooltip>
-          </div>
-        </TableCell>
-      ),
-    },
-  ];
 
   return (
     <div className="flex flex-col items-center gap-4 w-full mt-8">
       <div className="w-full max-w-md mb-4">
         <Input
           placeholder="İlan adı veya danışman adı ile arama yapın..."
-          value={searchValue}
+          
           onChange={(e) => handleSearch(e.target.value)}
           startContent={
             <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
@@ -228,31 +129,97 @@ export default function PropertyShare({ user }: PropertyShareProps) {
           <p>Toplam {totalCount} kayıt</p>
         )}
       </div>
-      <Table>
-        <TableHeader>
-          {columns.map((column) => (
-            <TableColumn
-              key={column.key}
-              className={column.key === "actions" ? "text-right" : ""}
-            >
-              {column.label}
-            </TableColumn>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {properties.map((item) => (
-            <TableRow key={item.id}>
-              {columns.map((column) => column.render(item))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Pagination
-        total={totalPages}
-        initialPage={1}
-        page={currentPage}
-        onChange={handlePageChange}
-      />
+      <div className="overflow-x-auto w-full">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BAŞLIK</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">FİYAT</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TİP</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">DURUM</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DANIŞMAN</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">OLUŞTURMA TARİHİ</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SON GÜNCELLEME TARİHİ</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {properties.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-6 py-4 text-center text-sm text-gray-500">
+                  İlan bulunamadı
+                </td>
+              </tr>
+            ) : (
+              properties.map((property) => (
+                <tr key={property.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{property.id}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{property.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {new Intl.NumberFormat("tr-TR", {
+                      style: "currency",
+                      currency: "TRY",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }).format(property.price)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{property.type.value}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{property.status.value}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {property.agent
+                      ? `${property.agent.name} ${property.agent.surname}`
+                      : "-"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    {new Date(property.createdAt).toLocaleDateString("tr-TR")}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    {new Date(property.updatedAt).toLocaleDateString("tr-TR")}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center justify-end gap-4">
+                      <Tooltip >
+                        <Link href={`/property/${property.id}`}>
+                          <EyeIcon className="w-5 text-slate-500" />
+                        </Link>
+                      </Tooltip>
+                      <Tooltip >
+                        <button onClick={() => handleShare(property.id)}>
+                          <ShareIcon className="w-5 text-blue-500" />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
+            isDisabled={currentPage === 1}
+          >
+            Önceki
+          </Button>
+          <span className="text-sm text-gray-600">
+            Sayfa {currentPage} / {totalPages}
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            isDisabled={currentPage === totalPages}
+          >
+            Sonraki
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

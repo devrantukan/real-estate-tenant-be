@@ -11,20 +11,17 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
   Button,
-  useDisclosure,
   Card,
-  User,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { X, EnvelopeSimple, Phone } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const PropertyPageClient = ({ params }: { params: { id: string } }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onOpenChange = (open: boolean) => setIsOpen(open);
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [descriptorsGrouped, setDescriptorsGrouped] = React.useState<
@@ -286,30 +283,30 @@ const PropertyPageClient = ({ params }: { params: { id: string } }) => {
               <>
                 <Attribute
                   label="Oda Sayısı"
-                  value={property.feature?.bedrooms}
+                  
                 />
                 <Attribute
                   label="Banyo Sayısı"
-                  value={property.feature?.bathrooms}
+                  
                 />
                 <Attribute
                   label="Bulunduğu kat"
-                  value={property.feature?.floor}
+                  
                 />
                 <Attribute
                   label="Binadaki kat sayısı"
-                  value={property.feature?.totalFloor}
+                  
                 />
               </>
             )}
-            <Attribute label="Alan" value={property.feature?.area + " m2"} />
+            <Attribute label="Alan"  />
 
             <Title title="Adres Bilgileri" className="mt-7" />
-            <Attribute label="Şehir" value={property.location?.city} />
-            <Attribute label="İlçe" value={property.location?.district} />
+            <Attribute label="Şehir"  />
+            <Attribute label="İlçe"  />
             <Attribute
               label="Mahalle"
-              value={property.location?.neighborhood}
+              
             />
             <div className="mt-6 w-full flex flex-row gap-1 justify-between items-center">
               <div className="lg:w-1/2">
@@ -346,7 +343,7 @@ const PropertyPageClient = ({ params }: { params: { id: string } }) => {
                     className="rounded-full object-cover border border-gray-300"
                   />
                 ) : (
-                  <User name={property.agent?.name} className="text-gray-400" />
+                  <span className="text-gray-400">{property.agent?.name}</span>
                 )}
               </div>
 
@@ -422,31 +419,29 @@ const PropertyPageClient = ({ params }: { params: { id: string } }) => {
           body: "!rounded-b-xl overflow-hidden",
         }}
       >
-        <ModalContent className="lg:h-[90vh] h-auto mt-0">
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex justify-between items-center">
-                3D Sanal Tur
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </ModalHeader>
-              <ModalBody className="p-0 rounded-b-xl overflow-hidden">
-                <div className="w-full aspect-[16/9]">
-                  <iframe
-                    src={property.threeDSource}
-                    className="w-full h-full"
-                    allowFullScreen
-                    loading="lazy"
-                  />
-                </div>
-              </ModalBody>
-            </>
-          )}
-        </ModalContent>
+        <Modal.Container>
+          <Modal.Dialog className="lg:h-[90vh] h-auto mt-0">
+            <Modal.Header className="flex justify-between items-center">
+              3D Sanal Tur
+              <button
+                onClick={onOpenChange}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </Modal.Header>
+            <Modal.Body className="p-0 rounded-b-xl overflow-hidden">
+              <div className="w-full aspect-[16/9]">
+                <iframe
+                  src={property.threeDSource}
+                  className="w-full h-full"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
+            </Modal.Body>
+          </Modal.Dialog>
+        </Modal.Container>
       </Modal>
     </div>
   );

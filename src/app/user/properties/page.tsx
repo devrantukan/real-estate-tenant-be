@@ -1,37 +1,36 @@
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import React from "react";
 import PropertiesTable from "./_components/PropertiesTable";
 import { getUserById } from "@/lib/actions/user";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
+import { getUserRole } from "@/lib/auth";
 const PAGE_SIZE = 12;
 
 interface Props {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const PropertiesPage = async ({ searchParams }: Props) => {
-  const { getUser } = await getKindeServerSession();
   const user = await getUser();
   console.log("user is:", user);
   if (!user) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  const role = await getUserRole(user.id);
 
-  const dbUser = await getUserById(user ? user.id : "");
+  const dbUser = await getUserById(user.id);
   if (!dbUser) {
-    redirect("/api/auth/login");
+    redirect("/login");
   }
 
-  const search = (searchParams.search as string) || "";
-  const pagenum = +(searchParams.pagenum ?? 1) - 1;
-  const sort = (searchParams.sort as string) || "id";
-  const direction = (searchParams.direction as "asc" | "desc") || "desc";
+  const params = await searchParams;
+  const search = (params.search as string) || "";
+  const pagenum = +(params.pagenum ?? 1) - 1;
+  const sort = (params.sort as string) || "id";
+  const direction = (params.direction as "asc" | "desc") || "desc";
 
   // Check if search term is a number
   const searchNumber = parseInt(search);

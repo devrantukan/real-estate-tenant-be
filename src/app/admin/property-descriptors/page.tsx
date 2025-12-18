@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import DescriptorsList from "./_components/DescriptorsList";
 import {
   getCategories,
@@ -8,14 +9,14 @@ import {
 } from "@/lib/actions/property-descriptor";
 
 export default async function PropertyDescriptorsPage() {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
+  if (!user) {
+    redirect("/");
+  }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  const role = await getUserRole(user.id);
   console.log("role is:", role);
-  if (!user || role !== "site-admin") {
+  if (role !== "site-admin") {
     redirect("/");
   }
 

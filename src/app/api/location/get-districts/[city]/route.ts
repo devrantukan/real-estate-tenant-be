@@ -5,8 +5,7 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { city: string } },
-  response: NextResponse
+  { params }: { params: Promise<{ city: string }> }
 ) {
   // const projectLocations = await prisma.propertyLocation.findMany({
   //   distinct: ["district"],
@@ -18,9 +17,10 @@ export async function GET(
   //   districts.push(location.district);
   // });
 
-  console.log("params city", params.city);
+  const { city } = await params;
+  console.log("params city", city);
   const districts = await prisma.district.findMany({
-    where: { city_name: params.city },
+    where: { city_name: city },
     orderBy: {
       district_name: "asc",
     },

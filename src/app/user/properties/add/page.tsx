@@ -1,8 +1,9 @@
 //import React from "react";
 import AddPropertyForm from "./_components/AddPropertyForm";
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import { getUserById } from "@/lib/actions/user";
+import { getUserRole } from "@/lib/auth";
 
 const AddPropertyPage = async () => {
   const [
@@ -75,14 +76,14 @@ const AddPropertyPage = async () => {
   // }
 
   //console.log(neighborhoodsObj);
-  const { getUser } = await getKindeServerSession();
   const user = await getUser();
+  if (!user) {
+    return null;
+  }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  const role = await getUserRole(user.id);
 
-  const dbUser = await getUserById(user ? user.id : "");
+  const dbUser = await getUserById(user.id);
   console.log("user is:", user);
   console.log("dbuser is:", dbUser);
   console.log("act", role);
@@ -97,7 +98,7 @@ const AddPropertyPage = async () => {
       // districtsObj={districtsObj}
       // neighborhoods={neighborhoods}
       // neighborhoodsObj={neighborhoodsObj}
-      role={role}
+      role={role || ""}
       agents={agents}
       types={propertyTypes}
       subTypes={propertySubTypes}

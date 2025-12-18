@@ -1,25 +1,27 @@
 import { getContactForms } from "@/lib/actions/contact-form";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import ContactFormsTable from "./_components/ContactFormsTable";
 
 export default async function ContactFormsPage({
   searchParams,
 }: {
-  searchParams: { pagenum: string };
+  searchParams: Promise<{ pagenum?: string }>;
 }) {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
-
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
-  console.log("role is:", role);
-  if (!user || role !== "site-admin") {
+  if (!user) {
     redirect("/");
   }
 
-  const page = searchParams.pagenum ? parseInt(searchParams.pagenum) : 1;
+  const role = await getUserRole(user.id);
+  console.log("role is:", role);
+  if (role !== "site-admin") {
+    redirect("/");
+  }
+
+  const params = await searchParams;
+  const page = params.pagenum ? parseInt(params.pagenum) : 1;
   const { contactForms, total, totalPages } = await getContactForms(page);
 
   return (

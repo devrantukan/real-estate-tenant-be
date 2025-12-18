@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { PencilIcon, TrashIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
 import { useDeleteContent } from "@/hooks/useDeleteContent";
@@ -36,7 +36,7 @@ function ContentActions({ item }: { item: Content }) {
       <Button
         isIconOnly
         size="sm"
-        variant="light"
+        variant="ghost"
         onClick={() => router.push(`/admin/contents/${item.id}/edit`)}
       >
         <PencilIcon className="w-4 h-4" />
@@ -44,8 +44,7 @@ function ContentActions({ item }: { item: Content }) {
       <Button
         isIconOnly
         size="sm"
-        color="danger"
-        variant="light"
+        variant="danger"
         onClick={handleDelete}
       >
         <TrashIcon className="w-4 h-4" />

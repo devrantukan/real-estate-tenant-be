@@ -4,12 +4,8 @@ import { useState } from "react";
 import {
   Button,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/react";
+  
+} from "@heroui/react";
 import { PencilIcon } from "@heroicons/react/16/solid";
 import FileInput from "@/app/components/fileUpload";
 import {
@@ -62,33 +58,31 @@ const UploadAvatar = ({ userId }: { userId: string }) => {
         <PencilIcon className="w-6 text-slate-400 hover:text-primary transition-colors hidden " />
       </button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Profil Fotoğrafı Yükle
-              </ModalHeader>
-              <ModalBody>
-                <FileInput
-                  onChange={(e) => setImage((e as any).target.files[0])}
-                  className="h-full"
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  İptal
-                </Button>
-                <Button
-                  isLoading={isSubmitting}
-                  color="primary"
-                  onPress={handleUpload}
-                >
-                  Fotoğrafı Değiştir
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+        <Modal.Container>
+          <Modal.Dialog>
+            <Modal.Header className="flex flex-col gap-1">
+              Profil Fotoğrafı Yükle
+            </Modal.Header>
+            <Modal.Body>
+              <FileInput
+                onChange={(e) => setImage((e as any).target.files[0])}
+                className="h-full"
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger-soft" onPress={onOpenChange}>
+                İptal
+              </Button>
+              <Button
+                isDisabled={isSubmitting}
+                variant="primary"
+                onPress={handleUpload}
+              >
+                Fotoğrafı Değiştir
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
       </Modal>
     </div>
   );

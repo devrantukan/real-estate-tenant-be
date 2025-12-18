@@ -1,4 +1,4 @@
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@heroui/react";
 
 export default function LoadingPage() {
   return (
@@ -6,7 +6,7 @@ export default function LoadingPage() {
       <Spinner
         size="lg"
         label="Yükleniyor..."
-        color="primary"
+        variant="primary"
         labelColor="primary"
       />
     </div>

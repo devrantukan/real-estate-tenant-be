@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
-    const { getUser } = getKindeServerSession();
     const user = await getUser();
 
     if (!user) {

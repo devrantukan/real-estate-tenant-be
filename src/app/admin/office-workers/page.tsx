@@ -1,18 +1,19 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { OfficeWorkerList } from "./_components/OfficeWorkerList";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function OfficeWorkersPage() {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
+  if (!user) {
+    redirect("/");
+  }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  const role = await getUserRole(user.id);
   console.log("role is:", role);
-  if (!user || role !== "site-admin") {
+  if (role !== "site-admin") {
     redirect("/");
   }
   return (

@@ -49,7 +49,7 @@ export default function RichTextEditor({
     <div className="min-h-[200px]">
       <QuillNoSSR
         theme="snow"
-        value={value}
+        
         onChange={onChange}
         className={className}
         modules={modules}

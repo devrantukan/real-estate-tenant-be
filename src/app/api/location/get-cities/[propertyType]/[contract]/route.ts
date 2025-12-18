@@ -5,10 +5,10 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { propertyType: string; contract: string } },
-  response: NextResponse
+  { params }: { params: Promise<{ propertyType: string; contract: string }> }
 ) {
-  console.log(params.propertyType);
+  const { propertyType } = await params;
+  console.log(propertyType);
   const projectLocations = await prisma.propertyLocation.findMany({
     distinct: ["city"],
   });

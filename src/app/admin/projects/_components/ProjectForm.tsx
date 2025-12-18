@@ -4,11 +4,10 @@ import {
   Button,
   Input,
   Select,
-  SelectItem,
+  ListBox,
   Switch,
-  Textarea,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -333,8 +332,7 @@ const ProjectForm = ({
     }
   }
 
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCountry = e.target.value;
+  const handleCountryChange = (selectedCountry: string) => {
     setCountry(selectedCountry);
     setFormData((prev) => ({
       ...prev,
@@ -355,8 +353,7 @@ const ProjectForm = ({
     setMarkerPosition(null);
   };
 
-  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCity = e.target.value;
+  const handleCityChange = (selectedCity: string) => {
     setCity(selectedCity);
     setFormData((prev) => ({
       ...prev,
@@ -377,8 +374,7 @@ const ProjectForm = ({
     setMarkerPosition(null);
   };
 
-  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedDistrict = e.target.value;
+  const handleDistrictChange = (selectedDistrict: string) => {
     setDistrict(selectedDistrict);
     setFormData((prev) => ({
       ...prev,
@@ -401,10 +397,7 @@ const ProjectForm = ({
     setMarkerPosition(null);
   };
 
-  const handleNeighborhoodChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const selectedNeighborhood = e.target.value;
+  const handleNeighborhoodChange = (selectedNeighborhood: string) => {
     setNeighborhood(selectedNeighborhood);
     setFormData((prev) => ({
       ...prev,
@@ -579,64 +572,62 @@ const ProjectForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input
-          label="Proje Adı"
-          value={formData.name}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, name: e.target.value }))
-          }
-          required
-        />
-
-        <Input
-          label="Katalog URL"
-          value={formData.catalogUrl}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, catalogUrl: e.target.value }))
-          }
-          placeholder="https://example.com/catalog.pdf"
-        />
-
-        <Select
-          label="Ofis"
-          selectedKeys={formData.officeId ? [formData.officeId] : []}
-          onSelectionChange={(keys) => {
-            const selectedKey = Array.from(keys)[0]?.toString() || "";
-            setFormData((prev) => ({
-              ...prev,
-              officeId: selectedKey,
-              assignedAgents: "",
-            }));
-          }}
-          required
-        >
-          {offices.map((office) => (
-            <SelectItem key={office.id.toString()} value={office.id.toString()}>
-              {office.name}
-            </SelectItem>
-          ))}
-        </Select>
-
-        <div className="space-y-2">
-          <Select
-            label="Atanmış Danışmanlar"
-            selectionMode="multiple"
-            placeholder="Danışman seçin"
-            selectedKeys={
-              formData.assignedAgents
-                ? new Set(formData.assignedAgents.split(",").filter(Boolean))
-                : new Set()
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-2">Proje Adı</label>
+          <Input
+            id="name"
+            value={formData.name || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, name: e.target.value }))
             }
-            onSelectionChange={(keys) => {
-              const selectedIds = Array.from(keys).filter(Boolean);
+          />
+        </div>
+
+        <div>
+          <label htmlFor="catalogUrl" className="block text-sm font-medium mb-2">Katalog URL</label>
+          <Input
+            id="catalogUrl"
+            value={formData.catalogUrl || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, catalogUrl: e.target.value }))
+            }
+            placeholder="https://example.com/catalog.pdf"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="office" className="block text-sm font-medium mb-2">Ofis</label>
+          <Select
+            selectedKey={formData.officeId || undefined}
+            onSelectionChange={(key) => {
+              const selectedKey = key?.toString() || "";
               setFormData((prev) => ({
                 ...prev,
-                assignedAgents:
-                  selectedIds.length > 0 ? selectedIds.join(",") : "",
+                officeId: selectedKey,
+                assignedAgents: "",
+              }));
+            }}
+          >
+            {offices.map((office) => (
+              <ListBox.Item key={office.id.toString()}>
+                {office.name}
+              </ListBox.Item>
+            ))}
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="assignedAgents" className="block text-sm font-medium mb-2">Atanmış Danışmanlar</label>
+          <Select
+            selectedKey={formData.assignedAgents ? formData.assignedAgents.split(",")[0] : undefined}
+            onSelectionChange={(key) => {
+              const selectedId = key?.toString() || "";
+              setFormData((prev) => ({
+                ...prev,
+                assignedAgents: selectedId,
               }));
             }}
             isDisabled={!formData.officeId}
-            required
           >
             {agents
               ?.filter((agent) => {
@@ -651,12 +642,11 @@ const ProjectForm = ({
                 );
               })
               .map((agent) => (
-                <SelectItem
+                <ListBox.Item
                   key={agent.id.toString()}
-                  value={agent.id.toString()}
                 >
                   {agent.name} {agent.surname}
-                </SelectItem>
+                </ListBox.Item>
               ))}
           </Select>
 
@@ -674,148 +664,160 @@ const ProjectForm = ({
           )}
         </div>
 
-        <Input
-          label="Başlangıç Tarihi"
-          type="date"
-          value={formData.startDate.toISOString().split("T")[0]}
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              startDate: new Date(e.target.value),
-            }))
-          }
-          required
-        />
+        <div>
+          <label htmlFor="startDate" className="block text-sm font-medium mb-2">Başlangıç Tarihi</label>
+          <Input
+            id="startDate"
+            type="date"
+            value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ""}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                startDate: new Date(e.target.value),
+              }))
+            }
+          />
+        </div>
 
-        <Input
-          label="Teslim Tarihi"
-          type="date"
-          value={formData.endDate.toISOString().split("T")[0]}
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              endDate: new Date(e.target.value),
-            }))
-          }
-          required
-        />
+        <div>
+          <label htmlFor="endDate" className="block text-sm font-medium mb-2">Teslim Tarihi</label>
+          <Input
+            id="endDate"
+            type="date"
+            value={formData.endDate ? new Date(formData.endDate).toISOString().split('T')[0] : ""}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                endDate: new Date(e.target.value),
+              }))
+            }
+          />
+        </div>
 
-        <Input
-          label="Tapu Bilgisi"
-          value={formData.deedInfo}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, deedInfo: e.target.value }))
-          }
-          required
-        />
+        <div>
+          <label htmlFor="deedInfo" className="block text-sm font-medium mb-2">Tapu Bilgisi</label>
+          <Input
+            id="deedInfo"
+            value={formData.deedInfo || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, deedInfo: e.target.value }))
+            }
+          />
+        </div>
 
-        <Input
-          label="Arsa Alanı"
-          value={formData.landArea}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, landArea: e.target.value }))
-          }
-          required
-        />
+        <div>
+          <label htmlFor="landArea" className="block text-sm font-medium mb-2">Arsa Alanı</label>
+          <Input
+            id="landArea"
+            value={formData.landArea || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, landArea: e.target.value }))
+            }
+          />
+        </div>
 
-        <Input
-          label="Konut Adeti"
-          value={formData.nOfUnits}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, nOfUnits: e.target.value }))
-          }
-          required
-        />
+        <div>
+          <label htmlFor="nOfUnits" className="block text-sm font-medium mb-2">Konut Adeti</label>
+          <Input
+            id="nOfUnits"
+            value={formData.nOfUnits || ""}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, nOfUnits: e.target.value }))
+            }
+          />
+        </div>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Konum Bilgileri</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="w-full flex flex-col gap-y-4">
-            <Select
-              label="Ülke"
-              selectedKeys={country ? [country] : []}
-              onChange={handleCountryChange}
-              required
-            >
-              {countries.map((item) => (
-                <SelectItem
-                  key={item.country_name}
-                  value={item.country_name}
-                  textValue={item.country_name}
-                >
-                  {item.country_name}
-                </SelectItem>
-              ))}
-            </Select>
+            <div>
+              <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
+              <Select
+                selectedKey={country || undefined}
+                onSelectionChange={(key) => handleCountryChange(key?.toString() || "")}
+              >
+                {countries.map((item) => (
+                  <ListBox.Item key={item.country_name}>
+                    {item.country_name}
+                  </ListBox.Item>
+                ))}
+              </Select>
+            </div>
 
-            <Select
-              label="Şehir"
-              selectedKeys={city ? [city] : []}
-              onChange={handleCityChange}
-              required
-              isLoading={isLoadingDistricts}
-              isDisabled={!country}
-            >
-              {cityOptions.map((c) => (
-                <SelectItem key={c} value={c} textValue={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </Select>
+            <div>
+              <label htmlFor="city" className="block text-sm font-medium mb-2">Şehir</label>
+              <Select
+                selectedKey={city || undefined}
+                onSelectionChange={(key) => handleCityChange(key?.toString() || "")}
+                isDisabled={isLoadingDistricts || !country}
+              >
+                {cityOptions.map((c) => (
+                  <ListBox.Item key={c}>
+                    {c}
+                  </ListBox.Item>
+                ))}
+              </Select>
+            </div>
 
-            <Select
-              label="İlçe"
-              selectedKeys={district ? [district] : []}
-              onChange={handleDistrictChange}
-              required
-              isLoading={isLoadingNeighborhoods}
-              isDisabled={!city}
-            >
-              {districtOptions.map((c) => (
-                <SelectItem key={c.label} value={c.label} textValue={c.label}>
-                  {c.label}
-                </SelectItem>
-              ))}
-            </Select>
+            <div>
+              <label htmlFor="district" className="block text-sm font-medium mb-2">İlçe</label>
+              <Select
+                selectedKey={district || undefined}
+                onSelectionChange={(key) => handleDistrictChange(key?.toString() || "")}
+                isDisabled={isLoadingNeighborhoods || !city}
+              >
+                {districtOptions.map((c) => (
+                  <ListBox.Item key={c.label}>
+                    {c.label}
+                  </ListBox.Item>
+                ))}
+              </Select>
+            </div>
 
-            <Select
-              label="Mahalle"
-              selectedKeys={neighborhood ? [neighborhood] : []}
-              onChange={handleNeighborhoodChange}
-              required
-              isDisabled={!district}
-            >
-              {neighborhoodOptions.map((c) => (
-                <SelectItem key={c.label} value={c.label} textValue={c.label}>
-                  {c.label}
-                </SelectItem>
-              ))}
-            </Select>
+            <div>
+              <label htmlFor="neighborhood" className="block text-sm font-medium mb-2">Mahalle</label>
+              <Select
+                selectedKey={neighborhood || undefined}
+                onSelectionChange={(key) => handleNeighborhoodChange(key?.toString() || "")}
+                isDisabled={!district}
+              >
+                {neighborhoodOptions.map((c) => (
+                  <ListBox.Item key={c.label}>
+                    {c.label}
+                  </ListBox.Item>
+                ))}
+              </Select>
+            </div>
 
-            <Input
-              label="Adres"
-              value={formData.location.streetAddress}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  location: { ...prev.location, streetAddress: e.target.value },
-                }))
-              }
-              required
-            />
+            <div>
+              <label htmlFor="streetAddress" className="block text-sm font-medium mb-2">Adres</label>
+              <Input
+                id="streetAddress"
+                value={formData.location.streetAddress || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    location: { ...prev.location, streetAddress: e.target.value },
+                  }))
+                }
+              />
+            </div>
 
-            <Input
-              label="Posta Kodu"
-              value={formData.location.zip}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  location: { ...prev.location, zip: e.target.value },
-                }))
-              }
-              required
-            />
+            <div>
+              <label htmlFor="zip" className="block text-sm font-medium mb-2">Posta Kodu</label>
+              <Input
+                id="zip"
+                value={formData.location.zip || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    location: { ...prev.location, zip: e.target.value },
+                  }))
+                }
+              />
+            </div>
           </div>
 
           <div className="w-full flex flex-col gap-y-4 relative">
@@ -845,8 +847,7 @@ const ProjectForm = ({
           <h3 className="text-lg font-semibold">Konut Büyüklükleri</h3>
           <Button
             type="button"
-            color="primary"
-            variant="flat"
+            variant="primary"
             onClick={() => handleAddItem("unitSizes")}
           >
             Ekle
@@ -855,7 +856,7 @@ const ProjectForm = ({
         {formData.unitSizes.map((item, index) => (
           <div key={index} className="flex gap-2">
             <Input
-              value={item.value}
+              value={item.value || ""}
               onChange={(e) =>
                 handleItemChange("unitSizes", index, e.target.value)
               }
@@ -864,8 +865,7 @@ const ProjectForm = ({
             />
             <Button
               type="button"
-              color="danger"
-              variant="flat"
+              variant="danger-soft"
               onClick={() => handleRemoveItem("unitSizes", index)}
             >
               Sil
@@ -879,8 +879,7 @@ const ProjectForm = ({
           <h3 className="text-lg font-semibold">Sosyal Özellikler</h3>
           <Button
             type="button"
-            color="primary"
-            variant="flat"
+            variant="primary"
             onClick={() => handleAddItem("socialFeatures")}
           >
             Ekle
@@ -889,7 +888,7 @@ const ProjectForm = ({
         {formData.socialFeatures.map((item, index) => (
           <div key={index} className="flex gap-2">
             <Input
-              value={item.value}
+              value={item.value || ""}
               onChange={(e) =>
                 handleItemChange("socialFeatures", index, e.target.value)
               }
@@ -898,8 +897,7 @@ const ProjectForm = ({
             />
             <Button
               type="button"
-              color="danger"
-              variant="flat"
+              variant="danger-soft"
               onClick={() => handleRemoveItem("socialFeatures", index)}
             >
               Sil
@@ -929,7 +927,7 @@ const ProjectForm = ({
         <h3 className="text-lg font-semibold">Açıklama</h3>
         <div className="min-h-[300px]">
           <QuillEditor
-            value={formData.description}
+            value={formData.description || ""}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
@@ -941,12 +939,12 @@ const ProjectForm = ({
       <div className="flex justify-end gap-4">
         <Button
           type="button"
-          variant="flat"
+          variant="ghost"
           onClick={() => router.push("/admin/projects")}
         >
           İptal
         </Button>
-        <Button type="submit" color="primary" isLoading={isLoading}>
+        <Button type="submit" variant="primary" isDisabled={isLoading}>
           {project ? "Güncelle" : "Oluştur"}
         </Button>
       </div>

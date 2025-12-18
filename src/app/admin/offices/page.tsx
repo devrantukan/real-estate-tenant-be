@@ -1,19 +1,20 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import OfficesTable from "./_components/OfficesTable";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import Link from "next/link";
 
 export default async function OfficesPage() {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
+  if (!user) {
+    redirect("/");
+  }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
+  const role = await getUserRole(user.id);
   console.log("role is:", role);
-  if (!user || role !== "site-admin") {
+  if (role !== "site-admin") {
     redirect("/");
   }
   const offices = await prisma.office.findMany({
@@ -44,7 +45,7 @@ export default async function OfficesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Ofisler</h1>
         <Link href="/admin/offices/add">
-          <Button color="primary">Yeni Ofis Ekle</Button>
+          <Button variant="primary">Yeni Ofis Ekle</Button>
         </Link>
       </div>
       <OfficesTable offices={offices as any} />

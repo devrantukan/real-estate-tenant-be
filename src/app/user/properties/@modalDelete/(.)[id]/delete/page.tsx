@@ -3,11 +3,7 @@ import { deleteProperty } from "@/lib/actions/property";
 import {
   Button,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -42,18 +38,20 @@ const ModalDeletePropertyPage = ({ params }: Props) => {
   };
   return (
     <Modal isOpen={isOpen} onOpenChange={handleCancel}>
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">İlanı Sil</ModalHeader>
-        <ModalBody>
-          <p>İlanı silmek istediğinizden emin misiniz?</p>
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={handleCancel}>İptal</Button>
-          <Button onClick={handldeDelete} color="danger" variant="light">
-            Sil
-          </Button>
-        </ModalFooter>
-      </ModalContent>
+      <Modal.Container>
+        <Modal.Dialog>
+          <Modal.Header className="flex flex-col gap-1">İlanı Sil</Modal.Header>
+          <Modal.Body>
+            <p>İlanı silmek istediğinizden emin misiniz?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleCancel}>İptal</Button>
+            <Button onClick={handldeDelete} variant="danger-soft">
+              Sil
+            </Button>
+          </Modal.Footer>
+        </Modal.Dialog>
+      </Modal.Container>
     </Modal>
   );
 };

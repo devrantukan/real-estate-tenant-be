@@ -1,14 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { deleteOfficeWorker } from "@/lib/actions/office-worker";
@@ -70,36 +62,58 @@ export function OfficeWorkerList() {
   ];
 
   return (
-    <Table aria-label="Çalışanlar listesi">
-      <TableHeader>
-        {columns.map((column) => (
-          <TableColumn key={column.uid}>{column.name}</TableColumn>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {workers?.map((worker) => (
-          <TableRow key={worker.id}>
-            <TableCell>{`${worker.name} ${worker.surname}`}</TableCell>
-            <TableCell>{worker.email}</TableCell>
-            <TableCell>{worker.office.name}</TableCell>
-            <TableCell>{worker.role.title}</TableCell>
-            <TableCell className="space-x-2">
-              <Link href={`/admin/office-workers/edit/${worker.id}`}>
-                <Button variant="outline" size="sm">
-                  <PencilSimple size={16} weight="bold" />
-                </Button>
-              </Link>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDelete(worker.id)}
-              >
-                <Trash size={16} weight="bold" />
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            {columns.map((column) => (
+              <th key={column.uid} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {column.name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {workers.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                Çalışan bulunamadı
+              </td>
+            </tr>
+          ) : (
+            workers.map((worker) => (
+              <tr key={worker.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {`${worker.name} ${worker.surname}`}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {worker.email}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {worker.office.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {worker.role.title}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                  <Link href={`/admin/office-workers/edit/${worker.id}`}>
+                    <Button variant="outline" size="sm">
+                      <PencilSimple size={16} weight="bold" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(worker.id)}
+                  >
+                    <Trash size={16} weight="bold" />
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }

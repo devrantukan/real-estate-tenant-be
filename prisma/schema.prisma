@@ -11,10 +11,34 @@ generator client {
 // }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
- }
+  provider = "postgresql"
+}
+
+model Organization {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+  properties  Property[]
+  offices     Office[]
+  projects    Project[]
+  prospectAgents ProspectAgent[]
+  prospectCustomers ProspectCustomer[]
+  contactRequests ContactRequest[]
+  contents    Contents[]
+  propertyTypes PropertyType[]
+  propertySubTypes PropertySubType[]
+  propertyDescriptorCategories PropertyDescriptorCategory[]
+  propertyDescriptors PropertyDescriptor[]
+  propertyStatuses PropertyStatus[]
+  propertyDeedStatuses PropertyDeedStatus[]
+  propertyContracts PropertyContract[]
+  roles       Role[]
+  officeWorkerReviews OfficeWorkerReview[]
+}
 
 model User {
   id            String          @id
@@ -22,6 +46,10 @@ model User {
   lastName      String
   email         String
   avatarUrl     String?
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
+  roleId        Int?
+  role          Role?           @relation(fields: [roleId], references: [id])
   createdAt     DateTime        @default(now())
   Property      Property[]
   officeWorker  OfficeWorker?
@@ -36,6 +64,8 @@ model Property {
   discountedPrice       Int
   userId      String
   user        User              @relation(fields: [userId], references: [id])
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   typeId      Int
   type        PropertyType      @relation(fields: [typeId], references: [id])
   subTypeId      Int
@@ -108,6 +138,8 @@ model PropertyType {
   id       Int        @id @default(autoincrement())
   value    String
   slug     String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   Property Property[]
   subTypes PropertySubType[]
   descriptorCategories PropertyDescriptorCategory[]
@@ -117,6 +149,8 @@ model PropertySubType {
   id       Int        @id @default(autoincrement())
   typeId   Int
   type     PropertyType      @relation(fields: [typeId], references: [id]) 
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   value    String
   slug     String
   Property Property[]
@@ -128,6 +162,8 @@ model PropertyDescriptorCategory {
   slug     String
   typeId   Int
   type     PropertyType      @relation(fields: [typeId], references: [id]) 
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   descriptors PropertyDescriptor[]
 }
 
@@ -135,6 +171,8 @@ model PropertyDescriptor {
   id       Int        @id @default(autoincrement())
   categoryId   Int
   category     PropertyDescriptorCategory      @relation(fields: [categoryId], references: [id]) 
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   value    String
   slug     String
   Properties DescriptorsOnProperties[]
@@ -152,6 +190,8 @@ model PropertyStatus {
   id       Int        @id @default(autoincrement())
   value    String
   slug     String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   Property Property[]
 }
 
@@ -159,6 +199,8 @@ model PropertyDeedStatus {
   id       Int        @id @default(autoincrement())
   value    String
   slug     String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   Property Property[]
 }
 
@@ -166,6 +208,8 @@ model PropertyContract {
   id       Int        @id @default(autoincrement())
   value    String
   slug     String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   Property Property[]
 }
 
@@ -205,6 +249,8 @@ model Office {
   district      District @relation(fields: [districtId], references: [district_id])
   neighborhoodId Int
   neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [neighborhood_id])
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   avatarUrl     String?
   description   String
   email         String
@@ -277,6 +323,8 @@ model OfficeWorkerReview {
   avg               Int 
   officeWorkerId    Int 
   officeWorker      OfficeWorker   @relation(fields: [officeWorkerId], references: [id]) 
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   isApproved        Int
   kvkkConsent       Int   @default(0)
   marketingConsent  Int  @default(0)
@@ -287,7 +335,10 @@ model Role {
   id        Int      @id @default(autoincrement())
   title     String
   slug      String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   officeWorker OfficeWorker[]
+  users     User[]
 
 }
 
@@ -326,6 +377,8 @@ model Project {
   socialFeatures  ProjectSocialFeatures[]
   officeId    Int 
   office      Office   @relation(fields: [officeId], references: [id])
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   assignedAgents String
   publishingStatus String
   startDate   DateTime
@@ -404,6 +457,8 @@ model ProspectAgent {
   district         String
   educationLevel   String
   occupation       String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   kvkkConsent      Int   @default(0)
   marketingConsent Int  @default(0)
   createdAt        DateTime        @default(now())
@@ -421,6 +476,8 @@ model ProspectCustomer {
   contractType     String
   propertyType      String
   notes            String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   kvkkConsent      Int   @default(0)
   marketingConsent Int  @default(0)
   createdAt        DateTime        @default(now())
@@ -433,6 +490,8 @@ model ContactRequest {
   phone     String
   officeId  String
   message   String
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   status    String   @default("PENDING")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -444,7 +503,8 @@ model Contents {
   key         String   @unique
   value       String   @db.Text
   description String?  @db.Text
+  organizationId Int?
+  organization  Organization?   @relation(fields: [organizationId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-

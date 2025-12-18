@@ -1,6 +1,6 @@
 "use client";
 import FileInput from "@/app/components/fileUpload";
-import { Button, Card, cn, Input } from "@nextui-org/react";
+import { Button, Card, cn, Input } from "@heroui/react";
 import React, {
   useCallback,
   useEffect,
@@ -471,7 +471,7 @@ const Picture = ({
               <PictureCard
                 src={image.url}
                 index={index}
-                isLoading={image.isLoading}
+                isDisabled={image.isLoading}
                 onDelete={() => {
                   if (image.type === "existing") {
                     const originalImage = image.originalData as PropertyImage;
@@ -546,7 +546,7 @@ const Picture = ({
         <Button
           onClick={prev}
           startContent={<ChevronLeftIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           Geri
@@ -554,7 +554,7 @@ const Picture = ({
         <Button
           onClick={next}
           endContent={<ChevronRightIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           İleri

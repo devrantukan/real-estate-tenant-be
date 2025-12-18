@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, Tab } from "@nextui-org/react";
+import { Tabs, Tab } from "@heroui/react";
 import PropertyShare from "./PropertyShare";
 import ProjectShare from "./ProjectShare";
 import { Prisma } from "@prisma/client";

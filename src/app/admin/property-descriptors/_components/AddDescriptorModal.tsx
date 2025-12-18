@@ -4,14 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@nextui-org/modal";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { Select, SelectItem } from "@nextui-org/select";
+} from "@heroui/react";
+import { Button } from "@heroui/react";
+import { Input } from "@heroui/react";
+import { Select, ListBox } from "@heroui/react";
 import {
   DescriptorFormData,
   descriptorSchema,
@@ -42,6 +38,8 @@ export default function AddDescriptorModal({
     handleSubmit,
     setValue,
     reset,
+    watch,
+    trigger,
     formState: { errors },
   } = useForm<DescriptorFormData>({
     resolver: zodResolver(descriptorSchema),
@@ -66,49 +64,76 @@ export default function AddDescriptorModal({
   };
 
   return (
-    <Modal isOpen={open} onClose={onClose}>
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader>Yeni Tanımlayıcı Ekle</ModalHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <ModalBody>
-                <Input
-                  label="Tanımlayıcı Adı"
-                  {...register("value")}
-                  errorMessage={errors.value?.message}
-                />
-                <Input
-                  label="Slug"
-                  {...register("slug")}
-                  errorMessage={errors.slug?.message}
-                />
-                <Select
-                  label="Kategori"
-                  onChange={(e) =>
-                    setValue("categoryId", Number(e.target.value))
-                  }
-                  errorMessage={errors.categoryId?.message}
-                >
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.value}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  İptal
-                </Button>
-                <Button color="primary" type="submit">
-                  Ekle
-                </Button>
-              </ModalFooter>
-            </form>
-          </>
-        )}
-      </ModalContent>
+    <Modal isOpen={open} onOpenChange={(open) => !open && onClose()}>
+      <Modal.Container>
+          <Modal.Dialog>
+        {(renderProps) => {
+          const handleClose = () => {
+            onClose();
+          };
+          return (
+            <>
+              <Modal.Header>Yeni Tanımlayıcı Ekle</Modal.Header>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <Modal.Body>
+                <div>
+                  <label htmlFor="value" className="block text-sm font-medium mb-2">Tanımlayıcı Adı</label>
+                  <Input
+                    id="value"
+                    value={watch("value") || ""}
+                    onChange={(e) => setValue("value", e.target.value)}
+                    onBlur={() => trigger("value")}
+                  />
+                  {errors.value && (
+                    <p className="text-danger text-sm mt-1">{errors.value.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="slug" className="block text-sm font-medium mb-2">Slug</label>
+                  <Input
+                    id="slug"
+                    value={watch("slug") || ""}
+                    onChange={(e) => setValue("slug", e.target.value)}
+                    onBlur={() => trigger("slug")}
+                  />
+                  {errors.slug && (
+                    <p className="text-danger text-sm mt-1">{errors.slug.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="categoryId" className="block text-sm font-medium mb-2">Kategori</label>
+                  <Select
+                    selectedKey={watch("categoryId")?.toString() || undefined}
+                    onSelectionChange={(key) => {
+                      const selectedKey = key?.toString() || "";
+                      setValue("categoryId", selectedKey ? Number(selectedKey) : 0);
+                    }}
+                  >
+                    {categories.map((category) => (
+                      <ListBox.Item key={category.id}>
+                        {category.value}
+                      </ListBox.Item>
+                    ))}
+                  </Select>
+                  {errors.categoryId && (
+                    <p className="text-danger text-sm mt-1">{errors.categoryId.message}</p>
+                  )}
+                </div>
+              </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger-soft" onClick={handleClose}>
+                    İptal
+                  </Button>
+                  <Button variant="primary" type="submit">
+                    Ekle
+                  </Button>
+                </Modal.Footer>
+              </form>
+            </>
+          );
+        }}
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

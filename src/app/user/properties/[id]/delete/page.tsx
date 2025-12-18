@@ -1,8 +1,8 @@
 import SubmitButton from "@/app/components/SubmitButton";
 import { deleteProperty } from "@/lib/actions/property";
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Button } from "@nextui-org/react";
+import { getUser } from "@/lib/supabase/server";
+import { Button } from "@heroui/react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -11,7 +11,6 @@ interface Props {
 }
 
 async function DeletePropertyPage({ params }: Props) {
-  const { getUser } = getKindeServerSession();
   const propertyPromise = prisma.property.findUnique({
     where: {
       id: +params.id,
@@ -43,7 +42,7 @@ async function DeletePropertyPage({ params }: Props) {
         <Link href={"/user/properties"}>
           <Button>Cancel</Button>
         </Link>
-        <SubmitButton type="submit" color="danger" variant="light">
+        <SubmitButton type="submit" variant="danger-soft">
           Delete
         </SubmitButton>
       </div>

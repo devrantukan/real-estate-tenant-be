@@ -5,12 +5,12 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: number } },
-  response: NextResponse
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const property = await prisma.property.findUnique({
     where: {
-      id: +params.id,
+      id: +id,
     },
     include: {
       status: true,
@@ -44,14 +44,15 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const formData = await request.formData();
     const locationData = JSON.parse(formData.get("location") as string);
 
     const property = await prisma.property.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         // ... other property fields
         location: {

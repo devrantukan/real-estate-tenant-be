@@ -1,5 +1,5 @@
 "use client";
-import { Pagination } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -11,13 +11,32 @@ const PaginationContainer = ({ totalPages, currentPage, route = "/" }: Props) =>
   const router = useRouter();
   if (totalPages <= 1) return null;
 
+  const handlePageChange = (page: number) => {
+    router.push(`${route}?pagenum=${page}`);
+  };
+
   return (
-    <Pagination
-      total={totalPages}
-      initialPage={1}
-      page={currentPage}
-      onChange={(page) => router.push(`${route}?pagenum=${page}`)}
-    />
+    <div className="flex justify-center items-center gap-2 mt-4">
+      <Button
+        size="sm"
+        variant="ghost"
+        onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
+        isDisabled={currentPage === 1}
+      >
+        Önceki
+      </Button>
+      <span className="text-sm text-gray-600">
+        Sayfa {currentPage} / {totalPages}
+      </span>
+      <Button
+        size="sm"
+        variant="ghost"
+        onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+        isDisabled={currentPage === totalPages}
+      >
+        Sonraki
+      </Button>
+    </div>
   );
 };
 

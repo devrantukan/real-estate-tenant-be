@@ -4,15 +4,16 @@ import { contentSchema } from "@/lib/validations/content";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { contentId: string } }
+  { params }: { params: Promise<{ contentId: string }> }
 ) {
   try {
+    const { contentId } = await params;
     const body = await req.json();
     const validatedData = contentSchema.parse(body);
 
     const content = await prisma.contents.update({
       where: {
-        id: parseInt(params.contentId),
+        id: parseInt(contentId),
       },
       data: {
         key: validatedData.key,
@@ -30,12 +31,13 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { contentId: string } }
+  { params }: { params: Promise<{ contentId: string }> }
 ) {
   try {
+    const { contentId } = await params;
     await prisma.contents.delete({
       where: {
-        id: parseInt(params.contentId),
+        id: parseInt(contentId),
       },
     });
 

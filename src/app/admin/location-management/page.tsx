@@ -1,7 +1,6 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
-import { Tabs, Tab } from "@nextui-org/react";
-import { useDisclosure } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CountryTable from "./_components/CountryTable";
@@ -12,7 +11,9 @@ import LocationModal from "./_components/LocationModal";
 
 export default function LocationManagement() {
   const [selectedTab, setSelectedTab] = useState("countries");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -151,32 +152,47 @@ export default function LocationManagement() {
     fetchCities();
   }, []);
 
+  const tabs = [
+    { key: "countries", label: "Ülkeler" },
+    { key: "cities", label: "Şehirler" },
+    { key: "districts", label: "İlçeler" },
+    { key: "neighborhoods", label: "Mahalleler" },
+  ];
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Konum Yönetimi</h1>
 
-      <Tabs
-        selectedKey={selectedTab}
-        onSelectionChange={(key) => {
-          setSelectedTab(key.toString());
-          setPage(1);
-          onClose();
-          setEditingItem(null);
-        }}
-      >
-        <Tab key="countries" title="Ülkeler">
-          {renderTable()}
-        </Tab>
-        <Tab key="cities" title="Şehirler">
-          {renderTable()}
-        </Tab>
-        <Tab key="districts" title="İlçeler">
-          {renderTable()}
-        </Tab>
-        <Tab key="neighborhoods" title="Mahalleler">
-          {renderTable()}
-        </Tab>
-      </Tabs>
+      <div className="flex gap-2 mb-6 border-b">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => {
+              setSelectedTab(tab.key);
+              setPage(1);
+              onClose();
+              setEditingItem(null);
+            }}
+            className={`
+              px-4 py-2 font-medium transition-colors border-b-2
+              ${
+                selectedTab === tab.key
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-600 hover:text-gray-900"
+              }
+            `}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      
+      <div className="p-4">
+        <h2 className="text-xl font-bold mb-4">
+          {tabs.find((t) => t.key === selectedTab)?.label}
+        </h2>
+        {renderTable()}
+      </div>
 
       <LocationModal
         isOpen={isOpen}

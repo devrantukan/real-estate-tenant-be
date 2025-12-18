@@ -2,16 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Pagination,
   Input,
   Tooltip,
-} from "@nextui-org/react";
+  Button,
+} from "@heroui/react";
 import { toast } from "react-toastify";
 import {
   ShareIcon,
@@ -101,66 +95,11 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
     router.push(`/user/project-property-share?${params.toString()}`);
   };
 
-  const columns = [
-    {
-      key: "name",
-      label: "BAŞLIK",
-      render: (project: Project) => (
-        <TableCell className="text-left">{project.name}</TableCell>
-      ),
-    },
-    {
-      key: "description",
-      label: "AÇIKLAMA",
-      render: (project: Project) => (
-        <TableCell className="text-left">{project.description}</TableCell>
-      ),
-    },
-    {
-      key: "location",
-      label: "KONUM",
-      render: (project: Project) => (
-        <TableCell className="text-center">
-          {project.location
-            ? `${project.location.city} / ${project.location.district} / ${project.location.neighborhood}`
-            : "-"}
-        </TableCell>
-      ),
-    },
-    {
-      key: "createdAt",
-      label: "OLUŞTURMA TARİHİ",
-      render: (project: Project) => (
-        <TableCell className="text-center">
-          {new Date(project.createdAt).toLocaleDateString("tr-TR")}
-        </TableCell>
-      ),
-    },
-    {
-      key: "updatedAt",
-      label: "SON GÜNCELLEME TARİHİ",
-      render: (project: Project) => (
-        <TableCell className="text-center">
-          {new Date(project.updatedAt).toLocaleDateString("tr-TR")}
-        </TableCell>
-      ),
-    },
-    {
-      key: "actions",
-      label: "İŞLEMLER",
-      render: (project: Project) => (
-        <TableCell>
-          <div className="flex items-center justify-end gap-4">
-            <Tooltip content="Projeyi Paylaş">
-              <button onClick={() => handleShare(project.id)}>
-                <ShareIcon className="w-5 text-blue-500" />
-              </button>
-            </Tooltip>
-          </div>
-        </TableCell>
-      ),
-    },
-  ];
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("pagenum", page.toString());
+    router.push(`/user/project-property-share?${params.toString()}`);
+  };
 
   const handleShare = async (projectId: number) => {
     try {
@@ -192,7 +131,7 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
           <div className="w-full max-w-md mb-4">
             <Input
               placeholder="Proje adı ile arama yapın..."
-              value={searchValue}
+              
               onChange={(e) => handleSearch(e.target.value)}
               startContent={
                 <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
@@ -207,38 +146,78 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
               <p>Toplam {totalCount} kayıt</p>
             )}
           </div>
-          <Table>
-            <TableHeader>
-              {columns.map((column) => (
-                <TableColumn
-                  key={column.key}
-                  className={column.key === "actions" ? "text-right" : ""}
-                >
-                  {column.label}
-                </TableColumn>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {projects.map((item) => (
-                <TableRow key={item.id}>
-                  {columns.map((column) => column.render(item))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto w-full">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BAŞLIK</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AÇIKLAMA</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">KONUM</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">OLUŞTURMA TARİHİ</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SON GÜNCELLEME TARİHİ</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {projects.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+                      Proje bulunamadı
+                    </td>
+                  </tr>
+                ) : (
+                  projects.map((project) => (
+                    <tr key={project.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{project.name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500">{project.description}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                        {project.location
+                          ? `${project.location.city} / ${project.location.district} / ${project.location.neighborhood}`
+                          : "-"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                        {new Date(project.createdAt).toLocaleDateString("tr-TR")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                        {new Date(project.updatedAt).toLocaleDateString("tr-TR")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center justify-end gap-4">
+                          <Tooltip >
+                            <button onClick={() => handleShare(project.id)}>
+                              <ShareIcon className="w-5 text-blue-500" />
+                            </button>
+                          </Tooltip>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
           {totalPages > 1 && (
-            <Pagination
-              total={totalPages}
-              initialPage={0}
-              page={currentPage}
-              onChange={(page) => {
-                const params = new URLSearchParams(searchParams.toString());
-                params.set("pagenum", page.toString());
-                router.push(
-                  `/user/project-property-share?${params.toString()}`
-                );
-              }}
-            />
+            <div className="flex justify-center items-center gap-2 mt-4">
+              <Button
+                size="sm"
+                variant="ghost"
+                onPress={() => handlePageChange(Math.max(0, currentPage - 1))}
+                isDisabled={currentPage === 0}
+              >
+                Önceki
+              </Button>
+              <span className="text-sm text-gray-600">
+                Sayfa {currentPage + 1} / {totalPages}
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onPress={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
+                isDisabled={currentPage >= totalPages - 1}
+              >
+                Sonraki
+              </Button>
+            </div>
           )}
         </>
       ) : (

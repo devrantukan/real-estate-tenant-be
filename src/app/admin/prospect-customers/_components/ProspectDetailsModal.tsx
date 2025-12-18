@@ -1,12 +1,8 @@
 "use client";
 import {
   Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { formatDate } from "@/lib/utils";
 
 interface Prospect {
@@ -35,10 +31,11 @@ export default function ProspectDetailsModal({ prospect, onClose }: Props) {
   if (!prospect) return null;
 
   return (
-    <Modal isOpen={!!prospect} onClose={onClose} size="2xl">
-      <ModalContent>
-        <ModalHeader>Müşteri Adayı Detayları</ModalHeader>
-        <ModalBody>
+    <Modal isOpen={!!prospect} onOpenChange={(open) => !open && onClose()} >
+      <Modal.Container>
+          <Modal.Dialog>
+        <Modal.Header>Müşteri Adayı Detayları</Modal.Header>
+        <Modal.Body>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="font-semibold mb-2">Kişisel Bilgiler</h3>
@@ -99,13 +96,14 @@ export default function ProspectDetailsModal({ prospect, onClose }: Props) {
               <p>{prospect.notes}</p>
             </div>
           )}
-        </ModalBody>
-        <ModalFooter>
-          <Button color="danger" variant="light" onPress={onClose}>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger-soft" onPress={onClose}>
             Kapat
           </Button>
-        </ModalFooter>
-      </ModalContent>
+        </Modal.Footer>
+      </Modal.Dialog>
+        </Modal.Container>
     </Modal>
   );
 }

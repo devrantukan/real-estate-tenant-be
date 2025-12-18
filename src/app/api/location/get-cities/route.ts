@@ -3,7 +3,7 @@ import axios from "axios";
 import prisma from "@/lib/prisma";
 import slugify from "slugify";
 
-export async function GET(request: NextRequest, response: NextResponse) {
+export async function GET(request: NextRequest) {
   const projectLocations = await prisma.propertyLocation.findMany({
     distinct: ["city"],
   });

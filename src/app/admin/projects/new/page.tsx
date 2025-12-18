@@ -1,17 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import ProjectForm from "../_components/ProjectForm";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export default async function NewProjectPage() {
-  const { getUser } = getKindeServerSession();
   const user = await getUser();
+  if (!user) {
+    redirect("/");
+  }
 
-  const { getAccessToken } = await getKindeServerSession();
-  const accessToken: any = await getAccessToken();
-  const role = accessToken?.roles?.[0]?.key;
-
-  if (!user || role !== "site-admin") {
+  const role = await getUserRole(user.id);
+  if (role !== "site-admin") {
     redirect("/");
   }
 

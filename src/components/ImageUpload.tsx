@@ -60,7 +60,7 @@ export function ImageUpload({ value, onChange, onUpload }: ImageUploadProps) {
         <Button
           type="button"
           onClick={() => document.getElementById("imageInput")?.click()}
-          disabled={uploading}
+          isDisabled={uploading}
         >
           {uploading ? "Yükleniyor..." : "Resim Yükle"}
         </Button>

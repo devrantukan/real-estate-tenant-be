@@ -5,10 +5,10 @@ import {
   Checkbox,
   Input,
   Select,
-  SelectItem,
+  ListBox,
   cn,
   Switch,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
@@ -113,9 +113,9 @@ const Features = (props: Props) => {
                     selectionMode="single"
                   >
                     {bedrooms.map((item) => (
-                      <SelectItem key={item.value} value={item.id}>
+                      <ListBox.Item key={item.value} >
                         {item.value}
-                      </SelectItem>
+                      </ListBox.Item>
                     ))}
                   </Select>
                 )}
@@ -134,9 +134,9 @@ const Features = (props: Props) => {
                     selectionMode="single"
                   >
                     {bathrooms.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
+                      <ListBox.Item key={item.value} >
                         {item.value}
-                      </SelectItem>
+                      </ListBox.Item>
                     ))}
                   </Select>
                 )}
@@ -206,7 +206,7 @@ const Features = (props: Props) => {
                 <div className="flex items-center gap-2">
                   <Switch
                     isSelected={value}
-                    onValueChange={onChange}
+                    onChange={onChange}
                     size="sm"
                   />
                   <span>Havuz</span>
@@ -221,7 +221,7 @@ const Features = (props: Props) => {
                 <div className="flex items-center gap-2">
                   <Switch
                     isSelected={value}
-                    onValueChange={onChange}
+                    onChange={onChange}
                     size="sm"
                   />
                   <span>Bahçe</span>
@@ -236,7 +236,7 @@ const Features = (props: Props) => {
                 <div className="flex items-center gap-2">
                   <Switch
                     isSelected={value}
-                    onValueChange={onChange}
+                    onChange={onChange}
                     size="sm"
                   />
                   <span>Balkon</span>
@@ -286,7 +286,7 @@ const Features = (props: Props) => {
                   <div className="flex items-center gap-2">
                     <Switch
                       isSelected={value}
-                      onValueChange={onChange}
+                      onChange={onChange}
                       size="sm"
                     />
                     <span>İmar Durumu</span>
@@ -301,7 +301,7 @@ const Features = (props: Props) => {
         <Button
           onClick={props.prev}
           startContent={<ChevronLeftIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           Geri
@@ -309,7 +309,7 @@ const Features = (props: Props) => {
         <Button
           onClick={handleNext}
           endContent={<ChevronRightIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           İleri

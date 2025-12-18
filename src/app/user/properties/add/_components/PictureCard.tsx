@@ -1,4 +1,4 @@
-import { Card, Button } from "@nextui-org/react";
+import { Card, Button } from "@heroui/react";
 import Image from "next/image";
 import { XCircle, ArrowLeft, ArrowRight, Trash } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";

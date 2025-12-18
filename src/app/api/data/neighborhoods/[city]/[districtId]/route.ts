@@ -5,12 +5,13 @@ import slugify from "slugify";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { city: string; districtId: string } }
+  { params }: { params: Promise<{ city: string; districtId: string }> }
 ) {
+  const { city, districtId } = await params;
   const neighborhoods = await prisma.neighborhood.findMany({
     where: {
-      city_id: parseInt(params.city),
-      district_id: parseInt(params.districtId),
+      city_id: parseInt(city),
+      district_id: parseInt(districtId),
     },
     orderBy: {
       neighborhood_name: "asc",

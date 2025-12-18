@@ -1,4 +1,4 @@
-import { Card, Image } from "@nextui-org/react";
+import { Card, Image } from "@heroui/react";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 

@@ -80,7 +80,7 @@ export default function LocationPicker({
           type="range"
           min="1"
           max="20"
-          value={zoom}
+          
           onChange={(e) => handleZoomChange(Number(e.target.value))}
           className="w-32"
         />

@@ -2,7 +2,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OfficeFormSchema, OfficeFormType } from "@/lib/validations/office";
-import { Input, Button, Textarea, Select, SelectItem } from "@nextui-org/react";
+import { Input, Button,  Select, ListBox } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -59,7 +59,7 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
     watch,
     setValue,
   } = useForm<OfficeFormType>({
-    resolver: zodResolver(OfficeFormSchema),
+    resolver: zodResolver(OfficeFormSchema) as any,
     defaultValues:
       mode === "edit"
         ? {
@@ -255,13 +255,17 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input
-          {...register("name")}
-          label="Ofis Adı"
-          errorMessage={errors.name?.message as string}
-          isInvalid={!!errors.name}
-          value={watch("name")}
-        />
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-2">Ofis Adı</label>
+          <Input
+            id="name"
+            {...register("name")}
+            value={watch("name") || ""}
+          />
+          {errors.name && (
+            <p className="text-sm text-red-500 mt-1">{errors.name.message as string}</p>
+          )}
+        </div>
 
         <ImageUploader
           currentImage={avatarUrl}
@@ -270,111 +274,136 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
           officeName={watch("name")}
         />
 
-        <Input
-          {...register("email")}
-          label="E-posta"
-          errorMessage={errors.email?.message as string}
-          isInvalid={!!errors.email}
-          value={watch("email")}
-        />
-
-        <Input
-          {...register("phone")}
-          label="Telefon"
-          errorMessage={errors.phone?.message as string}
-          isInvalid={!!errors.phone}
-          value={watch("phone")}
-        />
-
-        <Input
-          {...register("fax")}
-          label="Faks"
-          errorMessage={errors.fax?.message}
-          isInvalid={!!errors.fax}
-        />
-
-        <Input
-          {...register("webUrl")}
-          label="Web Sitesi"
-          errorMessage={errors.webUrl?.message}
-          isInvalid={!!errors.webUrl}
-        />
-
-        <Select
-          label="Ülke"
-          selectedKeys={countryId ? [String(countryId)] : []}
-          onChange={(e) => setValue("countryId", Number(e.target.value))}
-          items={locationData.countries || []}
-        >
-          {(country: { country_id: number; country_name: string }) => (
-            <SelectItem
-              key={String(country.country_id)}
-              value={country.country_id}
-            >
-              {country.country_name}
-            </SelectItem>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-2">E-posta</label>
+          <Input
+            id="email"
+            {...register("email")}
+            value={watch("email") || ""}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500 mt-1">{errors.email.message as string}</p>
           )}
-        </Select>
+        </div>
 
-        <Select
-          label="Şehir"
-          selectedKeys={cityId ? [cityId.toString()] : []}
-          onChange={(e) => setValue("cityId", Number(e.target.value))}
-          items={locationData.cities || []}
-        >
-          {(city: { city_id: number; city_name: string }) => (
-            <SelectItem key={city.city_id} value={city.city_id}>
-              {city.city_name}
-            </SelectItem>
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium mb-2">Telefon</label>
+          <Input
+            id="phone"
+            {...register("phone")}
+            value={watch("phone") || ""}
+          />
+          {errors.phone && (
+            <p className="text-sm text-red-500 mt-1">{errors.phone.message as string}</p>
           )}
-        </Select>
+        </div>
 
-        <Select
-          label="İlçe"
-          selectedKeys={districtId ? [districtId.toString()] : []}
-          onChange={(e) => setValue("districtId", Number(e.target.value))}
-          items={locationData.districts || []}
-        >
-          {(district: { district_id: number; district_name: string }) => (
-            <SelectItem key={district.district_id} value={district.district_id}>
-              {district.district_name}
-            </SelectItem>
+        <div>
+          <label htmlFor="fax" className="block text-sm font-medium mb-2">Faks</label>
+          <Input
+            id="fax"
+            {...register("fax")}
+            value={watch("fax") || ""}
+          />
+          {errors.fax && (
+            <p className="text-sm text-red-500 mt-1">{errors.fax.message as string}</p>
           )}
-        </Select>
+        </div>
 
-        <Select
-          label="Mahalle"
-          selectedKeys={neighborhoodId ? [neighborhoodId.toString()] : []}
-          onChange={(e) => setValue("neighborhoodId", Number(e.target.value))}
-          items={locationData.neighborhoods || []}
-        >
-          {(neighborhood: {
-            neighborhood_id: number;
-            neighborhood_name: string;
-          }) => (
-            <SelectItem
-              key={neighborhood.neighborhood_id}
-              value={neighborhood.neighborhood_id}
-            >
-              {neighborhood.neighborhood_name}
-            </SelectItem>
+        <div>
+          <label htmlFor="webUrl" className="block text-sm font-medium mb-2">Web Sitesi</label>
+          <Input
+            id="webUrl"
+            {...register("webUrl")}
+            value={watch("webUrl") || ""}
+          />
+          {errors.webUrl && (
+            <p className="text-sm text-red-500 mt-1">{errors.webUrl.message as string}</p>
           )}
-        </Select>
+        </div>
 
-        <Input
-          {...register("streetAddress")}
-          label="Adres"
-          errorMessage={errors.streetAddress?.message}
-          isInvalid={!!errors.streetAddress}
-        />
+        <div>
+          <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
+          <Select
+            selectedKey={countryId ? String(countryId) : undefined}
+            onSelectionChange={(key) => setValue("countryId", key ? Number(key) : undefined)}
+          >
+            {(locationData.countries || []).map((country: { country_id: number; country_name: string }) => (
+              <ListBox.Item key={String(country.country_id)}>
+                {country.country_name}
+              </ListBox.Item>
+            ))}
+          </Select>
+        </div>
 
-        <Input
-          {...register("zip")}
-          label="Posta Kodu"
-          errorMessage={errors.zip?.message as string}
-          isInvalid={!!errors.zip}
-          value={watch("zip")}
-        />
+        <div>
+          <label htmlFor="city" className="block text-sm font-medium mb-2">Şehir</label>
+          <Select
+            selectedKey={cityId ? cityId.toString() : undefined}
+            onSelectionChange={(key) => setValue("cityId", key ? Number(key) : undefined)}
+          >
+            {(locationData.cities || []).map((city: { city_id: number; city_name: string }) => (
+              <ListBox.Item key={city.city_id.toString()}>
+                {city.city_name}
+              </ListBox.Item>
+            ))}
+          </Select>
+        </div>
+
+        <div>
+          <label htmlFor="district" className="block text-sm font-medium mb-2">İlçe</label>
+          <Select
+            selectedKey={districtId ? districtId.toString() : undefined}
+            onSelectionChange={(key) => setValue("districtId", key ? Number(key) : undefined)}
+          >
+            {(locationData.districts || []).map((district: { district_id: number; district_name: string }) => (
+              <ListBox.Item key={district.district_id.toString()}>
+                {district.district_name}
+              </ListBox.Item>
+            ))}
+          </Select>
+        </div>
+
+        <div>
+          <label htmlFor="neighborhood" className="block text-sm font-medium mb-2">Mahalle</label>
+          <Select
+            selectedKey={neighborhoodId ? neighborhoodId.toString() : undefined}
+            onSelectionChange={(key) => setValue("neighborhoodId", key ? Number(key) : undefined)}
+          >
+            {(locationData.neighborhoods || []).map((neighborhood: {
+              neighborhood_id: number;
+              neighborhood_name: string;
+            }) => (
+              <ListBox.Item key={neighborhood.neighborhood_id.toString()}>
+                {neighborhood.neighborhood_name}
+              </ListBox.Item>
+            ))}
+          </Select>
+        </div>
+
+        <div>
+          <label htmlFor="streetAddress" className="block text-sm font-medium mb-2">Adres</label>
+          <Input
+            id="streetAddress"
+            {...register("streetAddress")}
+            value={watch("streetAddress") || ""}
+          />
+          {errors.streetAddress && (
+            <p className="text-sm text-red-500 mt-1">{errors.streetAddress.message as string}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="zip" className="block text-sm font-medium mb-2">Posta Kodu</label>
+          <Input
+            id="zip"
+            {...register("zip")}
+            value={watch("zip") || ""}
+          />
+          {errors.zip && (
+            <p className="text-sm text-red-500 mt-1">{errors.zip.message as string}</p>
+          )}
+        </div>
 
         <div className="md:col-span-2">
           <LocationPicker
@@ -385,29 +414,37 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
           />
         </div>
 
-        <Input
-          {...register("latitude", {
-            setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
-          })}
-          type="number"
-          label="Enlem"
-          errorMessage={errors.latitude?.message}
-          isInvalid={!!errors.latitude}
-          isReadOnly
-          value={String(watch("latitude"))}
-        />
+        <div>
+          <label htmlFor="latitude" className="block text-sm font-medium mb-2">Enlem</label>
+          <Input
+            id="latitude"
+            {...register("latitude", {
+              setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
+            })}
+            type="number"
+            value={watch("latitude") || ""}
+            readOnly
+          />
+          {errors.latitude && (
+            <p className="text-sm text-red-500 mt-1">{errors.latitude.message as string}</p>
+          )}
+        </div>
 
-        <Input
-          {...register("longitude", {
-            setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
-          })}
-          type="number"
-          label="Boylam"
-          errorMessage={errors.longitude?.message}
-          isInvalid={!!errors.longitude}
-          isReadOnly
-          value={String(watch("longitude"))}
-        />
+        <div>
+          <label htmlFor="longitude" className="block text-sm font-medium mb-2">Boylam</label>
+          <Input
+            id="longitude"
+            {...register("longitude", {
+              setValueAs: (v) => (v === "" ? 0 : parseFloat(v)),
+            })}
+            type="number"
+            value={watch("longitude") || ""}
+            readOnly
+          />
+          {errors.longitude && (
+            <p className="text-sm text-red-500 mt-1">{errors.longitude.message as string}</p>
+          )}
+        </div>
       </div>
 
       <Controller
@@ -431,30 +468,50 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Input
-          {...register("xAccountId" as keyof OfficeFormType)}
-          label="X (Twitter) Hesabı"
-        />
+        <div>
+          <label htmlFor="xAccountId" className="block text-sm font-medium mb-2">X (Twitter) Hesabı</label>
+          <Input
+            id="xAccountId"
+            {...register("xAccountId" as keyof OfficeFormType)}
+            value={watch("xAccountId" as keyof OfficeFormType) || ""}
+          />
+        </div>
 
-        <Input
-          {...register("facebookAccountId" as keyof OfficeFormType)}
-          label="Facebook Hesabı"
-        />
+        <div>
+          <label htmlFor="facebookAccountId" className="block text-sm font-medium mb-2">Facebook Hesabı</label>
+          <Input
+            id="facebookAccountId"
+            {...register("facebookAccountId" as keyof OfficeFormType)}
+            value={watch("facebookAccountId" as keyof OfficeFormType) || ""}
+          />
+        </div>
 
-        <Input
-          {...register("linkedInAccountId" as keyof OfficeFormType)}
-          label="LinkedIn Hesabı"
-        />
+        <div>
+          <label htmlFor="linkedInAccountId" className="block text-sm font-medium mb-2">LinkedIn Hesabı</label>
+          <Input
+            id="linkedInAccountId"
+            {...register("linkedInAccountId" as keyof OfficeFormType)}
+            value={watch("linkedInAccountId" as keyof OfficeFormType) || ""}
+          />
+        </div>
 
-        <Input
-          {...register("instagramAccountId" as keyof OfficeFormType)}
-          label="Instagram Hesabı"
-        />
+        <div>
+          <label htmlFor="instagramAccountId" className="block text-sm font-medium mb-2">Instagram Hesabı</label>
+          <Input
+            id="instagramAccountId"
+            {...register("instagramAccountId" as keyof OfficeFormType)}
+            value={watch("instagramAccountId" as keyof OfficeFormType) || ""}
+          />
+        </div>
 
-        <Input
-          {...register("youtubeAccountId" as keyof OfficeFormType)}
-          label="YouTube Hesabı"
-        />
+        <div>
+          <label htmlFor="youtubeAccountId" className="block text-sm font-medium mb-2">YouTube Hesabı</label>
+          <Input
+            id="youtubeAccountId"
+            {...register("youtubeAccountId" as keyof OfficeFormType)}
+            value={watch("youtubeAccountId" as keyof OfficeFormType) || ""}
+          />
+        </div>
       </div>
 
       <div className="mt-6">
@@ -483,15 +540,14 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
 
       <div className="flex justify-end gap-4">
         <Button
-          color="danger"
-          variant="light"
+          variant="danger-soft"
           onClick={() => router.push("/admin/offices")}
         >
           İptal
         </Button>
-        <Button color="primary" type="submit" isLoading={isSubmitting}>
+        <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50">
           {mode === "add" ? "Ekle" : "Güncelle"}
-        </Button>
+        </button>
       </div>
     </form>
   );

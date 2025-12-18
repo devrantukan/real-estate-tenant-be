@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { OfficeWorkerFormType } from "@/lib/validations/office-worker";
 
-import { createKindeUser } from "./kinde";
+// Removed Kinde user creation - using Supabase auth instead
 
 const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
 const REVALIDATION_TOKEN = process.env.NEXT_PUBLIC_REVALIDATION_TOKEN;
@@ -47,8 +47,6 @@ async function revalidateFrontend(path: string) {
 
 export async function createOfficeWorker(data: OfficeWorkerFormType) {
   try {
-    let kindeUserId = data.userId;
-
     // Get role name from database
     const role = await prisma.role.findUnique({
       where: { id: Number(data.roleId) },
@@ -59,22 +57,14 @@ export async function createOfficeWorker(data: OfficeWorkerFormType) {
       throw new Error(`Role with id ${data.roleId} not found`);
     }
 
-    // If roleId is not 10 (admin), create a new Kinde user
-    if (Number(data.roleId) !== 10) {
-      const kindeUser = await createKindeUser(
-        data.email,
-        data.name,
-        data.surname
-      );
-      kindeUserId = kindeUser.id;
-    }
-
+    // Note: User creation should be handled separately via Supabase Auth
+    // userId should be provided from Supabase auth user id
     const worker = await prisma.officeWorker.create({
       data: {
         ...data,
         roleId: Number(data.roleId),
         officeId: Number(data.officeId),
-        userId: kindeUserId || null,
+        userId: data.userId || null,
         name: data.name,
         surname: data.surname,
         email: data.email,

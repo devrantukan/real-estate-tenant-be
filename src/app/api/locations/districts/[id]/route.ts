@@ -1,19 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { DistrictSchema } from "@/lib/validations/location";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { getUser } = getKindeServerSession();
     const user = await getUser();
-    const { getAccessToken } = await getKindeServerSession();
-    const accessToken: any = await getAccessToken();
-    const role = accessToken?.roles?.[0]?.key;
-    if (!user?.id || role !== "site-admin") {
+    if (!user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const role = await getUserRole(user.id);
+    if (role !== "site-admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -29,8 +31,9 @@ export async function PUT(
       return NextResponse.json({ error: "Şehir bulunamadı" }, { status: 400 });
     }
 
+    const { id } = await params;
     const district = await prisma.district.update({
-      where: { district_id: parseInt(params.id) },
+      where: { district_id: parseInt(id) },
       data: {
         district_name: validatedData.district_name,
         city_id: validatedData.city_id,
@@ -56,20 +59,22 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { getUser } = getKindeServerSession();
     const user = await getUser();
-    const { getAccessToken } = await getKindeServerSession();
-    const accessToken: any = await getAccessToken();
-    const role = accessToken?.roles?.[0]?.key;
-    if (!user?.id || role !== "site-admin") {
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const role = await getUserRole(user.id);
+    if (role !== "site-admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
     await prisma.district.delete({
-      where: { district_id: parseInt(params.id) },
+      where: { district_id: parseInt(id) },
     });
 
     return NextResponse.json({ success: true });

@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
-  SelectItem,
+  ListBox,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -187,7 +187,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Adınız"
                     {...field}
-                    value={name}
+                    
                     onChange={(e) => {
                       setName(e.target.value);
                       field.onChange(e);
@@ -209,7 +209,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Soyadınız"
                     {...field}
-                    value={surname}
+                    
                     onChange={(e) => {
                       setSurname(e.target.value);
                       field.onChange(e);
@@ -231,7 +231,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="+90 5__ ___ __ __"
                     {...field}
-                    value={phone}
+                    
                     onChange={(e) => {
                       const rawValue = e.target.value;
                       // If backspace is pressed and value is just "+90 ", clear the field
@@ -275,11 +275,11 @@ export default function UserProfileForm({ officeWorker }: any) {
               <FormItem className="hidden">
                 <FormLabel>Hakkımda</FormLabel>
                 <FormControl>
-                  <Textarea
+                  <textarea
                     placeholder="Tell us about yourself"
                     className="hidden"
                     {...field}
-                    value={about}
+                    
                     onChange={(e) => {
                       setAbout(e.target.value);
                       field.onChange(e);
@@ -311,7 +311,7 @@ export default function UserProfileForm({ officeWorker }: any) {
               }}
               className="h-[280px] border-gray-200 mb-6 "
               theme="snow"
-              value={about}
+              
               onChange={onEditorStateChange}
             />
           </div>
@@ -329,7 +329,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Twitter Kullanıcı Adınız"
                     {...field}
-                    value={xAccountId}
+                    
                     onChange={(e) => {
                       setXAccountId(e.target.value);
                       field.onChange(e);
@@ -351,7 +351,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Facebook Kullanıcı Adınız"
                     {...field}
-                    value={facebookAccountId}
+                    
                     onChange={(e) => {
                       setFacebookAccountId(e.target.value);
                       field.onChange(e);
@@ -373,7 +373,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="LinkedIn Kullanıcı Adınız"
                     {...field}
-                    value={linkedInAccountId}
+                    
                     onChange={(e) => {
                       setLinkedInAccountId(e.target.value);
                       field.onChange(e);
@@ -395,7 +395,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Youtube Kullanıcı Adınız"
                     {...field}
-                    value={youtubeAccountId}
+                    
                     onChange={(e) => {
                       setYoutubeAccountId(e.target.value);
                       field.onChange(e);
@@ -417,7 +417,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="https://example.com"
                     {...field}
-                    value={webUrl}
+                    
                     onChange={(e) => {
                       setWebUrl(e.target.value);
                       field.onChange(e);
@@ -439,7 +439,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Instagram kullanıcı adınız"
                     {...field}
-                    value={instagramAccountId}
+                    
                     onChange={(e) => {
                       setInstagramAccountId(e.target.value);
                       field.onChange(e);
@@ -464,7 +464,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="DOC123456"
                     {...field}
-                    value={commercialDocumentId}
+                    
                     onChange={(e) => {
                       setCommercialDocumentId(e.target.value);
                       field.onChange(e);
@@ -486,7 +486,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Retroia"
                     {...field}
-                    value={companyLegalName}
+                    
                     onChange={(e) => {
                       setCompanyLegalName(e.target.value);
                       field.onChange(e);
@@ -498,7 +498,7 @@ export default function UserProfileForm({ officeWorker }: any) {
             )}
           />
         </div>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" isDisabled={isSubmitting}>
           {isSubmitting ? "Kayıt Ediliyor." : "Kaydet"}
         </Button>
       </form>

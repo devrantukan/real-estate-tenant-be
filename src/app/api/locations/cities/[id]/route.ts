@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getUser } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const city = await prisma.city.findUnique({
       where: {
-        city_id: parseInt(params.id),
+        city_id: parseInt(id),
       },
     });
 
@@ -29,21 +31,23 @@ export async function GET(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Auth check
-    const { getUser } = getKindeServerSession();
     const user = await getUser();
-    const { getAccessToken } = await getKindeServerSession();
-    const accessToken: any = await getAccessToken();
-    const role = accessToken?.roles?.[0]?.key;
-    if (!user?.id || role !== "site-admin") {
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const role = await getUserRole(user.id);
+    if (role !== "site-admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
     await prisma.city.delete({
-      where: { city_id: parseInt(params.id) },
+      where: { city_id: parseInt(id) },
     });
 
     return NextResponse.json({ success: true });

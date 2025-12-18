@@ -1,14 +1,8 @@
 "use client";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
   Button,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { formatDate } from "@/lib/utils";
 import { deleteProspectAgent } from "@/lib/actions/prospect-agent";
 import { toast } from "react-toastify";
@@ -64,67 +58,82 @@ export default function ProspectAgentsTable({
 
   return (
     <>
-      <Table aria-label="Danışman Adayları Tablosu">
-        <TableHeader>
-          <TableColumn>AD SOYAD</TableColumn>
-          <TableColumn>İLETİŞİM</TableColumn>
-          <TableColumn>KONUM</TableColumn>
-          <TableColumn>ARKA PLAN</TableColumn>
-          <TableColumn>TARİH</TableColumn>
-          <TableColumn>İŞLEMLER</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {prospectAgents.map((agent) => (
-            <TableRow key={agent.id}>
-              <TableCell>{`${agent.firstName} ${agent.lastName}`}</TableCell>
-              <TableCell>
-                <div>
-                  <div>{agent.email}</div>
-                  <div>{agent.phone}</div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div>
-                  <div>{agent.city}</div>
-                  <div>{agent.district}</div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div>
-                  <div>{agent.educationLevel}</div>
-                  <div>{agent.occupation}</div>
-                </div>
-              </TableCell>
-              <TableCell>{formatDate(agent.createdAt)}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Tooltip content="Detayları Görüntüle">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      variant="light"
-                      onClick={() => setSelectedAgent(agent)}
-                    >
-                      <EyeIcon className="h-5 w-5" />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Sil">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      color="danger"
-                      variant="light"
-                      onClick={() => handleDelete(agent.id)}
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </Button>
-                  </Tooltip>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AD SOYAD</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İLETİŞİM</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KONUM</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ARKA PLAN</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TARİH</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {prospectAgents.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+                  Danışman adayı bulunamadı
+                </td>
+              </tr>
+            ) : (
+              prospectAgents.map((agent) => (
+                <tr key={agent.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {`${agent.firstName} ${agent.lastName}`}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      <div>{agent.email}</div>
+                      <div className="text-gray-500">{agent.phone}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      <div>{agent.city}</div>
+                      <div className="text-gray-500">{agent.district}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      <div>{agent.educationLevel}</div>
+                      <div className="text-gray-500">{agent.occupation}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(agent.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex gap-2">
+                      <Tooltip >
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="ghost"
+                          onPress={() => setSelectedAgent(agent)}
+                        >
+                          <EyeIcon className="h-5 w-5" />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip >
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          variant="danger-soft"
+                          onClick={() => handleDelete(agent.id)}
+                        >
+                          <TrashIcon className="h-5 w-5" />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <ProspectAgentDetailsModal
         agent={selectedAgent}

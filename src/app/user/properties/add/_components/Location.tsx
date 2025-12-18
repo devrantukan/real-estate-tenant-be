@@ -4,11 +4,11 @@ import {
   Card,
   Input,
   Select,
-  SelectItem,
+  ListBox,
   Textarea,
   cn,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
@@ -469,13 +469,13 @@ const Location = (props: Props) => {
             label="Ülke"
             errorMessage={errors.location?.country?.message}
             isInvalid={!!errors.location?.country}
-            value={country}
+            
             selectedKeys={[watch("location.country") ?? country]}
           >
             {props.countries.map((item) => (
-              <SelectItem key={item.country_name} value={item.country_name}>
+              <ListBox.Item key={item.country_name} >
                 {item.country_name}
-              </SelectItem>
+              </ListBox.Item>
             ))}
           </Select>
 
@@ -485,13 +485,13 @@ const Location = (props: Props) => {
             label="Şehir"
             errorMessage={errors.location?.city?.message}
             isInvalid={!!errors.location?.city}
-            value={city}
+            
             selectedKeys={[watch("location.city") ?? city]}
           >
             {cityOptions.map((c) => (
-              <SelectItem key={c} value={c}>
+              <ListBox.Item key={c} >
                 {c}
-              </SelectItem>
+              </ListBox.Item>
             ))}
           </Select>
 
@@ -501,13 +501,13 @@ const Location = (props: Props) => {
             label="İlçe"
             errorMessage={errors.location?.district?.message}
             isInvalid={!!errors.location?.district}
-            value={district}
+            
             selectedKeys={[watch("location.district") ?? district]}
           >
             {districtOptions.map((c) => (
-              <SelectItem key={c.label} value={c.label}>
+              <ListBox.Item key={c.label} >
                 {c.label}
-              </SelectItem>
+              </ListBox.Item>
             ))}
           </Select>
 
@@ -517,13 +517,13 @@ const Location = (props: Props) => {
             label="Mahalle"
             errorMessage={errors.location?.neighborhood?.message}
             isInvalid={!!errors.location?.neighborhood}
-            value={neighborhood}
+            
             selectedKeys={[watch("location.neighborhood") ?? neighborhood]}
           >
             {neighborhoodOptions.map((c) => (
-              <SelectItem key={c.label} value={c.label}>
+              <ListBox.Item key={c.label} >
                 {c.label}
-              </SelectItem>
+              </ListBox.Item>
             ))}
           </Select>
 
@@ -532,7 +532,7 @@ const Location = (props: Props) => {
             errorMessage={errors.location?.streetAddress?.message}
             isInvalid={!!errors.location?.streetAddress}
             label="Adres Satırı"
-            value={watch("location.streetAddress") || ""}
+            
             onChange={(e) => setValue("location.streetAddress", e.target.value)}
           />
 
@@ -541,7 +541,7 @@ const Location = (props: Props) => {
             errorMessage={errors.location?.zip?.message}
             isInvalid={!!errors.location?.zip}
             label="Posta Kodu"
-            value={watch("location.zip") || ""}
+            
             onChange={(e) => setValue("location.zip", e.target.value)}
           />
           {/* <Input
@@ -619,7 +619,7 @@ const Location = (props: Props) => {
         // defaultValue={getValues().location.region}
       />
 
-      <Textarea
+      <textarea
         {...register("location.landmark")}
         errorMessage={errors.location?.landmark?.message}
         isInvalid={!!errors.location?.landmark}
@@ -636,19 +636,19 @@ const Location = (props: Props) => {
       <div className="flex justify-center col-span-2 gap-3 ">
         <Button
           onClick={props.prev}
-          startContent={<ChevronLeftIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
+          <ChevronLeftIcon className="w-6 mr-2" />
           Geri
         </Button>
         <Button
           onClick={handleNext}
-          endContent={<ChevronRightIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           İleri
+          <ChevronRightIcon className="w-6 ml-2" />
         </Button>
       </div>
     </Card>

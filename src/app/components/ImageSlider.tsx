@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, cn } from "@nextui-org/react";
+import { Card, cn } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
@@ -92,7 +92,7 @@ export const ImagesSlider = ({
       opacity: 1,
       transition: {
         duration: 0.5,
-        ease: [0.645, 0.045, 0.355, 1.0],
+        ease: [0.645, 0.045, 0.355, 1.0] as any,
       },
     },
     upExit: {

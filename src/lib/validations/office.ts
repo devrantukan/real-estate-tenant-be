@@ -19,8 +19,8 @@ export const OfficeFormSchema = z.object({
   linkedInAccountId: z.string().optional(),
   instagramAccountId: z.string().optional(),
   youtubeAccountId: z.string().optional(),
-  latitude: z.number().optional().default(0),
-  longitude: z.number().optional().default(0),
+  latitude: z.number().default(0),
+  longitude: z.number().default(0),
 });
 
 export type OfficeFormType = z.infer<typeof OfficeFormSchema>;

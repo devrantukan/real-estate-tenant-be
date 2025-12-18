@@ -3,21 +3,15 @@
 import { TrashIcon } from "@heroicons/react/16/solid";
 import { EyeIcon, PencilIcon } from "@heroicons/react/16/solid";
 import {
-  Pagination,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
   Tooltip,
   Switch,
-} from "@nextui-org/react";
+  Button,
+} from "@heroui/react";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { useState, useEffect } from "react";
 import { deleteProject } from "@/app/actions/project";
@@ -121,156 +115,140 @@ const ProjectsTable = ({
     }
   };
 
-  const columns = [
-    {
-      key: "name",
-      label: "PROJE ADI",
-      render: (project: any) => (
-        <TableCell key={`name-${project.id}`} className="text-left">
-          {project.name}
-        </TableCell>
-      ),
-    },
-    {
-      key: "location",
-      label: "KONUM",
-      render: (project: any) => (
-        <TableCell key={`location-${project.id}`}>
-          {project.location?.city}, {project.location?.district}
-        </TableCell>
-      ),
-    },
-    {
-      key: "feature",
-      label: "ÖZELLİKLER",
-      render: (project: any) => (
-        <TableCell key={`feature-${project.id}`}>
-          {project.feature?.bedrooms} Yatak Odası, {project.feature?.bathrooms}{" "}
-          Banyo
-        </TableCell>
-      ),
-    },
-    {
-      key: "unitSizes",
-      label: "BİRİM BÜYÜKLÜKLERİ",
-      render: (project: any) => (
-        <TableCell key={`unitSizes-${project.id}`}>
-          {project.unitSizes.map((size: any) => size.value).join(", ")}
-        </TableCell>
-      ),
-    },
-    {
-      key: "publishingStatus",
-      label: "YAYIN DURUMU",
-      render: (project: any) => (
-        <TableCell key={`publishingStatus-${project.id}`}>
-          <Switch
-            isSelected={project.publishingStatus === "PUBLISHED"}
-            onValueChange={async (checked) => {
-              try {
-                const response = await fetch(`/api/projects/${project.id}`, {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    publishingStatus: checked ? "PUBLISHED" : "DRAFT",
-                  }),
-                });
-
-                if (response.ok) {
-                  router.refresh();
-                } else {
-                  toast.error("Yayın durumu güncellenirken bir hata oluştu");
-                }
-              } catch (error) {
-                toast.error("Yayın durumu güncellenirken bir hata oluştu");
-              }
-            }}
-            size="sm"
-            color="primary"
-          >
-            {project.publishingStatus === "PUBLISHED" ? "Yayında" : "Taslak"}
-          </Switch>
-        </TableCell>
-      ),
-    },
-    {
-      key: "createdAt",
-      label: "OLUŞTURMA TARİHİ",
-      render: (project: any) => (
-        <TableCell key={`createdAt-${project.id}`} className="text-center">
-          {new Date(project.createdAt).toLocaleDateString("tr-TR")}
-        </TableCell>
-      ),
-    },
-    {
-      key: "actions",
-      label: "İŞLEMLER",
-      render: (project: any) => (
-        <TableCell key={`actions-${project.id}`}>
-          <div className="flex items-center justify-end gap-4">
-            <Tooltip content="Ön İzleme">
-              <Link href={`/admin/projects/${project.id}`}>
-                <EyeIcon className="w-5 text-slate-500" />
-              </Link>
-            </Tooltip>
-            <Tooltip content="Düzenle" color="warning">
-              <Link href={`/admin/projects/${project.id}/edit`}>
-                <PencilIcon className="w-5 text-yellow-500" />
-              </Link>
-            </Tooltip>
-            <Tooltip content="Sil" color="danger">
-              <button onClick={() => handleDelete(project.id)}>
-                <TrashIcon className="w-5 text-red-500" />
-              </button>
-            </Tooltip>
-          </div>
-        </TableCell>
-      ),
-    },
-  ];
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("pagenum", page.toString());
+    router.push(`/admin/projects?${params.toString()}`);
+  };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full mt-8">
-      <div className="w-full max-w-md mb-4">
+      <div className="w-full max-w-md mb-4 relative">
+        <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 z-10" />
         <Input
           placeholder="Proje adı veya konum ile arama yapın..."
-          value={searchTerm}
           onChange={(e) => handleSearch(e.target.value)}
-          startContent={
-            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
-          }
-          className="w-full"
+          className="w-full pl-10"
         />
       </div>
       <div className="w-full text-sm text-gray-500 mb-4">
         Toplam {totalCount} kayıt bulundu
       </div>
-      <Table>
-        <TableHeader>
-          {columns.map((column) => (
-            <TableColumn key={column.key}>{column.label}</TableColumn>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {projects.map((project) => (
-            <TableRow key={project.id}>
-              {columns.map((column) => column.render(project))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Pagination
-        total={totalPages}
-        initialPage={0}
-        page={currentPage}
-        onChange={(page) => {
-          const params = new URLSearchParams(searchParams.toString());
-          params.set("pagenum", page.toString());
-          router.push(`/admin/projects?${params.toString()}`);
-        }}
-      />
+      <div className="overflow-x-auto w-full">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PROJE ADI</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KONUM</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ÖZELLİKLER</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BİRİM BÜYÜKLÜKLERİ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">YAYIN DURUMU</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">OLUŞTURMA TARİHİ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {projects.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                  Proje bulunamadı
+                </td>
+              </tr>
+            ) : (
+              projects.map((project) => (
+                <tr key={project.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {project.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {project.location?.city}, {project.location?.district}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {project.feature?.bedrooms} Yatak Odası, {project.feature?.bathrooms} Banyo
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {project.unitSizes.map((size: any) => size.value).join(", ")}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Switch
+                      isSelected={project.publishingStatus === "PUBLISHED"}
+                      onChange={async (checked) => {
+                        try {
+                          const response = await fetch(`/api/projects/${project.id}`, {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              publishingStatus: checked ? "PUBLISHED" : "DRAFT",
+                            }),
+                          });
+
+                          if (response.ok) {
+                            router.refresh();
+                          } else {
+                            toast.error("Yayın durumu güncellenirken bir hata oluştu");
+                          }
+                        } catch (error) {
+                          toast.error("Yayın durumu güncellenirken bir hata oluştu");
+                        }
+                      }}
+                      size="sm"
+                    >
+                      {project.publishingStatus === "PUBLISHED" ? "Yayında" : "Taslak"}
+                    </Switch>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                    {new Date(project.createdAt).toLocaleDateString("tr-TR")}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex items-center justify-end gap-4">
+                      <Tooltip >
+                        <Link href={`/admin/projects/${project.id}`}>
+                          <EyeIcon className="w-5 text-slate-500" />
+                        </Link>
+                      </Tooltip>
+                      <Tooltip>
+                        <Link href={`/admin/projects/${project.id}/edit`}>
+                          <PencilIcon className="w-5 text-yellow-500" />
+                        </Link>
+                      </Tooltip>
+                      <Tooltip>
+                        <button onClick={() => handleDelete(project.id)}>
+                          <TrashIcon className="w-5 text-red-500" />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
+            isDisabled={currentPage === 1}
+          >
+            Önceki
+          </Button>
+          <span className="text-sm text-gray-600">
+            Sayfa {currentPage} / {totalPages}
+          </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            isDisabled={currentPage === totalPages}
+          >
+            Sonraki
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

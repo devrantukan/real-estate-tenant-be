@@ -6,10 +6,10 @@ import {
   Card,
   Input,
   Select,
-  SelectItem,
+  ListBox,
   Textarea,
   cn,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 import {
   PropertyStatus,
@@ -182,12 +182,12 @@ const Basic = (props: Props) => {
           }}
           className="h-[380px] rounded-lg border-gray-200"
           theme="snow"
-          value={description}
+          
           onChange={onEditorStateChange}
         />
       </div>
 
-      <Textarea
+      <textarea
         {...register("description")}
         errorMessage={errors.description?.message}
         isInvalid={!!errors.description}
@@ -195,8 +195,8 @@ const Basic = (props: Props) => {
         className=" hidden"
         name="description"
         defaultValue={getValues().description}
-        value={description}
-        onValueChange={onEditorStateChange}
+        
+        onChange={onEditorStateChange}
       />
       <div className="flex lg:flex-row flex-col gap-4 ">
         <Select
@@ -213,9 +213,9 @@ const Basic = (props: Props) => {
           }
         >
           {props.contracts.map((item) => (
-            <SelectItem key={item.id} value={item.id}>
+            <ListBox.Item key={item.id} >
               {item.value}
-            </SelectItem>
+            </ListBox.Item>
           ))}
         </Select>
 
@@ -236,9 +236,9 @@ const Basic = (props: Props) => {
             }
           >
             {props.deedStatuses.map((item) => (
-              <SelectItem key={item.id} value={item.id}>
+              <ListBox.Item key={item.id} >
                 {item.value}
-              </SelectItem>
+              </ListBox.Item>
             ))}
           </Select>
         )}
@@ -250,16 +250,16 @@ const Basic = (props: Props) => {
           label="Gayrimenkul Tipi"
           selectionMode="single"
           name="typeId"
-          value={typeId?.toString()}
+          
           onChange={handleTypeChange}
           defaultSelectedKeys={
             getValues().typeId ? [getValues().typeId.toString()] : undefined
           }
         >
           {props.types.map((item) => (
-            <SelectItem key={item.id} value={item.id}>
+            <ListBox.Item key={item.id} >
               {item.value}
-            </SelectItem>
+            </ListBox.Item>
           ))}
         </Select>
         <Select
@@ -269,7 +269,7 @@ const Basic = (props: Props) => {
           label="Gayrimenkul Alt Tipi"
           selectionMode="single"
           name="subTypeId"
-          value={subTypeId?.toString()}
+          
           onChange={handleSubTypeChange}
           defaultSelectedKeys={
             getValues().subTypeId
@@ -280,9 +280,9 @@ const Basic = (props: Props) => {
           {props.subTypes
             .filter((item) => item.typeId == getValues().typeId)
             .map((item) => (
-              <SelectItem key={item.id} value={item.value}>
+              <ListBox.Item key={item.id} >
                 {item.value}
-              </SelectItem>
+              </ListBox.Item>
             ))}
         </Select>
       </div>
@@ -299,9 +299,9 @@ const Basic = (props: Props) => {
           }
         >
           {props.statuses.map((item) => (
-            <SelectItem key={item.id} value={item.id}>
+            <ListBox.Item key={item.id} >
               {item.value}
-            </SelectItem>
+            </ListBox.Item>
           ))}
         </Select>
         <Input
@@ -336,19 +336,19 @@ const Basic = (props: Props) => {
       <div className="flex justify-center col-span-3 gap-3">
         <Button
           isDisabled
-          startContent={<ChevronLeftIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
+          <ChevronLeftIcon className="w-6 mr-2" />
           Geri
         </Button>
         <Button
           onClick={handleNext}
-          endContent={<ChevronRightIcon className="w-6" />}
-          color="primary"
+          variant="primary"
           className="w-36"
         >
           İleri
+          <ChevronRightIcon className="w-6 ml-2" />
         </Button>
       </div>
     </Card>
