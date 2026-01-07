@@ -3,7 +3,8 @@ import { getUserAsOfficeWorker, getUserById } from "@/lib/actions/user";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import React, { ReactNode } from "react";
 import SectionTitle from "./_components/sectionTitle";
-import { Avatar, Button, Card } from "@heroui/react";
+import { Button, Card } from "@heroui/react";
+import * as Avatar from "@radix-ui/react-avatar";
 import UploadAvatar from "./_components/UploadAvatar";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
@@ -40,19 +41,16 @@ const ProfilePage = async () => {
         <div className="flex lg:flex-row flex-col">
           <div className="flex flex-col items-center lg:w-1/3 w-full mb-6">
             <div className="w-[150px] h-[150px] relative">
-              <Avatar
-                className="absolute w-[150px] h-[150px] border-1 border-gray-200 overflow-hidden"
-                src={officeWorker?.avatarUrl ?? "/profile.png"}
-                imgProps={{
-                  className: "w-[150px] h-[200px]",
-                }}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "top center",
-                }}
-              />
+              <Avatar.Root className="h-[150px] w-[150px] rounded-full overflow-hidden flex items-center justify-center bg-gray-200 border border-gray-100 shadow-sm">
+                <Avatar.Image
+                  src={officeWorker?.avatarUrl ?? "/profile.png"}
+                  className="h-full w-full object-cover"
+                  alt={`${dbUser?.firstName} ${dbUser?.lastName}`}
+                />
+                <Avatar.Fallback className="text-2xl font-semibold text-gray-500 uppercase">
+                  {(dbUser?.firstName?.[0] || "") + (dbUser?.lastName?.[0] || "")}
+                </Avatar.Fallback>
+              </Avatar.Root>
             </div>
             <UploadAvatar userId={dbUser?.id!} />
           </div>

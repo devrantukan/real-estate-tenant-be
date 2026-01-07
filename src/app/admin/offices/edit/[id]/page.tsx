@@ -5,10 +5,11 @@ import { prisma } from "@/lib/prisma";
 import OfficeForm from "../../_components/OfficeForm";
 
 export default async function EditOfficePage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await paramsPromise;
   const user = await getUser();
   if (!user) {
     redirect("/");

@@ -1,102 +1,91 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
-
-// datasource db {
-//  provider = "sqlite"
-//  url      = env("DATABASE_URL")
-// }
 
 datasource db {
   provider = "postgresql"
 }
 
 model Organization {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  users       User[]
-  properties  Property[]
-  offices     Office[]
-  projects    Project[]
-  prospectAgents ProspectAgent[]
-  prospectCustomers ProspectCustomer[]
-  contactRequests ContactRequest[]
-  contents    Contents[]
-  propertyTypes PropertyType[]
-  propertySubTypes PropertySubType[]
+  id                           Int                          @id @default(autoincrement())
+  name                         String
+  slug                         String                       @unique
+  description                  String?
+  createdAt                    DateTime                     @default(now())
+  updatedAt                    DateTime                     @updatedAt
+  contactRequests              ContactRequest[]
+  contents                     Contents[]
+  offices                      Office[]
+  officeWorkerReviews          OfficeWorkerReview[]
+  projects                     Project[]
+  properties                   Property[]
+  propertyContracts            PropertyContract[]
+  propertyDeedStatuses         PropertyDeedStatus[]
+  propertyDescriptors          PropertyDescriptor[]
   propertyDescriptorCategories PropertyDescriptorCategory[]
-  propertyDescriptors PropertyDescriptor[]
-  propertyStatuses PropertyStatus[]
-  propertyDeedStatuses PropertyDeedStatus[]
-  propertyContracts PropertyContract[]
-  roles       Role[]
-  officeWorkerReviews OfficeWorkerReview[]
+  propertyStatuses             PropertyStatus[]
+  propertySubTypes             PropertySubType[]
+  propertyTypes                PropertyType[]
+  prospectAgents               ProspectAgent[]
+  prospectCustomers            ProspectCustomer[]
+  roles                        Role[]
+  users                        User[]
 }
 
 model User {
-  id            String          @id
-  firstName     String
-  lastName      String
-  email         String
-  avatarUrl     String?
+  id             String        @id
+  firstName      String
+  lastName       String
+  email          String
+  avatarUrl      String?
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  roleId        Int?
-  role          Role?           @relation(fields: [roleId], references: [id])
-  createdAt     DateTime        @default(now())
-  Property      Property[]
-  officeWorker  OfficeWorker?
-  
+  createdAt      DateTime      @default(now())
+  roleId         Int?
+  officeWorker   OfficeWorker?
+  Property       Property[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  role           Role?         @relation(fields: [roleId], references: [id])
 }
 
 model Property {
-  id          Int               @id @default(autoincrement())
-  name        String
-  description String
-  price       Int
-  discountedPrice       Int
-  userId      String
-  user        User              @relation(fields: [userId], references: [id])
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  typeId      Int
-  type        PropertyType      @relation(fields: [typeId], references: [id])
-  subTypeId      Int
-  subType        PropertySubType      @relation(fields: [subTypeId], references: [id])
-  descriptors DescriptorsOnProperties[]
-  statusId    Int
-  status      PropertyStatus    @relation(fields: [statusId], references: [id])
-  location    PropertyLocation?
-  feature     PropertyFeature?
-  images      PropertyImage[]
-  agentId     Int
-  agent       OfficeWorker @relation(fields: [agentId], references: [id])
-  contractId    Int
-  contract     PropertyContract    @relation(fields: [contractId], references: [id])
-  videoSource  String
+  id               Int                      @id @default(autoincrement())
+  name             String
+  description      String
+  price            Int
+  discountedPrice  Int
+  userId           String
+  organizationId   Int?
+  typeId           Int
+  subTypeId        Int
+  statusId         Int
+  agentId          Int
+  contractId       Int
+  videoSource      String
   threeDSource     String
-  deedStatusId    Int
-  deedStatus      PropertyDeedStatus    @relation(fields: [deedStatusId], references: [id])
-  publishingStatus    String   @default("PENDING")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  
+  deedStatusId     Int
+  publishingStatus String                   @default("PENDING")
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  descriptors      DescriptorsOnProperties?
+  agent            OfficeWorker             @relation(fields: [agentId], references: [id])
+  contract         PropertyContract         @relation(fields: [contractId], references: [id])
+  deedStatus       PropertyDeedStatus       @relation(fields: [deedStatusId], references: [id])
+  organization     Organization?            @relation(fields: [organizationId], references: [id])
+  status           PropertyStatus           @relation(fields: [statusId], references: [id])
+  subType          PropertySubType          @relation(fields: [subTypeId], references: [id])
+  type             PropertyType             @relation(fields: [typeId], references: [id])
+  user             User                     @relation(fields: [userId], references: [id])
+  feature          PropertyFeature?
+  images           PropertyImage[]
+  location         PropertyLocation?
 }
-
 
 model PropertyImage {
   id         Int      @id @default(autoincrement())
   url        String
   order      Int      @default(0)
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId Int
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 }
 
 model PropertyFeature {
@@ -106,15 +95,15 @@ model PropertyFeature {
   floor           Int
   totalFloor      Int
   area            Int
-  grossArea       Int  
+  grossArea       Int
   zoningStatus    Boolean
   parcelNumber    Int
   blockNumber     Int
   hasSwimmingPool Boolean
   hasGardenYard   Boolean
   hasBalcony      Boolean
-  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId      Int      @unique
+  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 }
 
 model PropertyLocation {
@@ -135,262 +124,254 @@ model PropertyLocation {
 }
 
 model PropertyType {
-  id       Int        @id @default(autoincrement())
-  value    String
-  slug     String
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  Property Property[]
-  subTypes PropertySubType[]
+  id                   Int                          @id @default(autoincrement())
+  value                String
+  slug                 String
+  organizationId       Int?
+  Property             Property[]
   descriptorCategories PropertyDescriptorCategory[]
+  subTypes             PropertySubType[]
+  organization         Organization?                @relation(fields: [organizationId], references: [id])
 }
 
 model PropertySubType {
-  id       Int        @id @default(autoincrement())
-  typeId   Int
-  type     PropertyType      @relation(fields: [typeId], references: [id]) 
+  id             Int           @id @default(autoincrement())
+  typeId         Int
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  value    String
-  slug     String
-  Property Property[]
+  value          String
+  slug           String
+  Property       Property[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  type           PropertyType  @relation(fields: [typeId], references: [id])
 }
 
 model PropertyDescriptorCategory {
-  id       Int        @id @default(autoincrement())
-  value    String
-  slug     String
-  typeId   Int
-  type     PropertyType      @relation(fields: [typeId], references: [id]) 
+  id             Int                  @id @default(autoincrement())
+  value          String
+  slug           String
+  typeId         Int
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  descriptors PropertyDescriptor[]
+  descriptors    PropertyDescriptor[]
+  organization   Organization?        @relation(fields: [organizationId], references: [id])
+  type           PropertyType         @relation(fields: [typeId], references: [id])
 }
 
 model PropertyDescriptor {
-  id       Int        @id @default(autoincrement())
-  categoryId   Int
-  category     PropertyDescriptorCategory      @relation(fields: [categoryId], references: [id]) 
+  id             Int                        @id @default(autoincrement())
+  categoryId     Int
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  value    String
-  slug     String
-  Properties DescriptorsOnProperties[]
+  value          String
+  slug           String
+  Properties     DescriptorsOnProperties[]
+  category       PropertyDescriptorCategory @relation(fields: [categoryId], references: [id])
+  organization   Organization?              @relation(fields: [organizationId], references: [id])
 }
 
 model DescriptorsOnProperties {
-  propertyId    Int      @unique
-  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  descriptorId   Int
-  descriptor     PropertyDescriptor     @relation(fields: [descriptorId], references: [id])
+  propertyId   Int                @unique
+  descriptorId Int
+  descriptor   PropertyDescriptor @relation(fields: [descriptorId], references: [id])
+  property     Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
   @@id([propertyId, descriptorId])
 }
 
 model PropertyStatus {
-  id       Int        @id @default(autoincrement())
-  value    String
-  slug     String
+  id             Int           @id @default(autoincrement())
+  value          String
+  slug           String
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  Property Property[]
+  Property       Property[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model PropertyDeedStatus {
-  id       Int        @id @default(autoincrement())
-  value    String
-  slug     String
+  id             Int           @id @default(autoincrement())
+  value          String
+  slug           String
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  Property Property[]
+  Property       Property[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model PropertyContract {
-  id       Int        @id @default(autoincrement())
-  value    String
-  slug     String
+  id             Int           @id @default(autoincrement())
+  value          String
+  slug           String
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  Property Property[]
+  Property       Property[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model City {
-  city_id         Int      @id @default(autoincrement())
-  city_name       String
-  districts       District[]
-  country_id      Int
-  country_name      String
-  country         Country @relation(fields: [country_id], references: [country_id])
-  offices          Office[]
-  slug            String
+  city_id      Int        @id @default(autoincrement())
+  city_name    String
+  country_id   Int
+  country_name String
+  slug         String
+  country      Country    @relation(fields: [country_id], references: [country_id])
+  districts    District[]
+  offices      Office[]
 }
 
 model Country {
-  country_id         Int      @id @default(autoincrement())
-  country_name      String
-  cities           City[]
-  offices          Office[]
-  slug             String
+  country_id   Int      @id @default(autoincrement())
+  country_name String
+  slug         String
+  cities       City[]
+  offices      Office[]
 }
 
 model Office {
-  id            Int      @id @default(autoincrement())
-  name          String
-  latitude      Float
-  longitude     Float
-  workers       OfficeWorker[]
-  images        OfficeImage[]
-  streetAddress String
-  cityId        Int
-  city          City @relation(fields: [cityId], references: [city_id])
-  zip           String
-  countryId     Int
-  country       Country @relation(fields: [countryId], references: [country_id])  
-  districtId    Int
-  district      District @relation(fields: [districtId], references: [district_id])
-  neighborhoodId Int
-  neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [neighborhood_id])
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  avatarUrl     String?
-  description   String
-  email         String
-  phone         String
-  fax           String
-  xAccountId    String
-  facebookAccountId    String
-  linkedInAccountId    String
-  instagramAccountId    String
-  youtubeAccountId      String
-  webUrl        String
-  slug          String
-  projects    Project[]
-
-
+  id                 Int            @id @default(autoincrement())
+  name               String
+  latitude           Float
+  longitude          Float
+  streetAddress      String
+  cityId             Int
+  zip                String
+  countryId          Int
+  districtId         Int
+  neighborhoodId     Int
+  organizationId     Int?
+  avatarUrl          String?
+  description        String
+  email              String
+  phone              String
+  fax                String
+  xAccountId         String
+  facebookAccountId  String
+  linkedInAccountId  String
+  instagramAccountId String
+  youtubeAccountId   String
+  webUrl             String
+  slug               String
+  city               City           @relation(fields: [cityId], references: [city_id])
+  country            Country        @relation(fields: [countryId], references: [country_id])
+  district           District       @relation(fields: [districtId], references: [district_id])
+  neighborhood       Neighborhood   @relation(fields: [neighborhoodId], references: [neighborhood_id])
+  organization       Organization?  @relation(fields: [organizationId], references: [id])
+  images             OfficeImage[]
+  workers            OfficeWorker[]
+  projects           Project[]
 }
 
 model OfficeImage {
-  id         Int      @id @default(autoincrement())
-  url        String
-  officeId    Int 
-  office      Office   @relation(fields: [officeId], references: [id])
-
+  id       Int    @id @default(autoincrement())
+  url      String
+  officeId Int
+  office   Office @relation(fields: [officeId], references: [id])
 }
 
-
 model OfficeWorker {
-  id          Int      @id @default(autoincrement())
-  name        String
-  surname     String
-  roleId    Int 
-  role      Role   @relation(fields: [roleId], references: [id])
-  avatarUrl   String?
-  about       String
-  email       String
-  phone       String
-  xAccountId    String
+  id                   Int                  @id @default(autoincrement())
+  name                 String
+  surname              String
+  roleId               Int
+  avatarUrl            String?
+  about                String
+  email                String
+  phone                String
+  xAccountId           String
   facebookAccountId    String
   linkedInAccountId    String
-  instagramAccountId    String
-  youtubeAccountId      String
-  webUrl        String
-  commercialDocumentId  String
-  companyLegalName      String
-  officeId    Int 
-  office      Office   @relation(fields: [officeId], references: [id])
-  properties  Property[]
-  slug        String
-  title       String?
-  reviews     OfficeWorkerReview[]
-
-
-  userId String?  @unique // relation scalar field (used in the `@relation` attribute above)
-  user   User? @relation(fields: [userId], references: [id])
+  instagramAccountId   String
+  youtubeAccountId     String
+  webUrl               String
+  commercialDocumentId String
+  companyLegalName     String
+  officeId             Int
+  slug                 String
+  title                String?
+  userId               String?              @unique
+  office               Office               @relation(fields: [officeId], references: [id])
+  role                 Role                 @relation(fields: [roleId], references: [id])
+  user                 User?                @relation(fields: [userId], references: [id])
+  reviews              OfficeWorkerReview[]
+  properties           Property[]
 }
 
 model OfficeWorkerReview {
-  id                Int      @id @default(autoincrement())
-  review              String
-  firstName      String
-  lastName   String
-  email     String
-  phone     String
-  score1            Int
-  score2            Int
-  score3            Int
-  score4            Int
-  score5            Int
-  score6            Int 
-  avg               Int 
-  officeWorkerId    Int 
-  officeWorker      OfficeWorker   @relation(fields: [officeWorkerId], references: [id]) 
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  isApproved        Int
-  kvkkConsent       Int   @default(0)
-  marketingConsent  Int  @default(0)
-  createdAt         DateTime        @default(now())
+  id               Int           @id @default(autoincrement())
+  review           String
+  firstName        String
+  lastName         String
+  email            String
+  phone            String
+  score1           Int
+  score2           Int
+  score3           Int
+  score4           Int
+  score5           Int
+  score6           Int
+  avg              Int
+  officeWorkerId   Int
+  organizationId   Int?
+  isApproved       Int
+  kvkkConsent      Int           @default(0)
+  marketingConsent Int           @default(0)
+  createdAt        DateTime      @default(now())
+  officeWorker     OfficeWorker  @relation(fields: [officeWorkerId], references: [id])
+  organization     Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model Role {
-  id        Int      @id @default(autoincrement())
-  title     String
-  slug      String
+  id             Int            @id @default(autoincrement())
+  title          String
+  slug           String
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  officeWorker OfficeWorker[]
-  users     User[]
-
+  officeWorker   OfficeWorker[]
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
+  users          User[]
 }
 
 model District {
-  district_id        Int      @id @default(autoincrement())
-  district_name      String
-  city_id            Int     
-  city_name          String
-  neighborhoods       Neighborhood[]
-  city City @relation(fields: [city_id], references: [city_id])
-  offices          Office[]
-  slug            String
+  district_id   Int            @id @default(autoincrement())
+  district_name String
+  city_id       Int
+  city_name     String
+  slug          String
+  city          City           @relation(fields: [city_id], references: [city_id])
+  neighborhoods Neighborhood[]
+  offices       Office[]
 }
 
 model Neighborhood {
-  neighborhood_id     Int      @id @default(autoincrement())
-  neighborhood_name   String
-  city_id             Int     
-  city_name           String
-  district_id         Int      
-  district_name       String
-  offices              Office[]
-  district District @relation(fields: [district_id], references: [district_id])
-   slug                String
+  neighborhood_id   Int      @id @default(autoincrement())
+  neighborhood_name String
+  city_id           Int
+  city_name         String
+  district_id       Int
+  district_name     String
+  slug              String
+  district          District @relation(fields: [district_id], references: [district_id])
+  offices           Office[]
 }
 
-
 model Project {
-  id          Int               @id @default(autoincrement())
-  name        String
-  description String
-  location    ProjectLocation?
-  feature     ProjectFeature?
-  images      ProjectImage[] 
-  unitSizes    ProjectUnitSize[]
-  socialFeatures  ProjectSocialFeatures[]
-  officeId    Int 
-  office      Office   @relation(fields: [officeId], references: [id])
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  assignedAgents String
+  id               Int                     @id @default(autoincrement())
+  name             String
+  description      String
+  officeId         Int
+  organizationId   Int?
+  assignedAgents   String
   publishingStatus String
-  startDate   DateTime
-  endDate     DateTime
-  deedInfo    String
-  landArea    String
-  nOfUnits    String
-  catalogUrl  String?
-  slug        String
-  
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt @default(now())
+  startDate        DateTime
+  endDate          DateTime
+  deedInfo         String
+  landArea         String
+  nOfUnits         String
+  catalogUrl       String?
+  slug             String
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @default(now()) @updatedAt
+  office           Office                  @relation(fields: [officeId], references: [id])
+  organization     Organization?           @relation(fields: [organizationId], references: [id])
+  feature          ProjectFeature?
+  images           ProjectImage[]
+  location         ProjectLocation?
+  socialFeatures   ProjectSocialFeatures[]
+  unitSizes        ProjectUnitSize[]
 }
 
 model ProjectLocation {
@@ -406,13 +387,13 @@ model ProjectLocation {
   latitude      Float?
   longitude     Float?
   projectId     Int      @unique
-  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProjectFeature {
-  id              Int      @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   bedrooms        Int
   bathrooms       Int
   floor           Int
@@ -421,34 +402,34 @@ model ProjectFeature {
   hasSwimmingPool Boolean
   hasGardenYard   Boolean
   hasBalcony      Boolean
-  projectId    Int      @unique
-  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId       Int     @unique
+  project         Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProjectUnitSize {
-  id       Int        @id @default(autoincrement())
-  value    String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        Int     @id @default(autoincrement())
+  value     String
   projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProjectSocialFeatures {
-  id       Int        @id @default(autoincrement())
-  value    String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        Int     @id @default(autoincrement())
+  value     String
   projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProjectImage {
-  id         Int      @id @default(autoincrement())
-  url        String
-  order      Int      @default(0)
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        Int     @id @default(autoincrement())
+  url       String
+  order     Int     @default(0)
   projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ProspectAgent {
-  id               Int          @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   firstName        String
   lastName         String
   email            String
@@ -457,15 +438,15 @@ model ProspectAgent {
   district         String
   educationLevel   String
   occupation       String
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  kvkkConsent      Int   @default(0)
-  marketingConsent Int  @default(0)
-  createdAt        DateTime        @default(now())
+  organizationId   Int?
+  kvkkConsent      Int           @default(0)
+  marketingConsent Int           @default(0)
+  createdAt        DateTime      @default(now())
+  organization     Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model ProspectCustomer {
-  id               Int          @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   firstName        String
   lastName         String
   email            String
@@ -474,37 +455,42 @@ model ProspectCustomer {
   district         String
   streetAddress    String
   contractType     String
-  propertyType      String
+  propertyType     String
   notes            String
-  organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  kvkkConsent      Int   @default(0)
-  marketingConsent Int  @default(0)
-  createdAt        DateTime        @default(now())
+  organizationId   Int?
+  kvkkConsent      Int           @default(0)
+  marketingConsent Int           @default(0)
+  createdAt        DateTime      @default(now())
+  organization     Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model ContactRequest {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  phone     String
-  officeId  String
-  message   String
+  id             String        @id @default(cuid())
+  firstName      String
+  lastName       String
+  phone          String
+  officeId       String
+  message        String
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  status    String   @default("PENDING")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  status         String        @default("PENDING")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model Contents {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique
-  value       String   @db.Text
-  description String?  @db.Text
+  id             Int           @id @default(autoincrement())
+  key            String        @unique
+  value          String
+  description    String?
   organizationId Int?
-  organization  Organization?   @relation(fields: [organizationId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+}
+
+model activity_log {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  note       String?
 }

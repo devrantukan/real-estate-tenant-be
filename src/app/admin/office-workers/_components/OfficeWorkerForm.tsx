@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Select,
-  ListBox,
-} from "@heroui/react";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   createOfficeWorker,
@@ -28,7 +31,7 @@ import { useEffect, useState } from "react";
 import { ImageUpload } from "@/components/ImageUpload";
 import { createClient } from "@supabase/supabase-js";
 import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
+
 import ImageUploader from "@/app/admin/offices/_components/ImageUploader";
 import {
   OfficeWorkerSchema,
@@ -87,41 +90,41 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
     resolver: zodResolver(OfficeWorkerSchema),
     defaultValues: worker
       ? {
-          name: worker.name,
-          surname: worker.surname,
-          email: worker.email,
-          phone: worker.phone,
-          about: worker.about || "",
-          roleId: worker.roleId?.toString(),
-          officeId: worker.officeId?.toString(),
-          webUrl: worker.webUrl || "",
-          xAccountId: worker.xAccountId || "",
-          facebookAccountId: worker.facebookAccountId || "",
-          linkedInAccountId: worker.linkedInAccountId || "",
-          instagramAccountId: worker.instagramAccountId || "",
-          youtubeAccountId: worker.youtubeAccountId || "",
-          commercialDocumentId: worker.commercialDocumentId || "",
-          companyLegalName: worker.companyLegalName || "",
-          userId: worker.userId || "",
-        }
+        name: worker.name,
+        surname: worker.surname,
+        email: worker.email,
+        phone: worker.phone,
+        about: worker.about || "",
+        roleId: worker.roleId?.toString(),
+        officeId: worker.officeId?.toString(),
+        webUrl: worker.webUrl || "",
+        xAccountId: worker.xAccountId || "",
+        facebookAccountId: worker.facebookAccountId || "",
+        linkedInAccountId: worker.linkedInAccountId || "",
+        instagramAccountId: worker.instagramAccountId || "",
+        youtubeAccountId: worker.youtubeAccountId || "",
+        commercialDocumentId: worker.commercialDocumentId || "",
+        companyLegalName: worker.companyLegalName || "",
+        userId: worker.userId || "",
+      }
       : {
-          name: "",
-          surname: "",
-          email: "",
-          phone: "",
-          about: "",
-          roleId: "",
-          officeId: "",
-          webUrl: "",
-          xAccountId: "",
-          facebookAccountId: "",
-          linkedInAccountId: "",
-          instagramAccountId: "",
-          youtubeAccountId: "",
-          commercialDocumentId: "",
-          companyLegalName: "",
-          userId: "",
-        },
+        name: "",
+        surname: "",
+        email: "",
+        phone: "",
+        about: "",
+        roleId: "",
+        officeId: "",
+        webUrl: "",
+        xAccountId: "",
+        facebookAccountId: "",
+        linkedInAccountId: "",
+        instagramAccountId: "",
+        youtubeAccountId: "",
+        commercialDocumentId: "",
+        companyLegalName: "",
+        userId: "",
+      },
   });
 
   const onSubmit = async (data: OfficeWorkerFormType) => {
@@ -264,14 +267,19 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
               <FormItem>
                 <FormLabel>Ofis</FormLabel>
                 <Select
-                  selectedKey={worker?.officeId?.toString() || undefined}
-                  onSelectionChange={(key) => field.onChange(key?.toString() || "")}
+                  value={field.value || ""}
+                  onValueChange={field.onChange}
                 >
-                  {offices?.map((office) => (
-                    <ListBox.Item key={office.id.toString()}>
-                      {office.name}
-                    </ListBox.Item>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ofis seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {offices?.map((office) => (
+                      <SelectItem key={office.id.toString()} value={office.id.toString()}>
+                        {office.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
@@ -285,14 +293,19 @@ export function OfficeWorkerForm({ worker }: { worker?: any }) {
               <FormItem>
                 <FormLabel>Rol</FormLabel>
                 <Select
-                  selectedKey={worker?.roleId?.toString() || undefined}
-                  onSelectionChange={(key) => field.onChange(key?.toString() || "")}
+                  value={field.value || ""}
+                  onValueChange={field.onChange}
                 >
-                  {roles?.map((role) => (
-                    <ListBox.Item key={role.id.toString()}>
-                      {role.title}
-                    </ListBox.Item>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Rol seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles?.map((role) => (
+                      <SelectItem key={role.id.toString()} value={role.id.toString()}>
+                        {role.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>

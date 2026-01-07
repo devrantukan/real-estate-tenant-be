@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
-  ListBox,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -31,8 +31,10 @@ import {
 import { z } from "zod";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
+const QuillEditor = dynamic(() => import("@/app/components/RichTextEditor"), {
+  ssr: false,
+});
+
 import { useRouter } from "next/navigation";
 
 export default function UserProfileForm({ officeWorker }: any) {
@@ -187,7 +189,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Adınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setName(e.target.value);
                       field.onChange(e);
@@ -209,7 +211,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Soyadınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setSurname(e.target.value);
                       field.onChange(e);
@@ -231,7 +233,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="+90 5__ ___ __ __"
                     {...field}
-                    
+
                     onChange={(e) => {
                       const rawValue = e.target.value;
                       // If backspace is pressed and value is just "+90 ", clear the field
@@ -279,7 +281,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                     placeholder="Tell us about yourself"
                     className="hidden"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setAbout(e.target.value);
                       field.onChange(e);
@@ -294,24 +296,9 @@ export default function UserProfileForm({ officeWorker }: any) {
 
           <div className="w-full flex flex-col md:col-span-3">
             <p className="text-sm mb-1 font-semibold">Detaylı Bilgi</p>
-            <ReactQuill
-              modules={{
-                toolbar: [
-                  [{ header: [1, 2, false] }],
-                  ["bold", "italic", "underline", "strike", "blockquote"],
-                  [
-                    { list: "ordered" },
-                    { list: "bullet" },
-                    { indent: "-1" },
-                    { indent: "+1" },
-                  ],
-                  ["link", "image"],
-                  ["clean"],
-                ],
-              }}
-              className="h-[280px] border-gray-200 mb-6 "
-              theme="snow"
-              
+            <QuillEditor
+              value={about}
+              className="h-[280px] border-gray-200 mb-6"
               onChange={onEditorStateChange}
             />
           </div>
@@ -329,7 +316,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Twitter Kullanıcı Adınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setXAccountId(e.target.value);
                       field.onChange(e);
@@ -351,7 +338,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Facebook Kullanıcı Adınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setFacebookAccountId(e.target.value);
                       field.onChange(e);
@@ -373,7 +360,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="LinkedIn Kullanıcı Adınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setLinkedInAccountId(e.target.value);
                       field.onChange(e);
@@ -395,7 +382,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Youtube Kullanıcı Adınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setYoutubeAccountId(e.target.value);
                       field.onChange(e);
@@ -417,7 +404,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="https://example.com"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setWebUrl(e.target.value);
                       field.onChange(e);
@@ -439,7 +426,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Instagram kullanıcı adınız"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setInstagramAccountId(e.target.value);
                       field.onChange(e);
@@ -464,7 +451,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="DOC123456"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setCommercialDocumentId(e.target.value);
                       field.onChange(e);
@@ -486,7 +473,7 @@ export default function UserProfileForm({ officeWorker }: any) {
                   <Input
                     placeholder="Retroia"
                     {...field}
-                    
+
                     onChange={(e) => {
                       setCompanyLegalName(e.target.value);
                       field.onChange(e);
@@ -498,7 +485,7 @@ export default function UserProfileForm({ officeWorker }: any) {
             )}
           />
         </div>
-        <Button type="submit" isDisabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Kayıt Ediliyor." : "Kaydet"}
         </Button>
       </form>

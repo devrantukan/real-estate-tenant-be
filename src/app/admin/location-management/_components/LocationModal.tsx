@@ -5,9 +5,14 @@ import {
   Modal,
   Button,
   Input,
-  Select,
-  ListBox,
 } from "@heroui/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   CountrySchema,
   CitySchema,
@@ -168,16 +173,21 @@ export default function LocationModal({
             />
             <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
             <Select
-              selectedKey={formData.country_id ? String(formData.country_id) : undefined}
-              onSelectionChange={(key) => {
-                setFormData({ ...formData, country_id: key ? String(key) : "" });
+              value={formData.country_id ? String(formData.country_id) : ""}
+              onValueChange={(value) => {
+                setFormData({ ...formData, country_id: value });
               }}
             >
-              {countries.map((country) => (
-                <ListBox.Item key={country.country_id} >
-                  {country.country_name}
-                </ListBox.Item>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Ülke seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((country) => (
+                  <SelectItem key={country.country_id} value={String(country.country_id)}>
+                    {country.country_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
             <label htmlFor="slug-country" className="block text-sm font-medium mb-2">Slug</label>
             <Input
@@ -229,38 +239,48 @@ export default function LocationModal({
             />
             <label htmlFor="country-select" className="block text-sm font-medium mb-2">Ülke</label>
             <Select
-              selectedKey={formData.country_id ? formData.country_id.toString() : undefined}
-              onSelectionChange={(key) => {
+              value={formData.country_id ? formData.country_id.toString() : ""}
+              onValueChange={(value) => {
                 setFormData({
                   ...formData,
-                  country_id: key ? key.toString() : "",
+                  country_id: value,
                   city_id: "", // Reset city when country changes
                 });
               }}
             >
-              {countries.map((country) => (
-                <ListBox.Item key={country.country_id.toString()}>
-                  {country.country_name}
-                </ListBox.Item>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Ülke seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((country) => (
+                  <SelectItem key={country.country_id.toString()} value={country.country_id.toString()}>
+                    {country.country_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
             <label htmlFor="city-select" className="block text-sm font-medium mb-2">Şehir</label>
             <Select
-              selectedKey={formData.city_id ? formData.city_id.toString() : undefined}
-              onSelectionChange={(key) => {
-                setFormData({ ...formData, city_id: key ? key.toString() : "" });
+              value={formData.city_id ? formData.city_id.toString() : ""}
+              onValueChange={(value) => {
+                setFormData({ ...formData, city_id: value });
               }}
-              isDisabled={!formData.country_id}
+              disabled={!formData.country_id}
             >
-              {cities
-                .filter(
-                  (city) => city.country_id === parseInt(formData.country_id)
-                )
-                .map((city) => (
-                  <ListBox.Item key={city.city_id.toString()}>
-                    {city.city_name}
-                  </ListBox.Item>
-                ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Şehir seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities
+                  .filter(
+                    (city) => city.country_id === parseInt(formData.country_id)
+                  )
+                  .map((city) => (
+                    <SelectItem key={city.city_id.toString()} value={city.city_id.toString()}>
+                      {city.city_name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
             </Select>
             <label htmlFor="slug-district" className="block text-sm font-medium mb-2">Slug</label>
             <Input
@@ -285,67 +305,83 @@ export default function LocationModal({
             />
             <label htmlFor="country-select-2" className="block text-sm font-medium mb-2">Ülke</label>
             <Select
-              selectedKey={formData.country_id ? formData.country_id.toString() : undefined}
-              onSelectionChange={(key) => {
+              value={formData.country_id ? formData.country_id.toString() : ""}
+              onValueChange={(value) => {
                 setFormData({
                   ...formData,
-                  country_id: key ? key.toString() : "",
+                  country_id: value,
                   city_id: "", // Reset city when country changes
                   district_id: "", // Reset district when country changes
                 });
               }}
             >
-              {countries.map((country) => (
-                <ListBox.Item key={country.country_id} >
-                  {country.country_name}
-                </ListBox.Item>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Ülke seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((country) => (
+                  <SelectItem key={country.country_id} value={String(country.country_id)}>
+                    {country.country_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
             <label htmlFor="city-select-2" className="block text-sm font-medium mb-2">Şehir</label>
             <Select
-              selectedKey={formData.city_id ? formData.city_id.toString() : undefined}
-              onSelectionChange={(key) => {
+              value={formData.city_id ? formData.city_id.toString() : ""}
+              onValueChange={(value) => {
                 setFormData({
                   ...formData,
-                  city_id: key ? key.toString() : "",
+                  city_id: value,
                   district_id: "", // Reset district when city changes
                 });
               }}
-              isDisabled={!formData.country_id}
+              disabled={!formData.country_id}
             >
-              {cities
-                .filter((city) => {
-                  const selectedCountryId = parseInt(formData.country_id);
-                  return city.country_id === selectedCountryId;
-                })
-                .sort((a, b) => a.city_name.localeCompare(b.city_name))
-                .map((city) => (
-                  <ListBox.Item key={city.city_id} >
-                    {city.city_name}
-                  </ListBox.Item>
-                ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Şehir seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities
+                  .filter((city) => {
+                    const selectedCountryId = parseInt(formData.country_id);
+                    return city.country_id === selectedCountryId;
+                  })
+                  .sort((a, b) => a.city_name.localeCompare(b.city_name))
+                  .map((city) => (
+                    <SelectItem key={city.city_id} value={String(city.city_id)}>
+                      {city.city_name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
             </Select>
             <label htmlFor="district-select" className="block text-sm font-medium mb-2">İlçe</label>
             <Select
-              selectedKey={formData.district_id ? formData.district_id.toString() : undefined}
-              onSelectionChange={(key) =>
-                setFormData({ ...formData, district_id: key ? key.toString() : "" })
+              value={formData.district_id ? formData.district_id.toString() : ""}
+              onValueChange={(value) =>
+                setFormData({ ...formData, district_id: value })
               }
-              isDisabled={!formData.city_id}
+              disabled={!formData.city_id}
             >
-              {districts
-                .filter((district) => {
-                  const selectedCityId = parseInt(formData.city_id);
-                  return district.city_id === selectedCityId;
-                })
-                .sort((a, b) => a.district_name.localeCompare(b.district_name))
-                .map((district) => (
-                  <ListBox.Item
-                    key={district.district_id}
-                  >
-                    {district.district_name}
-                  </ListBox.Item>
-                ))}
+              <SelectTrigger>
+                <SelectValue placeholder="İlçe seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {districts
+                  .filter((district) => {
+                    const selectedCityId = parseInt(formData.city_id);
+                    return district.city_id === selectedCityId;
+                  })
+                  .sort((a, b) => a.district_name.localeCompare(b.district_name))
+                  .map((district) => (
+                    <SelectItem
+                      key={district.district_id}
+                      value={String(district.district_id)}
+                    >
+                      {district.district_name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
             </Select>
             <label htmlFor="slug-neighborhood" className="block text-sm font-medium mb-2">Slug</label>
             <Input
@@ -365,21 +401,21 @@ export default function LocationModal({
   return (
     <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Modal.Container>
-          <Modal.Dialog>
-        <form onSubmit={onSubmit}>
-          <Modal.Header>{getTitle()}</Modal.Header>
-          <Modal.Body>{renderFields()}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="danger-soft" onPress={onClose}>
-              İptal
-            </Button>
-            <Button variant="primary" type="submit" isDisabled={isLoading}>
-              Kaydet
-            </Button>
-          </Modal.Footer>
-        </form>
-      </Modal.Dialog>
-        </Modal.Container>
+        <Modal.Dialog>
+          <form onSubmit={onSubmit}>
+            <Modal.Header>{getTitle()}</Modal.Header>
+            <Modal.Body>{renderFields()}</Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger-soft" onPress={onClose}>
+                İptal
+              </Button>
+              <Button variant="primary" type="submit" isDisabled={isLoading}>
+                Kaydet
+              </Button>
+            </Modal.Footer>
+          </form>
+        </Modal.Dialog>
+      </Modal.Container>
     </Modal>
   );
 }

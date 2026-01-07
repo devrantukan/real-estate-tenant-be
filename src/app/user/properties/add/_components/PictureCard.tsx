@@ -1,8 +1,5 @@
-import { Card, Button } from "@heroui/react";
 import Image from "next/image";
-import { XCircle, ArrowLeft, ArrowRight, Trash } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface PictureCardProps {
@@ -10,6 +7,7 @@ interface PictureCardProps {
   index: number;
   onDelete: () => void;
   isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 const PictureCard = ({
@@ -17,39 +15,39 @@ const PictureCard = ({
   index,
   onDelete,
   isLoading = false,
+  isDisabled = false,
 }: PictureCardProps) => {
-  // Handle different types of URLs
-  const getImageUrl = (url: string) => {
-    // If it's a blob URL (new upload), return as is
-    if (url.startsWith("blob:")) {
-      return url;
-    }
+  // const getImageUrl = (url: string) => {
+  //   // If it's a blob URL (new upload), return as is
+  //   if (url.startsWith("blob:")) {
+  //     return url;
+  //   }
 
-    // If it's already a propertyImages URL, return as is
-    if (url.includes("/propertyImages/")) {
-      return url;
-    }
+  //   // If it's already a propertyImages URL, return as is
+  //   if (url.includes("/propertyImages/")) {
+  //     return url;
+  //   }
 
-    // If it's a property-images URL, convert to propertyImages
-    if (url.includes("/property-images/")) {
-      return url.replace("/property-images/", "/propertyImages/");
-    }
+  //   // If it's a property-images URL, convert to propertyImages
+  //   if (url.includes("/property-images/")) {
+  //     return url.replace("/property-images/", "/propertyImages/");
+  //   }
 
-    // If it's a filename without path, construct the full URL with propertyImages
-    if (!url.includes("/")) {
-      return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/propertyImages/${url}`;
-    }
+  //   // If it's a filename without path, construct the full URL with propertyImages
+  //   if (!url.includes("/")) {
+  //     return \`\${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/propertyImages/\${url}\`;
+  //   }
 
-    return url;
-  };
+  //   return url;
+  // };
 
-  const imageUrl = getImageUrl(src);
+  // const imageUrl = getImageUrl(src);
 
   return (
     <div className="relative group cursor-move">
       <div className="aspect-[16/9] relative overflow-hidden rounded-lg">
         <Image
-          src={imageUrl}
+          src={src}
           alt={`Property image ${index + 1}`}
           fill
           className="object-cover"
@@ -63,12 +61,16 @@ const PictureCard = ({
       </div>
       <button
         type="button"
+        disabled={isDisabled}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onDelete();
         }}
-        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        className={cn(
+          "absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity",
+          isDisabled && "cursor-not-allowed opacity-50"
+        )}
       >
         <XMarkIcon className="w-3 h-3" />
       </button>

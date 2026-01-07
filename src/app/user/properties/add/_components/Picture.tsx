@@ -1,6 +1,11 @@
 "use client";
 import FileInput from "@/app/components/fileUpload";
-import { Button, Card, cn, Input } from "@heroui/react";
+import { cn } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import React, {
   useCallback,
   useEffect,
@@ -130,7 +135,7 @@ const Picture = ({
 
   const [resizingImage, setResizingImage] = useState<{
     file: File;
-    bucket: "propertyImages" | "property-images" | "thumbnails-property-images";
+    bucket: "property-images" | "thumbnails-property-images";
   } | null>(null);
 
   const handleResizedImage = useCallback(
@@ -437,13 +442,13 @@ const Picture = ({
   const [isUploading, setIsUploading] = useState(false);
 
   return (
-    <Card className={cn("p-6", className)}>
+    <Card className={cn("p-6 flex flex-col gap-6", className)}>
       {isUploading && (
         <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-500 border-t-transparent"></div>
+            <Spinner size="lg" />
             <p className="text-xl font-semibold">Görüntüler Yükleniyor...</p>
-            <p className="text-sm text-gray-500">Lütfen bekleyin</p>
+            <p className="text-sm text-gray-500 font-medium">Lütfen bekleyin</p>
           </div>
         </div>
       )}
@@ -522,42 +527,48 @@ const Picture = ({
       </div>
 
       <div className="mt-4 flex flex-col gap-y-4">
-        <Input
-          {...register("videoSource")}
-          errorMessage={errors.videoSource?.message}
-          isInvalid={!!errors.videoSource}
-          label="Video Url"
-          name="videoSource"
-          defaultValue={getValues().videoSource}
-        />
-        <p className="text-sm text-red-500 mt-1">
-          Dikey video (Shorts) linkleri gösterilmemektedir.
-        </p>
-        <Input
-          {...register("threeDSource")}
-          errorMessage={errors.threeDSource?.message}
-          isInvalid={!!errors.threeDSource}
-          label="3d Url "
-          name="threeDSource"
-          defaultValue={getValues().threeDSource}
-        />
+        <div className="space-y-2">
+          <Label>Video Url</Label>
+          <Input
+            {...register("videoSource")}
+            defaultValue={getValues().videoSource}
+            placeholder="Youtube, Vimeo..."
+          />
+          {errors.videoSource && (
+            <p className="text-red-500 text-xs font-medium">{errors.videoSource.message}</p>
+          )}
+          <p className="text-sm text-red-500">
+            Dikey video (Shorts) linkleri gösterilmemektedir.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label>3d Url</Label>
+          <Input
+            {...register("threeDSource")}
+            defaultValue={getValues().threeDSource}
+            placeholder="Matterport, Kuula..."
+          />
+          {errors.threeDSource && (
+            <p className="text-red-500 text-xs font-medium">{errors.threeDSource.message}</p>
+          )}
+        </div>
       </div>
-      <div className="flex justify-center col-span-2 gap-3 mt-3">
+      <div className="flex justify-center gap-4 mt-4">
         <Button
           onClick={prev}
-          startContent={<ChevronLeftIcon className="w-6" />}
-          variant="primary"
+          variant="outline"
           className="w-36"
         >
+          <ChevronLeftIcon className="w-5 h-5 mr-1" />
           Geri
         </Button>
         <Button
           onClick={next}
-          endContent={<ChevronRightIcon className="w-6" />}
-          variant="primary"
           className="w-36"
         >
           İleri
+          <ChevronRightIcon className="w-5 h-5 ml-1" />
         </Button>
       </div>
     </Card>

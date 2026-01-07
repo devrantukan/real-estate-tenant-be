@@ -64,9 +64,8 @@ export async function uploadImages(images: File[]) {
         }
       };
 
-      // Upload to all three buckets with the same filename
-      const originalUrl = await uploadToBucket("propertyImages", file);
-      const largeUrl = await uploadToBucket("property-images", file);
+      // Upload to the main bucket and thumbnail bucket
+      const originalUrl = await uploadToBucket("property-images", file);
       const thumbnailUrl = await uploadToBucket(
         "thumbnails-property-images",
         file

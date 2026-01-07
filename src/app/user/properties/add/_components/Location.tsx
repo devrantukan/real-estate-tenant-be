@@ -1,14 +1,17 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
+import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 import {
-  Button,
-  Card,
-  Input,
   Select,
-  ListBox,
-  Textarea,
-  cn,
-  Spinner,
-} from "@heroui/react";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
@@ -17,6 +20,7 @@ import { set } from "zod";
 import LocationMap from "@/app/components/LocationPicker";
 import LocationPicker from "@/app/components/LocationPicker";
 import axios from "axios";
+// @ts-ignore
 import { debounce } from "lodash";
 
 interface Props {
@@ -460,90 +464,137 @@ const Location = (props: Props) => {
   }, [country, props.citiesObj]);
 
   return (
-    <Card className={cn("p-2  grid grid-cols-1  gap-3", props.className)}>
+    <Card className={cn("p-4 flex flex-col gap-6", props.className)}>
       <div className="flex lg:flex-row flex-col gap-4">
         <div className="w-full flex flex-col gap-y-4">
-          <Select
-            {...register("location.country")}
-            onChange={handleCountryChange}
-            label="Ülke"
-            errorMessage={errors.location?.country?.message}
-            isInvalid={!!errors.location?.country}
-            
-            selectedKeys={[watch("location.country") ?? country]}
-          >
-            {props.countries.map((item) => (
-              <ListBox.Item key={item.country_name} >
-                {item.country_name}
-              </ListBox.Item>
-            ))}
-          </Select>
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Ülke</label>
+            <Select
+              onValueChange={(value) => {
+                handleCountryChange({ target: { value } } as any);
+              }}
+              value={watch("location.country") ?? country}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Ülke seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {props.countries.map((item) => (
+                  <SelectItem key={item.country_name} value={item.country_name}>
+                    {item.country_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.location?.country && (
+              <p className="text-xs text-red-500">{errors.location.country.message}</p>
+            )}
+          </div>
 
-          <Select
-            {...register("location.city")}
-            onChange={handleCityChange}
-            label="Şehir"
-            errorMessage={errors.location?.city?.message}
-            isInvalid={!!errors.location?.city}
-            
-            selectedKeys={[watch("location.city") ?? city]}
-          >
-            {cityOptions.map((c) => (
-              <ListBox.Item key={c} >
-                {c}
-              </ListBox.Item>
-            ))}
-          </Select>
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Şehir</label>
+            <Select
+              onValueChange={(value) => {
+                handleCityChange({ target: { value } } as any);
+              }}
+              value={watch("location.city") ?? city}
+              disabled={!watch("location.country")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Şehir seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {cityOptions.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.location?.city && (
+              <p className="text-xs text-red-500">{errors.location.city.message}</p>
+            )}
+          </div>
 
-          <Select
-            {...register("location.district")}
-            onChange={handleDistrictChange}
-            label="İlçe"
-            errorMessage={errors.location?.district?.message}
-            isInvalid={!!errors.location?.district}
-            
-            selectedKeys={[watch("location.district") ?? district]}
-          >
-            {districtOptions.map((c) => (
-              <ListBox.Item key={c.label} >
-                {c.label}
-              </ListBox.Item>
-            ))}
-          </Select>
+          <div className="space-y-1">
+            <label className="text-sm font-medium">İlçe</label>
+            <Select
+              onValueChange={(value) => {
+                handleDistrictChange({ target: { value } } as any);
+              }}
+              value={watch("location.district") ?? district}
+              disabled={!watch("location.city") || isLoadingDistricts}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={isLoadingDistricts ? "Yükleniyor..." : "İlçe seçin"} />
+              </SelectTrigger>
+              <SelectContent>
+                {districtOptions.map((c) => (
+                  <SelectItem key={c.label} value={c.label}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.location?.district && (
+              <p className="text-xs text-red-500">{errors.location.district.message}</p>
+            )}
+          </div>
 
-          <Select
-            {...register("location.neighborhood")}
-            onChange={handleNeighborhoodChange}
-            label="Mahalle"
-            errorMessage={errors.location?.neighborhood?.message}
-            isInvalid={!!errors.location?.neighborhood}
-            
-            selectedKeys={[watch("location.neighborhood") ?? neighborhood]}
-          >
-            {neighborhoodOptions.map((c) => (
-              <ListBox.Item key={c.label} >
-                {c.label}
-              </ListBox.Item>
-            ))}
-          </Select>
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Mahalle</label>
+            <Select
+              onValueChange={(value) => {
+                handleNeighborhoodChange({ target: { value } } as any);
+              }}
+              value={watch("location.neighborhood") ?? neighborhood}
+              disabled={!watch("location.district") || isLoadingNeighborhoods}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={isLoadingNeighborhoods ? "Yükleniyor..." : "Mahalle seçin"} />
+              </SelectTrigger>
+              <SelectContent>
+                {neighborhoodOptions.map((c) => (
+                  <SelectItem key={c.label} value={c.label}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.location?.neighborhood && (
+              <p className="text-xs text-red-500">{errors.location.neighborhood.message}</p>
+            )}
+          </div>
 
-          <Input
-            {...register("location.streetAddress")}
-            errorMessage={errors.location?.streetAddress?.message}
-            isInvalid={!!errors.location?.streetAddress}
-            label="Adres Satırı"
-            
-            onChange={(e) => setValue("location.streetAddress", e.target.value)}
-          />
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Adres Satırı</label>
+            <Input
+              {...register("location.streetAddress")}
+              onChange={(e) => {
+                setValue("location.streetAddress", e.target.value);
+                register("location.streetAddress").onChange(e);
+              }}
+              placeholder="Sokak, No, Daire..."
+            />
+            {errors.location?.streetAddress && (
+              <p className="text-xs text-red-500">{errors.location.streetAddress.message}</p>
+            )}
+          </div>
 
-          <Input
-            {...register("location.zip")}
-            errorMessage={errors.location?.zip?.message}
-            isInvalid={!!errors.location?.zip}
-            label="Posta Kodu"
-            
-            onChange={(e) => setValue("location.zip", e.target.value)}
-          />
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Posta Kodu</label>
+            <Input
+              {...register("location.zip")}
+              onChange={(e) => {
+                setValue("location.zip", e.target.value);
+                register("location.zip").onChange(e);
+              }}
+              placeholder="34xxx"
+            />
+            {errors.location?.zip && (
+              <p className="text-xs text-red-500">{errors.location.zip.message}</p>
+            )}
+          </div>
           {/* <Input
           {...register("location.latitude", {
             valueAsNumber: true,
@@ -636,7 +687,7 @@ const Location = (props: Props) => {
       <div className="flex justify-center col-span-2 gap-3 ">
         <Button
           onClick={props.prev}
-          variant="primary"
+          variant="default"
           className="w-36"
         >
           <ChevronLeftIcon className="w-6 mr-2" />
@@ -644,7 +695,7 @@ const Location = (props: Props) => {
         </Button>
         <Button
           onClick={handleNext}
-          variant="primary"
+          variant="default"
           className="w-36"
         >
           İleri

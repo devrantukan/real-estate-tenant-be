@@ -1,7 +1,9 @@
 import React, { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   children?: React.ReactNode;
@@ -10,11 +12,6 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   multiple?: boolean;
 }
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const FileInput = React.forwardRef<HTMLInputElement, IProps>(
   (
@@ -190,22 +187,14 @@ const FileInput = React.forwardRef<HTMLInputElement, IProps>(
             const baseFileName = generateFileName(file.name);
             console.log("Using sanitized filename:", baseFileName);
 
-            // Upload original version (original size)
-            const originalUrl = await uploadToBucket(
-              file,
-              baseFileName,
-              "propertyImages"
-            );
-            console.log("Original uploaded with filename:", baseFileName);
-
-            // Create and upload large version (resized to 1920x1080)
-            const largeBlob = await createImageVersion(img, 1920, 1080);
-            const largeUrl = await uploadToBucket(
-              largeBlob,
+            // Upload main version (resized to 1920x1080)
+            const mainBlob = await createImageVersion(img, 1920, 1080);
+            const mainUrl = await uploadToBucket(
+              mainBlob,
               baseFileName,
               "property-images"
             );
-            console.log("Large version uploaded with filename:", baseFileName);
+            console.log("Main version uploaded with filename:", baseFileName);
 
             // Create and upload thumbnail version (resized to 400x225)
             const thumbnailBlob = await createImageVersion(img, 400, 225);
@@ -217,8 +206,7 @@ const FileInput = React.forwardRef<HTMLInputElement, IProps>(
             console.log("Thumbnail uploaded with filename:", baseFileName);
 
             console.log("Uploaded image versions:", {
-              original: originalUrl,
-              large: largeUrl,
+              main: mainUrl,
               thumbnail: thumbnailUrl,
               baseFileName,
             });
@@ -237,7 +225,7 @@ const FileInput = React.forwardRef<HTMLInputElement, IProps>(
                 configurable: true,
               },
               url: {
-                value: originalUrl,
+                value: mainUrl,
                 writable: true,
                 enumerable: true,
                 configurable: true,

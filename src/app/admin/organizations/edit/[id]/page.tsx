@@ -5,10 +5,11 @@ import { getOrganizationById } from "@/lib/actions/organization";
 import OrganizationForm from "../../_components/OrganizationForm";
 
 export default async function EditOrganizationPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await paramsPromise;
   const user = await getUser();
   if (!user) {
     redirect("/");

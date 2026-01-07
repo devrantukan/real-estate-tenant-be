@@ -5,10 +5,11 @@ import { OfficeWorkerForm } from "../../_components/OfficeWorkerForm";
 import { getOfficeWorker } from "@/lib/actions/office-worker";
 
 export default async function EditOfficeWorkerPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await paramsPromise;
   const user = await getUser();
   if (!user) {
     redirect("/");

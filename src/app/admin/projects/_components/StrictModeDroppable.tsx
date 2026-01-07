@@ -33,5 +33,14 @@ export const StrictModeDroppable = ({
     return null;
   }
 
-  return <Droppable {...(props as any)}>{children as any}</Droppable>;
+  return (
+    <Droppable
+      isDropDisabled={false}
+      isCombineEnabled={false}
+      ignoreContainerClipping={false}
+      {...(props as any)}
+    >
+      {children as any}
+    </Droppable>
+  );
 };

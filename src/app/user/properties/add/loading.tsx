@@ -1,4 +1,4 @@
-import { Spinner } from "@heroui/react";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function LoadingPage() {
   return (
@@ -6,8 +6,6 @@ export default function LoadingPage() {
       <Spinner
         size="lg"
         label="Yükleniyor..."
-        variant="primary"
-        labelColor="primary"
       />
     </div>
   );

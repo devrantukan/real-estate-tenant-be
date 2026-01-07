@@ -19,31 +19,32 @@ export const getAddPropertyFormSchema = async () => {
     videoSource: z.string().optional(),
     threeDSource: z.string().optional(),
     typeId: z
-      .string()
-      .min(1, "Lütfen mülk tipini seçiniz")
-      .transform((data: unknown) => Number(data)),
+      .union([z.string(), z.number()])
+      .transform((data) => Number(data))
+      .refine((data) => data > 0, "Lütfen mülk tipini seçiniz"),
     subTypeId: z
-      .string()
-      .min(1, "Lütfen alt tipini seçiniz")
-      .transform((data: unknown) => Number(data)),
+      .union([z.string(), z.number()])
+      .transform((data) => Number(data))
+      .refine((data) => data > 0, "Lütfen alt tipini seçiniz"),
     contractId: z
-      .string()
-      .min(1, "Lütfen sözleşme tipini seçiniz")
-      .transform((data: unknown) => Number(data)),
+      .union([z.string(), z.number()])
+      .transform((data) => Number(data))
+      .refine((data) => data > 0, "Lütfen sözleşme tipini seçiniz"),
     agentId: z.number(),
     statusId: z
-      .string()
-      .min(1, "Lütfen kontrat tipini seçiniz")
-      .transform((data: unknown) => Number(data)),
+      .union([z.string(), z.number()])
+      .transform((data) => Number(data))
+      .refine((data) => data > 0, "Lütfen kontrat tipini seçiniz"),
     deedStatusId: z
       .union([z.string(), z.number()])
-      .transform((data: unknown) => Number(data)),
+      .transform((data) => Number(data))
+      .optional(),
 
     price: z
-      .string()
-      .min(1, "Price is required")
+      .union([z.string(), z.number()])
       .refine(
         (val) => {
+          if (typeof val === "number") return val > 0;
           const cleanValue = val.replace(/\./g, "").replace(/\D/g, "");
           const number = Number(cleanValue);
           return !isNaN(number) && number > 0;
@@ -51,10 +52,11 @@ export const getAddPropertyFormSchema = async () => {
         { message: "Price must be a positive number" }
       )
       .transform((val) => {
+        if (typeof val === "number") return val;
         const cleanValue = val.replace(/\./g, "").replace(/\D/g, "");
         return Number(cleanValue);
       }),
-    discountedPrice: z.string().optional(),
+    discountedPrice: z.union([z.string(), z.number()]).optional(),
     location: z.object({
       streetAddress: z.string().min(1, "Lütfen sokak adresini giriniz"),
       city: z.string().min(1, "Lütfen şehir giriniz"),
@@ -71,63 +73,16 @@ export const getAddPropertyFormSchema = async () => {
     propertyFeature: z.object({
       bedrooms: z.string().optional(),
       bathrooms: z.string().optional(),
-      floor: z.preprocess(
-        (val) => {
-          if (val === "" || val === null || val === undefined) return "0";
-          return String(val);
-        },
-        z.string().transform((val) => {
-          const num = Number(val);
-          return isNaN(num) ? 0 : num;
-        })
-      ),
-      totalFloor: z.preprocess(
-        (val) => {
-          if (val === "" || val === null || val === undefined) return "0";
-          return String(val);
-        },
-        z.string().transform((val) => {
-          const num = Number(val);
-          return isNaN(num) ? 0 : num;
-        })
-      ),
-      area: z.number(),
-      grossArea: z
-        .preprocess(
-          (val) => {
-            if (val === "" || val === null || val === undefined) return "0";
-            return String(val);
-          },
-          z.string().transform((val) => {
-            const num = Number(val);
-            return isNaN(num) ? 0 : num;
-          })
-        )
-        .optional(),
+      floor: z.coerce.number().default(0),
+      totalFloor: z.coerce.number().default(0),
+      area: z.number().min(1, "Lütfen alan bilgisini giriniz"),
+      grossArea: z.coerce.number().optional(),
       hasSwimmingPool: z.boolean().default(false),
       hasGardenYard: z.boolean().default(false),
       hasBalcony: z.boolean().default(false),
       zoningStatus: z.boolean().default(false),
-      parcelNumber: z.preprocess(
-        (val) => {
-          if (val === "" || val === null || val === undefined) return "0";
-          return String(val);
-        },
-        z.string().transform((val) => {
-          const num = Number(val);
-          return isNaN(num) ? 0 : num;
-        })
-      ),
-      blockNumber: z.preprocess(
-        (val) => {
-          if (val === "" || val === null || val === undefined) return "0";
-          return String(val);
-        },
-        z.string().transform((val) => {
-          const num = Number(val);
-          return isNaN(num) ? 0 : num;
-        })
-      ),
+      parcelNumber: z.coerce.number().default(0),
+      blockNumber: z.coerce.number().default(0),
     }),
     propertyDescriptors: z.object(descriptorsSchema),
     photos: z.array(z.instanceof(File)).optional(),

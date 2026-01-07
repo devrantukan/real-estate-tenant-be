@@ -5,10 +5,11 @@ import { getUser } from "@/lib/supabase/server";
 import { getUserRole } from "@/lib/auth";
 
 export default async function EditProjectPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await paramsPromise;
   const user = await getUser();
   if (!user) {
     redirect("/");

@@ -4,14 +4,20 @@ import {
   PlusCircleIcon,
 } from "@heroicons/react/16/solid";
 import {
-  Button,
   Card,
-  Checkbox,
-  Input,
-  Select,
-  ListBox,
   cn,
 } from "@heroui/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import React, { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
@@ -44,6 +50,7 @@ const Contact = ({
     control,
     getValues,
     setValue,
+    watch,
   } = useFormContext<AddPropertyInputType>();
 
   const [agentId, setAgentId] = React.useState<number>(0);
@@ -124,75 +131,74 @@ const Contact = ({
           />
         )}
         {role == "site-admin" && (
-          <Select
-            {...register("agentId", { valueAsNumber: true })}
-            errorMessage={errors.agentId?.message}
-            isInvalid={!!errors.agentId}
-            label="Gayrimenkul Danışmanı"
-            selectionMode="single"
-            name="agentId"
-            {...(getValues().agentId
-              ? {
-                  defaultSelectedKeys: [getValues().agentId.toString()],
-                }
-              : {})}
-            onChange={(e) => {
-              setValue("agentId", Number(e.target.value));
-            }}
-          >
-            {agents.map((item) => (
-              <ListBox
-                key={item.id}
-                
-                textValue={`${item.name} ${item.surname}`}
-              >
-                {item.name} {item.surname}
-              </ListBox>
-            ))}
-          </Select>
+          <div className="space-y-2 col-span-1">
+            <Label>Gayrimenkul Danışmanı</Label>
+            <Select
+              onValueChange={(v) => setValue("agentId", Number(v))}
+              value={watch("agentId")?.toString() || ""}
+            >
+              <SelectTrigger className={errors.agentId ? "border-red-500" : ""}>
+                <SelectValue placeholder="Danışman seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                {agents.map((item) => (
+                  <SelectItem key={item.id} value={item.id.toString()}>
+                    {item.name} {item.surname}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.agentId && (
+              <p className="text-xs text-red-500 font-medium">{errors.agentId.message}</p>
+            )}
+          </div>
         )}
       </div>
-      <div className="flex lg:flex-row flex-col basis-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
         {descriptorCategories &&
           descriptorCategories
             .filter((descriptorCategory) => descriptorCategory.typeId == typeId)
             .map((descriptorCategory) => (
-              <div key={descriptorCategory.id} className="p-4 ">
-                <h2 className="text-lg font-semibold mb-4">
+              <div key={descriptorCategory.id} className="flex flex-col gap-3">
+                <h2 className="text-lg font-bold border-b pb-2">
                   {descriptorCategory.value}
                 </h2>
-                {descriptorCategory.descriptors &&
-                  descriptorCategory.descriptors.map(
-                    (descriptor: {
-                      id: string | number;
-                      value: string;
-                      slug: string;
-                    }) => (
-                      <div key={descriptor.id}>
-                        <Controller
-                          control={control}
-                          name={`propertyDescriptors.${descriptor.slug}` as any}
-                          defaultValue={descriptorsList.includes(
-                            Number(descriptor.id)
-                          )}
-                          render={({ field }) => (
-                            <Checkbox
-                              id={String(descriptor.id)}
-                              {...field}
-                              
-                              isSelected={
-                                field.value ||
-                                descriptorsList.includes(Number(descriptor.id))
-                              }
-                              onChange={field.onChange}
-                            >
-                              {descriptor.value}
-                            </Checkbox>
-                          )}
-                        />
-                      </div>
-                    )
-                  )}
+                <div className="flex flex-col gap-2">
+                  {descriptorCategory.descriptors &&
+                    descriptorCategory.descriptors.map(
+                      (descriptor: {
+                        id: string | number;
+                        value: string;
+                        slug: string;
+                      }) => (
+                        <div key={descriptor.id} className="flex items-center space-x-2">
+                          <Controller
+                            control={control}
+                            name={`propertyDescriptors.${descriptor.slug}` as any}
+                            defaultValue={descriptorsList.includes(
+                              Number(descriptor.id)
+                            )}
+                            render={({ field }) => (
+                              <Checkbox
+                                id={String(descriptor.id)}
+                                checked={
+                                  field.value ||
+                                  descriptorsList.includes(Number(descriptor.id))
+                                }
+                                onCheckedChange={field.onChange}
+                              />
+                            )}
+                          />
+                          <Label
+                            htmlFor={String(descriptor.id)}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {descriptor.value}
+                          </Label>
+                        </div>
+                      )
+                    )}
+                </div>
               </div>
             ))}
       </div>
@@ -200,18 +206,17 @@ const Contact = ({
       <div className="flex justify-center col-span-3 gap-3">
         <Button
           onClick={prev}
-          startContent={<ChevronLeftIcon className="w-6" />}
-          variant="primary"
+          variant="outline"
           className="w-36"
         >
+          <ChevronLeftIcon className="w-5 h-5 mr-1" />
           Geri
         </Button>
         <Button
-          endContent={<PlusCircleIcon className="w-6" />}
-          color="secondary"
           className="w-36"
           type="submit"
         >
+          <PlusCircleIcon className="w-5 h-5 mr-1" />
           Kaydet
         </Button>
       </div>

@@ -3,11 +3,16 @@
 import {
   Button,
   Input,
-  Select,
-  ListBox,
   Switch,
   Spinner,
 } from "@heroui/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -19,7 +24,8 @@ import slugify from "slugify";
 import LocationPicker from "@/app/components/LocationPicker";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
+import { X } from "lucide-react";
+
 
 type Props = {
   project?: Prisma.ProjectGetPayload<{
@@ -107,7 +113,7 @@ const ProjectForm = ({
     lat: number;
     lng: number;
   } | null>(null);
-  const [selectedAgentNames, setSelectedAgentNames] = useState<string[]>([]);
+  const [selectedAgentNames, setSelectedAgentNames] = useState<{ id: number; name: string }[]>([]);
 
   const [formData, setFormData] = useState<FormData>({
     name: project?.name || "",
@@ -275,17 +281,16 @@ const ProjectForm = ({
     }
   }, [district, city, project]);
 
-  // Update selected agent names when assigned agents change
   useEffect(() => {
     if (formData.assignedAgents && agents) {
       const agentIds = formData.assignedAgents.split(",").filter(Boolean);
-      const names = agentIds
+      const selected = agentIds
         .map((id) => {
           const agent = agents.find((a) => a.id.toString() === id);
-          return agent ? `${agent.name} ${agent.surname}` : "";
+          return agent ? { id: agent.id, name: `${agent.name} ${agent.surname}` } : null;
         })
-        .filter(Boolean);
-      setSelectedAgentNames(names);
+        .filter((a): a is { id: number; name: string } => a !== null);
+      setSelectedAgentNames(selected);
     } else {
       setSelectedAgentNames([]);
     }
@@ -598,65 +603,97 @@ const ProjectForm = ({
         <div>
           <label htmlFor="office" className="block text-sm font-medium mb-2">Ofis</label>
           <Select
-            selectedKey={formData.officeId || undefined}
-            onSelectionChange={(key) => {
-              const selectedKey = key?.toString() || "";
+            value={formData.officeId || ""}
+            onValueChange={(value) => {
               setFormData((prev) => ({
                 ...prev,
-                officeId: selectedKey,
+                officeId: value,
                 assignedAgents: "",
               }));
             }}
           >
-            {offices.map((office) => (
-              <ListBox.Item key={office.id.toString()}>
-                {office.name}
-              </ListBox.Item>
-            ))}
+            <SelectTrigger>
+              <SelectValue placeholder="Ofis seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              {offices.map((office) => (
+                <SelectItem key={office.id.toString()} value={office.id.toString()}>
+                  {office.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-2">
           <label htmlFor="assignedAgents" className="block text-sm font-medium mb-2">Atanmış Danışmanlar</label>
           <Select
-            selectedKey={formData.assignedAgents ? formData.assignedAgents.split(",")[0] : undefined}
-            onSelectionChange={(key) => {
-              const selectedId = key?.toString() || "";
-              setFormData((prev) => ({
-                ...prev,
-                assignedAgents: selectedId,
-              }));
+            value={formData.assignedAgents ? formData.assignedAgents.split(",")[0] : ""}
+            onValueChange={(value) => {
+              setFormData((prev) => {
+                const current = prev.assignedAgents ? prev.assignedAgents.split(",").filter(Boolean) : [];
+                if (!current.includes(value)) {
+                  return {
+                    ...prev,
+                    assignedAgents: [...current, value].join(","),
+                  };
+                }
+                return prev;
+              });
             }}
-            isDisabled={!formData.officeId}
+            disabled={!formData.officeId}
           >
-            {agents
-              ?.filter((agent) => {
-                // If no office is selected, show all agents
-                if (!formData.officeId) return true;
-                // Otherwise, show only agents from the selected office
-                // and exclude specific roles
-                const excludedRoleIds = [10, 11, 12, 4]; // Karşılama ve Servis Sorumlusu, İş Geliştirme, Proje Geliştirme
-                return (
-                  agent.officeId === Number(formData.officeId) &&
-                  !excludedRoleIds.includes(agent.role.id)
-                );
-              })
-              .map((agent) => (
-                <ListBox.Item
-                  key={agent.id.toString()}
-                >
-                  {agent.name} {agent.surname}
-                </ListBox.Item>
-              ))}
+            <SelectTrigger>
+              <SelectValue placeholder="Danışman seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              {agents
+                ?.filter((agent) => {
+                  // If no office is selected, show all agents
+                  if (!formData.officeId) return true;
+                  // Otherwise, show only agents from the selected office
+                  // and exclude specific roles
+                  const excludedRoleIds = [10, 11, 12, 4]; // Karşılama ve Servis Sorumlusu, İş Geliştirme, Proje Geliştirme
+                  return (
+                    agent.officeId === Number(formData.officeId) &&
+                    !excludedRoleIds.includes(agent.role.id)
+                  );
+                })
+                .map((agent) => (
+                  <SelectItem
+                    key={agent.id.toString()}
+                    value={agent.id.toString()}
+                  >
+                    {agent.name} {agent.surname}
+                  </SelectItem>
+                ))}
+            </SelectContent>
           </Select>
 
           {selectedAgentNames.length > 0 && (
             <div className="mt-2 p-2 bg-gray-100 rounded-md">
               <p className="text-sm font-medium">Seçilen Danışmanlar:</p>
               <ul className="mt-1 list-disc list-inside">
-                {selectedAgentNames.map((name, index) => (
-                  <li key={index} className="text-sm">
-                    {name}
+                {selectedAgentNames.map((agent, index) => (
+                  <li key={index} className="text-sm flex items-center justify-between group">
+                    <span>{agent.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => {
+                          const current = prev.assignedAgents.split(",").filter(Boolean);
+                          const updated = current.filter(id => id !== agent.id.toString());
+                          return {
+                            ...prev,
+                            assignedAgents: updated.join(",")
+                          };
+                        });
+                      }}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      title="Kaldır"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -735,59 +772,79 @@ const ProjectForm = ({
             <div>
               <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
               <Select
-                selectedKey={country || undefined}
-                onSelectionChange={(key) => handleCountryChange(key?.toString() || "")}
+                value={country || ""}
+                onValueChange={(value) => handleCountryChange(value)}
               >
-                {countries.map((item) => (
-                  <ListBox.Item key={item.country_name}>
-                    {item.country_name}
-                  </ListBox.Item>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Ülke seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((item) => (
+                    <SelectItem key={item.country_name} value={item.country_name}>
+                      {item.country_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
               <label htmlFor="city" className="block text-sm font-medium mb-2">Şehir</label>
               <Select
-                selectedKey={city || undefined}
-                onSelectionChange={(key) => handleCityChange(key?.toString() || "")}
-                isDisabled={isLoadingDistricts || !country}
+                value={city || ""}
+                onValueChange={(value) => handleCityChange(value)}
+                disabled={isLoadingDistricts || !country}
               >
-                {cityOptions.map((c) => (
-                  <ListBox.Item key={c}>
-                    {c}
-                  </ListBox.Item>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Şehir seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cityOptions.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
               <label htmlFor="district" className="block text-sm font-medium mb-2">İlçe</label>
               <Select
-                selectedKey={district || undefined}
-                onSelectionChange={(key) => handleDistrictChange(key?.toString() || "")}
-                isDisabled={isLoadingNeighborhoods || !city}
+                value={district || ""}
+                onValueChange={(value) => handleDistrictChange(value)}
+                disabled={isLoadingNeighborhoods || !city}
               >
-                {districtOptions.map((c) => (
-                  <ListBox.Item key={c.label}>
-                    {c.label}
-                  </ListBox.Item>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="İlçe seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {districtOptions.map((c) => (
+                    <SelectItem key={c.label} value={c.label}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
               <label htmlFor="neighborhood" className="block text-sm font-medium mb-2">Mahalle</label>
               <Select
-                selectedKey={neighborhood || undefined}
-                onSelectionChange={(key) => handleNeighborhoodChange(key?.toString() || "")}
-                isDisabled={!district}
+                value={neighborhood || ""}
+                onValueChange={(value) => handleNeighborhoodChange(value)}
+                disabled={!district}
               >
-                {neighborhoodOptions.map((c) => (
-                  <ListBox.Item key={c.label}>
-                    {c.label}
-                  </ListBox.Item>
-                ))}
+                <SelectTrigger>
+                  <SelectValue placeholder="Mahalle seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {neighborhoodOptions.map((c) => (
+                    <SelectItem key={c.label} value={c.label}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 

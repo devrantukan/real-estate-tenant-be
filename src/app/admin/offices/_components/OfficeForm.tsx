@@ -2,7 +2,14 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OfficeFormSchema, OfficeFormType } from "@/lib/validations/office";
-import { Input, Button,  Select, ListBox } from "@heroui/react";
+import { Input, Button } from "@heroui/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -10,7 +17,7 @@ import ImageUploader from "@/app/admin/offices/_components/ImageUploader";
 import { saveOffice, updateOffice } from "@/lib/actions/office";
 import slugify from "slugify";
 import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
+
 import { OfficeImage } from "@prisma/client";
 import { uploadImages } from "@/lib/upload";
 import LocationPicker from "./LocationPicker";
@@ -63,27 +70,27 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
     defaultValues:
       mode === "edit"
         ? {
-            ...office,
-            description: office.description || "",
-            name: office?.name || "",
-            email: office?.email || "",
-            phone: office?.phone || "",
-            fax: office?.fax || "",
-            streetAddress: office?.streetAddress || "",
-            zip: office?.zip || "",
-            countryId: office?.countryId || "",
-            cityId: office?.cityId || "",
-            districtId: office?.districtId || "",
-            neighborhoodId: office?.neighborhoodId || "",
-            webUrl: office?.webUrl || "",
-            xAccountId: office?.xAccountId || "",
-            facebookAccountId: office?.facebookAccountId || "",
-            linkedInAccountId: office?.linkedInAccountId || "",
-            instagramAccountId: office?.instagramAccountId || "",
-            youtubeAccountId: office?.youtubeAccountId || "",
-            latitude: office?.latitude || 0,
-            longitude: office?.longitude || 0,
-          }
+          ...office,
+          description: office.description || "",
+          name: office?.name || "",
+          email: office?.email || "",
+          phone: office?.phone || "",
+          fax: office?.fax || "",
+          streetAddress: office?.streetAddress || "",
+          zip: office?.zip || "",
+          countryId: office?.countryId || "",
+          cityId: office?.cityId || "",
+          districtId: office?.districtId || "",
+          neighborhoodId: office?.neighborhoodId || "",
+          webUrl: office?.webUrl || "",
+          xAccountId: office?.xAccountId || "",
+          facebookAccountId: office?.facebookAccountId || "",
+          linkedInAccountId: office?.linkedInAccountId || "",
+          instagramAccountId: office?.instagramAccountId || "",
+          youtubeAccountId: office?.youtubeAccountId || "",
+          latitude: office?.latitude || 0,
+          longitude: office?.longitude || 0,
+        }
         : undefined,
   });
 
@@ -325,59 +332,79 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
         <div>
           <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
           <Select
-            selectedKey={countryId ? String(countryId) : undefined}
-            onSelectionChange={(key) => setValue("countryId", key ? Number(key) : undefined)}
+            value={countryId ? String(countryId) : ""}
+            onValueChange={(value) => setValue("countryId", value ? Number(value) : undefined)}
           >
-            {(locationData.countries || []).map((country: { country_id: number; country_name: string }) => (
-              <ListBox.Item key={String(country.country_id)}>
-                {country.country_name}
-              </ListBox.Item>
-            ))}
+            <SelectTrigger>
+              <SelectValue placeholder="Ülke seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              {(locationData.countries || []).map((country: { country_id: number; country_name: string }) => (
+                <SelectItem key={String(country.country_id)} value={String(country.country_id)}>
+                  {country.country_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
 
         <div>
           <label htmlFor="city" className="block text-sm font-medium mb-2">Şehir</label>
           <Select
-            selectedKey={cityId ? cityId.toString() : undefined}
-            onSelectionChange={(key) => setValue("cityId", key ? Number(key) : undefined)}
+            value={cityId ? cityId.toString() : ""}
+            onValueChange={(value) => setValue("cityId", value ? Number(value) : undefined)}
           >
-            {(locationData.cities || []).map((city: { city_id: number; city_name: string }) => (
-              <ListBox.Item key={city.city_id.toString()}>
-                {city.city_name}
-              </ListBox.Item>
-            ))}
+            <SelectTrigger>
+              <SelectValue placeholder="Şehir seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              {(locationData.cities || []).map((city: { city_id: number; city_name: string }) => (
+                <SelectItem key={city.city_id.toString()} value={city.city_id.toString()}>
+                  {city.city_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
 
         <div>
           <label htmlFor="district" className="block text-sm font-medium mb-2">İlçe</label>
           <Select
-            selectedKey={districtId ? districtId.toString() : undefined}
-            onSelectionChange={(key) => setValue("districtId", key ? Number(key) : undefined)}
+            value={districtId ? districtId.toString() : ""}
+            onValueChange={(value) => setValue("districtId", value ? Number(value) : undefined)}
           >
-            {(locationData.districts || []).map((district: { district_id: number; district_name: string }) => (
-              <ListBox.Item key={district.district_id.toString()}>
-                {district.district_name}
-              </ListBox.Item>
-            ))}
+            <SelectTrigger>
+              <SelectValue placeholder="İlçe seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              {(locationData.districts || []).map((district: { district_id: number; district_name: string }) => (
+                <SelectItem key={district.district_id.toString()} value={district.district_id.toString()}>
+                  {district.district_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
 
         <div>
           <label htmlFor="neighborhood" className="block text-sm font-medium mb-2">Mahalle</label>
           <Select
-            selectedKey={neighborhoodId ? neighborhoodId.toString() : undefined}
-            onSelectionChange={(key) => setValue("neighborhoodId", key ? Number(key) : undefined)}
+            value={neighborhoodId ? neighborhoodId.toString() : ""}
+            onValueChange={(value) => setValue("neighborhoodId", value ? Number(value) : undefined)}
           >
-            {(locationData.neighborhoods || []).map((neighborhood: {
-              neighborhood_id: number;
-              neighborhood_name: string;
-            }) => (
-              <ListBox.Item key={neighborhood.neighborhood_id.toString()}>
-                {neighborhood.neighborhood_name}
-              </ListBox.Item>
-            ))}
+            <SelectTrigger>
+              <SelectValue placeholder="Mahalle seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              {(locationData.neighborhoods || []).map((neighborhood: {
+                neighborhood_id: number;
+                neighborhood_name: string;
+              }) => (
+                <SelectItem key={neighborhood.neighborhood_id.toString()} value={neighborhood.neighborhood_id.toString()}>
+                  {neighborhood.neighborhood_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
 

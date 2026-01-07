@@ -2,14 +2,21 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import {
-  Button,
-  Card,
-  Input,
-  Select,
-  ListBox,
-  Textarea,
   cn,
 } from "@heroui/react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import dynamic from "next/dynamic";
 
 import {
   PropertyStatus,
@@ -23,9 +30,9 @@ import { useForm, useFormContext, useFormState } from "react-hook-form";
 import { AddPropertyInputType } from "./AddPropertyForm";
 import { format } from "path";
 
-import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
+const QuillEditor = dynamic(() => import("@/app/components/RichTextEditor"), {
+  ssr: false,
+});
 
 interface Props {
   className?: string;
@@ -152,203 +159,206 @@ const Basic = (props: Props) => {
   };
 
   return (
-    <Card className={cn("p-2 flex flex-col gap-4", props.className)}>
-      <Input
-        {...register("name")}
-        errorMessage={errors.name?.message}
-        isInvalid={!!errors.name}
-        label="Başlık"
-        className=""
-        name="name"
-        defaultValue={getValues().name}
-      />
+    <Card className={cn("p-4 flex flex-col gap-6", props.className)}>
+      <div className="space-y-2">
+        <Label>Başlık</Label>
+        <Input
+          {...register("name")}
+          defaultValue={getValues().name}
+          placeholder="İlan başlığı girin"
+        />
+        {errors.name && (
+          <p className="text-red-500 text-xs font-medium">{errors.name.message}</p>
+        )}
+      </div>
 
       <div className="w-full  h-[460px] p-2 bg-gray-100 rounded-xl">
         <p className="text-xs mb-1">Detaylı Bilgi</p>
-        <ReactQuill
-          modules={{
-            toolbar: [
-              [{ header: [1, 2, false] }],
-              ["bold", "italic", "underline", "strike", "blockquote"],
-              [
-                { list: "ordered" },
-                { list: "bullet" },
-                { indent: "-1" },
-                { indent: "+1" },
-              ],
-              ["link", "image"],
-              ["clean"],
-            ],
-          }}
+        <QuillEditor
           className="h-[380px] rounded-lg border-gray-200"
-          theme="snow"
-          
+          value={description}
           onChange={onEditorStateChange}
         />
       </div>
 
-      <textarea
-        {...register("description")}
-        errorMessage={errors.description?.message}
-        isInvalid={!!errors.description}
-        label="Detaylı Bilgi"
-        className=" hidden"
-        name="description"
-        defaultValue={getValues().description}
-        
-        onChange={onEditorStateChange}
-      />
+      <div className="hidden">
+        <textarea
+          {...register("description")}
+          name="description"
+          defaultValue={getValues().description}
+          onChange={(e) => onEditorStateChange(e.target.value)}
+        />
+      </div>
       <div className="flex lg:flex-row flex-col gap-4 ">
-        <Select
-          {...register("contractId", { setValueAs: (v: any) => v.toString() })}
-          errorMessage={errors.contractId?.message}
-          isInvalid={!!errors.contractId}
-          label="Hizmet Tipi"
-          selectionMode="single"
-          name="contractId"
-          defaultSelectedKeys={
-            getValues().contractId
-              ? [getValues().contractId.toString()]
-              : undefined
-          }
-        >
-          {props.contracts.map((item) => (
-            <ListBox.Item key={item.id} >
-              {item.value}
-            </ListBox.Item>
-          ))}
-        </Select>
+        <div className="flex-1 space-y-2">
+          <Label>Hizmet Tipi</Label>
+          <Select
+            value={contractId?.toString() || ""}
+            onValueChange={(v) => setValue("contractId", Number(v))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Seçiniz" />
+            </SelectTrigger>
+            <SelectContent>
+              {props.contracts.map((item) => (
+                <SelectItem key={item.id} value={item.id.toString()}>
+                  {item.value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.contractId && (
+            <p className="text-red-500 text-xs mt-1 font-medium">{errors.contractId.message}</p>
+          )}
+        </div>
 
         {isSatilik && (
-          <Select
-            {...register("deedStatusId", {
-              setValueAs: (v: any) => v.toString(),
-            })}
-            errorMessage={errors.deedStatusId?.message}
-            isInvalid={!!errors.deedStatusId}
-            label="Tapu Durumu"
-            selectionMode="single"
-            name="deedStatusId"
-            defaultSelectedKeys={
-              getValues().deedStatusId
-                ? [getValues().deedStatusId.toString()]
-                : undefined
-            }
-          >
-            {props.deedStatuses.map((item) => (
-              <ListBox.Item key={item.id} >
-                {item.value}
-              </ListBox.Item>
-            ))}
-          </Select>
+          <div className="flex-1 space-y-2">
+            <Label>Tapu Durumu</Label>
+            <Select
+              value={watch("deedStatusId")?.toString() || ""}
+              onValueChange={(v) => setValue("deedStatusId", Number(v))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seçiniz" />
+              </SelectTrigger>
+              <SelectContent>
+                {props.deedStatuses.map((item) => (
+                  <SelectItem key={item.id} value={item.id.toString()}>
+                    {item.value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.deedStatusId && (
+              <p className="text-red-500 text-xs mt-1 font-medium">{errors.deedStatusId.message}</p>
+            )}
+          </div>
         )}
 
-        <Select
-          {...register("typeId", { setValueAs: (v: any) => v.toString() })}
-          errorMessage={errors.typeId?.message}
-          isInvalid={!!errors.typeId}
-          label="Gayrimenkul Tipi"
-          selectionMode="single"
-          name="typeId"
-          
-          onChange={handleTypeChange}
-          defaultSelectedKeys={
-            getValues().typeId ? [getValues().typeId.toString()] : undefined
-          }
-        >
-          {props.types.map((item) => (
-            <ListBox.Item key={item.id} >
-              {item.value}
-            </ListBox.Item>
-          ))}
-        </Select>
-        <Select
-          {...register("subTypeId", { setValueAs: (v: any) => v.toString() })}
-          errorMessage={errors.subTypeId?.message}
-          isInvalid={!!errors.subTypeId}
-          label="Gayrimenkul Alt Tipi"
-          selectionMode="single"
-          name="subTypeId"
-          
-          onChange={handleSubTypeChange}
-          defaultSelectedKeys={
-            getValues().subTypeId
-              ? [getValues().subTypeId.toString()]
-              : undefined
-          }
-        >
-          {props.subTypes
-            .filter((item) => item.typeId == getValues().typeId)
-            .map((item) => (
-              <ListBox.Item key={item.id} >
-                {item.value}
-              </ListBox.Item>
-            ))}
-        </Select>
+        <div className="flex-1 space-y-2">
+          <Label>Gayrimenkul Tipi</Label>
+          <Select
+            value={typeId?.toString() || ""}
+            onValueChange={(v) => {
+              const newTypeId = Number(v);
+              setTypeId(newTypeId);
+              setValue("typeId", newTypeId);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Seçiniz" />
+            </SelectTrigger>
+            <SelectContent>
+              {props.types.map((item) => (
+                <SelectItem key={item.id} value={item.id.toString()}>
+                  {item.value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.typeId && (
+            <p className="text-red-500 text-xs mt-1 font-medium">{errors.typeId.message}</p>
+          )}
+        </div>
+        <div className="flex-1 space-y-2">
+          <Label>Gayrimenkul Alt Tipi</Label>
+          <Select
+            value={subTypeId?.toString() || ""}
+            onValueChange={(v) => {
+              const newSubTypeId = Number(v);
+              setSubTypeId(newSubTypeId);
+              setValue("subTypeId", newSubTypeId);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Seçiniz" />
+            </SelectTrigger>
+            <SelectContent>
+              {props.subTypes
+                .filter((item) => item.typeId == typeId)
+                .map((item) => (
+                  <SelectItem key={item.id} value={item.id.toString()}>
+                    {item.value}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          {errors.subTypeId && (
+            <p className="text-red-500 text-xs mt-1 font-medium">{errors.subTypeId.message}</p>
+          )}
+        </div>
       </div>
       <div className="flex lg:flex-row flex-col gap-4 ">
-        <Select
-          {...register("statusId", { setValueAs: (v: any) => v.toString() })}
-          errorMessage={errors.statusId?.message}
-          isInvalid={!!errors.statusId}
-          label="Kontrat Tipi"
-          selectionMode="single"
-          name="statusId"
-          defaultSelectedKeys={
-            getValues().statusId ? [getValues().statusId.toString()] : undefined
-          }
-        >
-          {props.statuses.map((item) => (
-            <ListBox.Item key={item.id} >
-              {item.value}
-            </ListBox.Item>
-          ))}
-        </Select>
-        <Input
-          {...register("discountedPrice", {
-            setValueAs: (v: any) => v.toString(),
-          })}
-          errorMessage={errors.discountedPrice?.message}
-          isInvalid={!!errors.discountedPrice}
-          label="İndirimli Fiyat"
-          name="discountedPrice"
-          defaultValue={getValues().discountedPrice ?? ""}
-          onInput={(e) => handleDiscountedPriceChange(e.currentTarget.value)}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-        />
-        <Input
-          {...register("price", {
-            setValueAs: (v: any) => v.toString(),
-          })}
-          errorMessage={errors.price?.message}
-          isInvalid={!!errors.price}
-          label="Fiyat"
-          name="price"
-          defaultValue={getValues().price?.toString() || ""}
-          onInput={(e) => handlePriceChange(e.currentTarget.value)}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-        />
+        <div className="flex-1 space-y-2">
+          <Label>Kontrat Tipi</Label>
+          <Select
+            value={watch("statusId")?.toString() || ""}
+            onValueChange={(v) => setValue("statusId", Number(v))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Seçiniz" />
+            </SelectTrigger>
+            <SelectContent>
+              {props.statuses.map((item) => (
+                <SelectItem key={item.id} value={item.id.toString()}>
+                  {item.value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.statusId && (
+            <p className="text-red-500 text-xs mt-1 font-medium">{errors.statusId.message}</p>
+          )}
+        </div>
+        <div className="flex-1 space-y-2">
+          <Label>İndirimli Fiyat</Label>
+          <Input
+            {...register("discountedPrice", {
+              setValueAs: (v: any) => v.toString(),
+            })}
+            defaultValue={getValues().discountedPrice ?? ""}
+            onInput={(e) => handleDiscountedPriceChange(e.currentTarget.value)}
+            type="text"
+            inputMode="numeric"
+            placeholder="0"
+          />
+          {errors.discountedPrice && (
+            <p className="text-red-500 text-xs font-medium">{errors.discountedPrice.message}</p>
+          )}
+        </div>
+        <div className="flex-1 space-y-2">
+          <Label>Fiyat</Label>
+          <Input
+            {...register("price", {
+              setValueAs: (v: any) => v.toString(),
+            })}
+            defaultValue={getValues().price?.toString() || ""}
+            onInput={(e) => handlePriceChange(e.currentTarget.value)}
+            type="text"
+            inputMode="numeric"
+            placeholder="0"
+          />
+          {errors.price && (
+            <p className="text-red-500 text-xs font-medium">{errors.price.message}</p>
+          )}
+        </div>
       </div>
-      <div className="flex justify-center col-span-3 gap-3">
+      <div className="flex justify-center gap-4 mt-4">
         <Button
-          isDisabled
-          variant="primary"
+          disabled
+          variant="outline"
           className="w-36"
         >
-          <ChevronLeftIcon className="w-6 mr-2" />
+          <ChevronLeftIcon className="w-5 h-5 mr-1" />
           Geri
         </Button>
         <Button
           onClick={handleNext}
-          variant="primary"
           className="w-36"
         >
           İleri
-          <ChevronRightIcon className="w-6 ml-2" />
+          <ChevronRightIcon className="w-5 h-5 ml-1" />
         </Button>
       </div>
     </Card>

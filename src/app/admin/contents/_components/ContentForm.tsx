@@ -9,33 +9,12 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
+const QuillEditor = dynamic(() => import("@/app/components/RichTextEditor"), {
+  ssr: false,
+});
 
-// Add custom styles for Quill editor
-const quillStyles = `
-  .ql-container {
-    background-color: var(--nextui-colors-content1);
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
-    border: 1px solid var(--nextui-colors-divider);
-    height: 300px;
-  }
-  .ql-toolbar {
-    background-color: var(--nextui-colors-content1);
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
-    border: 1px solid var(--nextui-colors-divider);
-    border-bottom: none;
-  }
-  .ql-editor {
-    min-height: 250px;
-  }
-  .ql-editor.ql-blank::before {
-    color: var(--nextui-colors-foreground-400);
-    font-style: normal;
-  }
-`;
+
+
 
 interface ContentFormProps {
   initialData?: ContentInputType & { id: string };
@@ -163,7 +142,6 @@ export function ContentForm({ initialData }: ContentFormProps) {
 
   return (
     <>
-      <style>{quillStyles}</style>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label htmlFor="key" className="block text-sm font-medium mb-2">Anahtar</label>
@@ -171,9 +149,8 @@ export function ContentForm({ initialData }: ContentFormProps) {
             id="key"
             type="text"
             {...register("key")}
-            className={`w-full px-3 py-2 border rounded-md ${
-              errors.key ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-md ${errors.key ? "border-red-500" : "border-gray-300"
+              }`}
           />
           {errors.key && (
             <p className="text-red-500 text-sm mt-1">{errors.key.message}</p>
@@ -182,22 +159,10 @@ export function ContentForm({ initialData }: ContentFormProps) {
 
         <div>
           <div className="mb-4">
-            <ReactQuill
-              theme="snow"
-              
+            <QuillEditor
+              value={richTextValue || ""}
               onChange={(value) => setValue("value", value)}
               placeholder="Değer"
-              modules={{
-                toolbar: [
-                  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                  ["bold", "italic", "underline", "strike"],
-                  [{ list: "ordered" }, { list: "bullet" }],
-                  [{ indent: "-1" }, { indent: "+1" }],
-                  [{ align: [] }],
-                  ["link", "image"],
-                  ["clean"],
-                ],
-              }}
             />
           </div>
           {errors.value && (
@@ -210,9 +175,8 @@ export function ContentForm({ initialData }: ContentFormProps) {
           <textarea
             id="description"
             {...register("description")}
-            className={`w-full px-3 py-2 border rounded-md ${
-              errors.description ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-md ${errors.description ? "border-red-500" : "border-gray-300"
+              }`}
             rows={4}
           />
           {errors.description && (

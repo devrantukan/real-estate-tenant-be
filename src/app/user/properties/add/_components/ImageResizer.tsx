@@ -20,9 +20,8 @@ interface ImageResizerProps {
   image: File;
   onResize: (resizedImage: File) => void;
   targetBucket:
-    | "propertyImages"
-    | "property-images"
-    | "thumbnails-property-images";
+  | "property-images"
+  | "thumbnails-property-images";
   onCancel: () => void;
 }
 

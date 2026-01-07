@@ -18,7 +18,7 @@ import {
   PropertyDescriptorCategory,
   PropertyDeedStatus,
 } from "@prisma/client";
-import { cn } from "@heroui/react";
+import { cn } from "@/lib/utils";
 import Location from "./Location";
 import Features from "./Features";
 import Picture from "./Picture";
@@ -36,7 +36,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { redirect, useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
-import { Spinner } from "@heroui/react";
+import { Spinner } from "@/components/ui/spinner";
 
 const steps = [
   {
@@ -102,19 +102,19 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
       location: props.property?.location ?? undefined,
       propertyFeature: props.property?.feature
         ? {
-            bedrooms: props.property.feature.bedrooms,
-            bathrooms: props.property.feature.bathrooms.toString(),
-            floor: Number(props.property.feature.floor),
-            totalFloor: Number(props.property.feature.totalFloor),
-            area: Number(props.property.feature.area),
-            grossArea: Number(props.property.feature.grossArea),
-            hasSwimmingPool: props.property.feature.hasSwimmingPool,
-            hasGardenYard: props.property.feature.hasGardenYard,
-            hasBalcony: props.property.feature.hasBalcony,
-            zoningStatus: props.property.feature.zoningStatus,
-            parcelNumber: props.property.feature.parcelNumber,
-            blockNumber: props.property.feature.blockNumber,
-          }
+          bedrooms: props.property.feature.bedrooms,
+          bathrooms: props.property.feature.bathrooms.toString(),
+          floor: Number(props.property.feature.floor),
+          totalFloor: Number(props.property.feature.totalFloor),
+          area: Number(props.property.feature.area),
+          grossArea: Number(props.property.feature.grossArea),
+          hasSwimmingPool: props.property.feature.hasSwimmingPool,
+          hasGardenYard: props.property.feature.hasGardenYard,
+          hasBalcony: props.property.feature.hasBalcony,
+          zoningStatus: props.property.feature.zoningStatus,
+          parcelNumber: props.property.feature.parcelNumber,
+          blockNumber: props.property.feature.blockNumber,
+        }
         : undefined,
       description: props.property?.description ?? undefined,
       name: props.property?.name ?? undefined,
@@ -153,7 +153,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-      
+
       if (user?.id) {
         const response = await fetch("/api/user");
         const data = await response.json();
@@ -231,7 +231,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
     <div className="relative">
       {isSubmitting && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Spinner size="lg" color="white" />
+          <Spinner size="lg" className="text-white" />
         </div>
       )}
 
