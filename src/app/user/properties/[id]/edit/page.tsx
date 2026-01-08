@@ -6,10 +6,12 @@ import { getUserById } from "@/lib/actions/user";
 import { getUserRole } from "@/lib/auth";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-const EditPropertyPage = async ({ params }: Props) => {
+const EditPropertyPage = async (props: Props) => {
+  const params = await props.params;
+
   const [
     propertyTypes,
     propertySubTypes,
@@ -129,7 +131,7 @@ const EditPropertyPage = async ({ params }: Props) => {
       deedStatuses={deedStatuses}
       property={property}
       isEdit={true}
-      // descriptorCategories={descriptorCategories}
+    // descriptorCategories={descriptorCategories}
     />
   );
 };
