@@ -34,21 +34,16 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(
-      process.env.NEXT_PUBLIC_SITE_URL || "https://emlak.retroia.com"
+      process.env.NEXT_PUBLIC_SITE_URL || "https://emlak.tukanft.com"
     ),
     title: property.name || "İlan Detayları",
-    description: `${property.feature?.bedrooms ?? ""} Yatak Odalı, ${
-      property.feature?.bathrooms ?? ""
-    } Banyolu, ${property.feature?.area ?? ""}m² ${
-      property.type?.value ?? ""
-    } ${
-      property.contract?.value === "sale" ? "Satılık" : "Kiralık"
-    } - ${locationString}`,
-    keywords: `${property.type?.value ?? ""}, ${
-      property.contract?.value === "sale" ? "satılık" : "kiralık"
-    }, ${property.location?.city ?? ""}, ${
-      property.location?.district ?? ""
-    }, ${property.location?.neighborhood ?? ""}, emlak, gayrimenkul`,
+    description: `${property.feature?.bedrooms ?? ""} Yatak Odalı, ${property.feature?.bathrooms ?? ""
+      } Banyolu, ${property.feature?.area ?? ""}m² ${property.type?.value ?? ""
+      } ${property.contract?.value === "sale" ? "Satılık" : "Kiralık"
+      } - ${locationString}`,
+    keywords: `${property.type?.value ?? ""}, ${property.contract?.value === "sale" ? "satılık" : "kiralık"
+      }, ${property.location?.city ?? ""}, ${property.location?.district ?? ""
+      }, ${property.location?.neighborhood ?? ""}, emlak, gayrimenkul`,
     openGraph: {
       title: property.name ?? "",
       description: property.description ?? "",
@@ -56,7 +51,7 @@ export async function generateMetadata({
         property.images?.map((img: { url: string }) => ({
           url: img.url,
         })) || [],
-      siteName: "Retroia",
+      siteName: "TukanFT",
       locale: "tr_TR",
       type: "article",
       url: `/property/${params.id}`,

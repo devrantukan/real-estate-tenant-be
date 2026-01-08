@@ -1,5 +1,6 @@
 "use client";
 import { HomeModernIcon } from "@heroicons/react/16/solid";
+import Image from "next/image";
 import Link from "next/link";
 import React, { ReactNode } from "react";
 
@@ -18,8 +19,13 @@ const Appbar = ({ children }: Props) => {
               href={"/"}
               className="flex flex-col items-start text-primary-400 hover:text-primary-600 transition-colors"
             >
-              <span className="text-lg font-semibold">Real Estate</span>
-              <span className="text-sm">Tenant Panel</span>
+              <Image
+                src="/tukanft-logo-final.png"
+                alt="TukanFT Logo"
+                width={150}
+                height={50}
+                className="object-contain"
+              />
             </Link>
           </div>
           <div className="hidden sm:flex sm:items-center sm:gap-4"></div>
