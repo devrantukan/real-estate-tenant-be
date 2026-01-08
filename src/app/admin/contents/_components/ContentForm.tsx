@@ -2,7 +2,9 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Label } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ContentInputType, contentSchema } from "@/lib/validations/content";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -144,13 +146,12 @@ export function ContentForm({ initialData }: ContentFormProps) {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="key" className="block text-sm font-medium mb-2">Anahtar</label>
-          <input
+          <Label htmlFor="key" className="block text-sm font-medium mb-2">Anahtar</Label>
+          <Input
             id="key"
             type="text"
             {...register("key")}
-            className={`w-full px-3 py-2 border rounded-md ${errors.key ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`w-full ${errors.key ? "border-red-500" : ""}`}
           />
           {errors.key && (
             <p className="text-red-500 text-sm mt-1">{errors.key.message}</p>
@@ -166,17 +167,16 @@ export function ContentForm({ initialData }: ContentFormProps) {
             />
           </div>
           {errors.value && (
-            <p className="text-danger text-sm">{errors.value.message}</p>
+            <p className="text-destructive text-sm">{errors.value.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-2">Açıklama</label>
+          <Label htmlFor="description" className="block text-sm font-medium mb-2">Açıklama</Label>
           <textarea
             id="description"
             {...register("description")}
-            className={`w-full px-3 py-2 border rounded-md ${errors.description ? "border-red-500" : "border-gray-300"
-              }`}
+            className={`flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${errors.description ? "border-red-500" : ""}`}
             rows={4}
           />
           {errors.description && (
@@ -186,12 +186,13 @@ export function ContentForm({ initialData }: ContentFormProps) {
 
         <div className="flex justify-end gap-2">
           <Button
-            variant="danger-soft"
-            onPress={() => router.push("/admin/contents")}
+            variant="outline"
+            onClick={() => router.push("/admin/contents")}
+            type="button"
           >
             İptal
           </Button>
-          <Button type="submit" variant="primary" isDisabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting}>
             {initialData ? "Güncelle" : "Oluştur"}
           </Button>
         </div>

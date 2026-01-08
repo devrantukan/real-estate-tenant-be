@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import { PencilIcon, TrashIcon } from "@heroicons/react/16/solid";
 import { useRouter } from "next/navigation";
 import { useDeleteContent } from "@/hooks/useDeleteContent";
@@ -34,17 +34,15 @@ function ContentActions({ item }: { item: Content }) {
   return (
     <div className="flex items-center gap-2">
       <Button
-        isIconOnly
-        size="sm"
+        size="icon"
         variant="ghost"
         onClick={() => router.push(`/admin/contents/${item.id}/edit`)}
       >
         <PencilIcon className="w-4 h-4" />
       </Button>
       <Button
-        isIconOnly
-        size="sm"
-        variant="danger"
+        size="icon"
+        variant="destructive"
         onClick={handleDelete}
       >
         <TrashIcon className="w-4 h-4" />

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -37,52 +39,47 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md border">
         <h1 className="text-2xl font-bold mb-6 text-center">Giriş Yap</h1>
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
             {error}
           </div>
         )}
         <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block mb-2">
-              E-posta
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="email">E-posta</Label>
+            <Input
               id="email"
               type="email"
-              
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-2 border rounded"
+              placeholder="ornek@email.com"
             />
           </div>
-          <div>
-            <label htmlFor="password" className="block mb-2">
-              Şifre
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="password">Şifre</Label>
+            <Input
               id="password"
               type="password"
-              
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-2 border rounded"
+              placeholder="••••••••"
             />
           </div>
           <Button
             type="submit"
-            variant="primary"
             className="w-full"
-            isDisabled={loading}
+            disabled={loading}
           >
-            Giriş Yap
+            {loading ? "Giriş Yapılıyor..." : "Giriş Yap"}
           </Button>
         </form>
-        <p className="mt-4 text-center">
+        <p className="mt-4 text-center text-sm text-gray-600">
           Hesabınız yok mu?{" "}
-          <Link href="/signup" className="text-blue-600">
+          <Link href="/signup" className="text-blue-600 hover:underline">
             Kayıt Ol
           </Link>
         </p>

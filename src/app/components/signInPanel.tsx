@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import React from "react";
 import Link from "next/link";
 import UserProfilePanel from "./UserProfilePanel";
@@ -20,12 +20,12 @@ const signInPanel = async () => {
   return (
     <div className="flex gap-3">
       <Link href="/login">
-        <Button variant="primary">
+        <Button>
           Sign In
         </Button>
       </Link>
       <Link href="/signup">
-        <Button>
+        <Button variant="outline">
           Sign Up
         </Button>
       </Link>

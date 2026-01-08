@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Input } from "@/components/ui/input";
 import {
-  Input,
   Tooltip,
-  Button,
-} from "@heroui/react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import {
   ShareIcon,
@@ -128,15 +131,13 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
     <div className="flex flex-col items-center gap-4 w-full mt-8">
       {totalCount > 0 ? (
         <>
-          <div className="w-full max-w-md mb-4">
+          <div className="w-full max-w-md mb-4 relative">
+            <MagnifyingGlassIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
             <Input
               placeholder="Proje adı ile arama yapın..."
-              
+
               onChange={(e) => handleSearch(e.target.value)}
-              startContent={
-                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
-              }
-              className="w-full"
+              className="w-full pl-8"
             />
           </div>
           <div className="w-full text-sm text-gray-500 mb-4">
@@ -183,11 +184,18 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center justify-end gap-4">
-                          <Tooltip >
-                            <button onClick={() => handleShare(project.id)}>
-                              <ShareIcon className="w-5 text-blue-500" />
-                            </button>
-                          </Tooltip>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button onClick={() => handleShare(project.id)}>
+                                  <ShareIcon className="w-5 text-blue-500" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Paylaş</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
                       </td>
                     </tr>
@@ -201,8 +209,8 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                onPress={() => handlePageChange(Math.max(0, currentPage - 1))}
-                isDisabled={currentPage === 0}
+                onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+                disabled={currentPage === 0}
               >
                 Önceki
               </Button>
@@ -212,8 +220,8 @@ export default function ProjectShare({ user, initialData }: ProjectShareProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                onPress={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
-                isDisabled={currentPage >= totalPages - 1}
+                onClick={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
+                disabled={currentPage >= totalPages - 1}
               >
                 Sonraki
               </Button>

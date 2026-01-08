@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, cn } from "@heroui/react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 

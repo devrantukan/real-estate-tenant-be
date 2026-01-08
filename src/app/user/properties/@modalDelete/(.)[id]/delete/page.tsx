@@ -1,9 +1,13 @@
 "use client";
 import { deleteProperty } from "@/lib/actions/property";
+import { Button } from "@/components/ui/button";
 import {
-  Button,
-  Modal,
-} from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -18,13 +22,10 @@ const ModalDeletePropertyPage = ({ params }: Props) => {
     setIsOpen(true);
   }, []);
 
-  const handldeDelete = async () => {
+  const handleDelete = async () => {
     try {
       await deleteProperty(Number(params.id));
-
-      //  router.push("/user/properties");
       router.refresh();
-
       setIsOpen(false);
     } catch (e) {
       throw e;
@@ -32,27 +33,34 @@ const ModalDeletePropertyPage = ({ params }: Props) => {
   };
 
   const handleCancel = () => {
-    //  router.push("/user/properties");
     window.location.assign("/user/properties");
     setIsOpen(false);
   };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) handleCancel();
+    setIsOpen(open);
+  }
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={handleCancel}>
-      <Modal.Container>
-        <Modal.Dialog>
-          <Modal.Header className="flex flex-col gap-1">İlanı Sil</Modal.Header>
-          <Modal.Body>
-            <p>İlanı silmek istediğinizden emin misiniz?</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={handleCancel}>İptal</Button>
-            <Button onClick={handldeDelete} variant="danger-soft">
-              Sil
-            </Button>
-          </Modal.Footer>
-        </Modal.Dialog>
-      </Modal.Container>
-    </Modal>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>İlanı Sil</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <p>İlanı silmek istediğinizden emin misiniz?</p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={handleCancel}>
+            İptal
+          </Button>
+          <Button onClick={handleDelete} variant="destructive">
+            Sil
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -2,7 +2,8 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OfficeFormSchema, OfficeFormType } from "@/lib/validations/office";
-import { Input, Button } from "@heroui/react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -567,14 +568,14 @@ export default function OfficeForm({ mode, office }: OfficeFormProps) {
 
       <div className="flex justify-end gap-4">
         <Button
-          variant="danger-soft"
+          variant="outline"
           onClick={() => router.push("/admin/offices")}
         >
           İptal
         </Button>
-        <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50">
+        <Button type="submit" disabled={isSubmitting}>
           {mode === "add" ? "Ekle" : "Güncelle"}
-        </button>
+        </Button>
       </div>
     </form>
   );

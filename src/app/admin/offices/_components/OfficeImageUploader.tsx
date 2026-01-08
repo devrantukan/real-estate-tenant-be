@@ -1,6 +1,9 @@
 "use client";
 
-import { Button, Card, cn, Spinner } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import React, { useState, useCallback, useEffect } from "react";
 import { OfficeImage } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
@@ -207,7 +210,7 @@ const OfficeImageUploader = ({
       {isUploading && (
         <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-500 border-t-transparent"></div>
+            <Spinner size="lg" />
             <p className="text-xl font-semibold">Görüntüler Yükleniyor...</p>
             <p className="text-sm text-gray-500">Lütfen bekleyin</p>
           </div>
@@ -220,7 +223,7 @@ const OfficeImageUploader = ({
             <div key={image.id} className="relative group w-full aspect-video">
               {image.isLoading ? (
                 <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary-500 border-t-transparent"></div>
+                  <Spinner />
                 </div>
               ) : (
                 <Image

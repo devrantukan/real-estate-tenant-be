@@ -11,7 +11,7 @@ import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
 import { useFormContext } from "react-hook-form";
 
 import axios from "axios";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const LIBRARIES: "places"[] = ["places"];

@@ -3,17 +3,13 @@ import { TrashIcon } from "@heroicons/react/16/solid";
 import { EyeIcon, PencilIcon } from "@heroicons/react/16/solid";
 import {
   Tooltip,
-  Switch,
-  Button,
-} from "@heroui/react";
-import { Prisma, Property } from "@prisma/client";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { updatePublishingStatus } from "@/app/actions/updatePropertyStatus";
-import { revalidateProperty } from "@/lib/actions/property";
-import { toast } from "react-toastify";
-import { Input } from "@heroui/react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { useState, useEffect } from "react";
 
@@ -142,7 +138,7 @@ const PropertiesTable = ({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("id")}
               >
@@ -153,7 +149,7 @@ const PropertiesTable = ({
                   )}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("name")}
               >
@@ -164,7 +160,7 @@ const PropertiesTable = ({
                   )}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("price")}
               >
@@ -175,7 +171,7 @@ const PropertiesTable = ({
                   )}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("type")}
               >
@@ -186,7 +182,7 @@ const PropertiesTable = ({
                   )}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("status")}
               >
@@ -198,7 +194,7 @@ const PropertiesTable = ({
                 </div>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Yayın Durumu</th>
-              <th 
+              <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("agent")}
               >
@@ -209,7 +205,7 @@ const PropertiesTable = ({
                   )}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("createdAt")}
               >
@@ -220,7 +216,7 @@ const PropertiesTable = ({
                   )}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none"
                 onClick={() => handleSort("updatedAt")}
               >
@@ -264,12 +260,11 @@ const PropertiesTable = ({
                           {isPublished ? "Yayında" : "Beklemede"}
                         </span>
                         <Switch
-                          isSelected={isPublished}
-                          onChange={(checked) =>
+                          checked={isPublished}
+                          onCheckedChange={(checked) =>
                             handlePublishChange(property.id, checked)
                           }
-                          size="sm"
-                          color="success"
+                          className="data-[state=checked]:bg-green-600"
                         />
                       </div>
                     </td>
@@ -284,21 +279,44 @@ const PropertiesTable = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center justify-end gap-4">
-                        <Tooltip >
-                          <Link href={`/property/${property.id}`}>
-                            <EyeIcon className="w-5 text-slate-500" />
-                          </Link>
-                        </Tooltip>
-                        <Tooltip  color="warning">
-                          <Link href={`/user/properties/${property.id}/edit`}>
-                            <PencilIcon className="w-5 text-yellow-500" />
-                          </Link>
-                        </Tooltip>
-                        <Tooltip  variant="danger">
-                          <Link href={`/user/properties/${property.id}/delete`}>
-                            <TrashIcon className="w-5 text-red-500" />
-                          </Link>
-                        </Tooltip>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Link href={`/property/${property.id}`}>
+                                <EyeIcon className="w-5 text-slate-500" />
+                              </Link>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Görüntüle</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Link href={`/user/properties/${property.id}/edit`}>
+                                <PencilIcon className="w-5 text-yellow-500" />
+                              </Link>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Düzenle</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Link href={`/user/properties/${property.id}/delete`}>
+                                <TrashIcon className="w-5 text-red-500" />
+                              </Link>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Sil</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </td>
                   </tr>
@@ -313,8 +331,8 @@ const PropertiesTable = ({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
-            isDisabled={currentPage === 1}
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
           >
             Önceki
           </Button>
@@ -324,8 +342,8 @@ const PropertiesTable = ({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-            isDisabled={currentPage === totalPages}
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
           >
             Sonraki
           </Button>

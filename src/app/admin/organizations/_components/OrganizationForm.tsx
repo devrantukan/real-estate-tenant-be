@@ -5,7 +5,8 @@ import {
   OrganizationFormSchema,
   OrganizationFormType,
 } from "@/lib/validations/organization";
-import { Input, Button } from "@heroui/react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
@@ -35,10 +36,10 @@ export default function OrganizationForm({
     defaultValues:
       mode === "edit"
         ? {
-            name: organization?.name || "",
-            slug: organization?.slug || "",
-            description: organization?.description || "",
-          }
+          name: organization?.name || "",
+          slug: organization?.slug || "",
+          description: organization?.description || "",
+        }
         : undefined,
   });
 
@@ -125,14 +126,14 @@ export default function OrganizationForm({
 
       <div className="flex justify-end gap-4">
         <Button
-          variant="danger-soft"
+          variant="outline"
           onClick={() => router.push("/admin/organizations")}
         >
           İptal
         </Button>
-        <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50">
+        <Button type="submit" disabled={isSubmitting}>
           {mode === "add" ? "Ekle" : "Güncelle"}
-        </button>
+        </Button>
       </div>
     </form>
   );

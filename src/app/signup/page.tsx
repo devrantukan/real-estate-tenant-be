@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export default function SignupPage() {
@@ -47,79 +49,70 @@ export default function SignupPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md border">
         <h1 className="text-2xl font-bold mb-6 text-center">Kayıt Ol</h1>
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
             {error}
           </div>
         )}
         <form onSubmit={handleSignup} className="space-y-4">
-          <div>
-            <label htmlFor="firstName" className="block mb-2">
-              Ad
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="firstName">Ad</Label>
+            <Input
               id="firstName"
               type="text"
-              
+              value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
-              className="w-full p-2 border rounded"
+              placeholder="Adınız"
             />
           </div>
-          <div>
-            <label htmlFor="lastName" className="block mb-2">
-              Soyad
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Soyad</Label>
+            <Input
               id="lastName"
               type="text"
-              
+              value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
-              className="w-full p-2 border rounded"
+              placeholder="Soyadınız"
             />
           </div>
-          <div>
-            <label htmlFor="email" className="block mb-2">
-              E-posta
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="email">E-posta</Label>
+            <Input
               id="email"
               type="email"
-              
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-2 border rounded"
+              placeholder="ornek@email.com"
             />
           </div>
-          <div>
-            <label htmlFor="password" className="block mb-2">
-              Şifre
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="password">Şifre</Label>
+            <Input
               id="password"
               type="password"
-              
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full p-2 border rounded"
+              placeholder="••••••••"
             />
           </div>
           <Button
             type="submit"
-            variant="primary"
             className="w-full"
-            isDisabled={loading}
+            disabled={loading}
           >
-            Kayıt Ol
+            {loading ? "Kayıt Olunuyor..." : "Kayıt Ol"}
           </Button>
         </form>
-        <p className="mt-4 text-center">
+        <p className="mt-4 text-center text-sm text-gray-600">
           Zaten hesabınız var mı?{" "}
-          <Link href="/login" className="text-blue-600">
+          <Link href="/login" className="text-blue-600 hover:underline">
             Giriş Yap
           </Link>
         </p>

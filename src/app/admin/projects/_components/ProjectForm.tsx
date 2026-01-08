@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  Button,
-  Input,
-  Switch,
-  Spinner,
-} from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -904,7 +902,7 @@ const ProjectForm = ({
           <h3 className="text-lg font-semibold">Konut Büyüklükleri</h3>
           <Button
             type="button"
-            variant="primary"
+            variant="default"
             onClick={() => handleAddItem("unitSizes")}
           >
             Ekle
@@ -922,7 +920,7 @@ const ProjectForm = ({
             />
             <Button
               type="button"
-              variant="danger-soft"
+              variant="destructive"
               onClick={() => handleRemoveItem("unitSizes", index)}
             >
               Sil
@@ -936,7 +934,7 @@ const ProjectForm = ({
           <h3 className="text-lg font-semibold">Sosyal Özellikler</h3>
           <Button
             type="button"
-            variant="primary"
+            variant="default"
             onClick={() => handleAddItem("socialFeatures")}
           >
             Ekle
@@ -954,7 +952,7 @@ const ProjectForm = ({
             />
             <Button
               type="button"
-              variant="danger-soft"
+              variant="destructive"
               onClick={() => handleRemoveItem("socialFeatures", index)}
             >
               Sil
@@ -996,12 +994,12 @@ const ProjectForm = ({
       <div className="flex justify-end gap-4">
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           onClick={() => router.push("/admin/projects")}
         >
           İptal
         </Button>
-        <Button type="submit" variant="primary" isDisabled={isLoading}>
+        <Button type="submit" disabled={isLoading}>
           {project ? "Güncelle" : "Oluştur"}
         </Button>
       </div>

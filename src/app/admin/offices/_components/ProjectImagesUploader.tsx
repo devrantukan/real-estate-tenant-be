@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -146,9 +146,8 @@ export default function OfficeImagesUploader({
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`relative group aspect-video ${
-                            snapshot.isDragging ? "z-50" : ""
-                          }`}
+                          className={`relative group aspect-video ${snapshot.isDragging ? "z-50" : ""
+                            }`}
                         >
                           <Image
                             src={url}

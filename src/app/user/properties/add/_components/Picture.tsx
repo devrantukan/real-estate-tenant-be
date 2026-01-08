@@ -1,6 +1,6 @@
 "use client";
 import FileInput from "@/app/components/fileUpload";
-import { cn } from "@heroui/react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

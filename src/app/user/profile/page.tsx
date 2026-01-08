@@ -3,7 +3,7 @@ import { getUserAsOfficeWorker, getUserById } from "@/lib/actions/user";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import React, { ReactNode } from "react";
 import SectionTitle from "./_components/sectionTitle";
-import { Button, Card } from "@heroui/react";
+import { Card } from "@/components/ui/card";
 import * as Avatar from "@radix-ui/react-avatar";
 import UploadAvatar from "./_components/UploadAvatar";
 import Link from "next/link";

@@ -1,11 +1,15 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Modal,
-  Button,
-  Input,
-} from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -171,7 +175,7 @@ export default function LocationModal({
                 setFormData({ ...formData, city_name: e.target.value })
               }
             />
-            <label htmlFor="country" className="block text-sm font-medium mb-2">Ülke</label>
+            <label htmlFor="country" className="block text-sm font-medium mb-2 mt-4">Ülke</label>
             <Select
               value={formData.country_id ? String(formData.country_id) : ""}
               onValueChange={(value) => {
@@ -189,7 +193,7 @@ export default function LocationModal({
                 ))}
               </SelectContent>
             </Select>
-            <label htmlFor="slug-country" className="block text-sm font-medium mb-2">Slug</label>
+            <label htmlFor="slug-country" className="block text-sm font-medium mb-2 mt-4">Slug</label>
             <Input
               id="slug-country"
               value={formData.slug || ""}
@@ -211,7 +215,7 @@ export default function LocationModal({
               }
             />
             {(errors as any).country_name?.message && (
-              <p className="text-sm text-red-500 mt-1">{(errors as any).country_name.message.toString()}</p>
+              <p className="text-sm text-destructive mt-1">{(errors as any).country_name.message.toString()}</p>
             )}
             <label htmlFor="slug" className="block text-sm font-medium mb-2 mt-4">Slug</label>
             <Input
@@ -222,7 +226,7 @@ export default function LocationModal({
               }
             />
             {(errors as any).slug?.message && (
-              <p className="text-sm text-red-500 mt-1">{(errors as any).slug.message.toString()}</p>
+              <p className="text-sm text-destructive mt-1">{(errors as any).slug.message.toString()}</p>
             )}
           </>
         );
@@ -237,7 +241,7 @@ export default function LocationModal({
                 setFormData({ ...formData, district_name: e.target.value })
               }
             />
-            <label htmlFor="country-select" className="block text-sm font-medium mb-2">Ülke</label>
+            <label htmlFor="country-select" className="block text-sm font-medium mb-2 mt-4">Ülke</label>
             <Select
               value={formData.country_id ? formData.country_id.toString() : ""}
               onValueChange={(value) => {
@@ -259,7 +263,7 @@ export default function LocationModal({
                 ))}
               </SelectContent>
             </Select>
-            <label htmlFor="city-select" className="block text-sm font-medium mb-2">Şehir</label>
+            <label htmlFor="city-select" className="block text-sm font-medium mb-2 mt-4">Şehir</label>
             <Select
               value={formData.city_id ? formData.city_id.toString() : ""}
               onValueChange={(value) => {
@@ -282,7 +286,7 @@ export default function LocationModal({
                   ))}
               </SelectContent>
             </Select>
-            <label htmlFor="slug-district" className="block text-sm font-medium mb-2">Slug</label>
+            <label htmlFor="slug-district" className="block text-sm font-medium mb-2 mt-4">Slug</label>
             <Input
               id="slug-district"
               value={formData.slug || ""}
@@ -303,7 +307,7 @@ export default function LocationModal({
                 setFormData({ ...formData, neighborhood_name: e.target.value })
               }
             />
-            <label htmlFor="country-select-2" className="block text-sm font-medium mb-2">Ülke</label>
+            <label htmlFor="country-select-2" className="block text-sm font-medium mb-2 mt-4">Ülke</label>
             <Select
               value={formData.country_id ? formData.country_id.toString() : ""}
               onValueChange={(value) => {
@@ -326,7 +330,7 @@ export default function LocationModal({
                 ))}
               </SelectContent>
             </Select>
-            <label htmlFor="city-select-2" className="block text-sm font-medium mb-2">Şehir</label>
+            <label htmlFor="city-select-2" className="block text-sm font-medium mb-2 mt-4">Şehir</label>
             <Select
               value={formData.city_id ? formData.city_id.toString() : ""}
               onValueChange={(value) => {
@@ -355,7 +359,7 @@ export default function LocationModal({
                   ))}
               </SelectContent>
             </Select>
-            <label htmlFor="district-select" className="block text-sm font-medium mb-2">İlçe</label>
+            <label htmlFor="district-select" className="block text-sm font-medium mb-2 mt-4">İlçe</label>
             <Select
               value={formData.district_id ? formData.district_id.toString() : ""}
               onValueChange={(value) =>
@@ -383,7 +387,7 @@ export default function LocationModal({
                   ))}
               </SelectContent>
             </Select>
-            <label htmlFor="slug-neighborhood" className="block text-sm font-medium mb-2">Slug</label>
+            <label htmlFor="slug-neighborhood" className="block text-sm font-medium mb-2 mt-4">Slug</label>
             <Input
               id="slug-neighborhood"
               value={formData.slug || ""}
@@ -398,24 +402,30 @@ export default function LocationModal({
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <Modal.Container>
-        <Modal.Dialog>
-          <form onSubmit={onSubmit}>
-            <Modal.Header>{getTitle()}</Modal.Header>
-            <Modal.Body>{renderFields()}</Modal.Body>
-            <Modal.Footer>
-              <Button variant="danger-soft" onPress={onClose}>
-                İptal
-              </Button>
-              <Button variant="primary" type="submit" isDisabled={isLoading}>
-                Kaydet
-              </Button>
-            </Modal.Footer>
-          </form>
-        </Modal.Dialog>
-      </Modal.Container>
-    </Modal>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{getTitle()}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={onSubmit}>
+          <div className="py-4">
+            {renderFields()}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose} type="button">
+              İptal
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              Kaydet
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -2,7 +2,7 @@ import SubmitButton from "@/app/components/SubmitButton";
 import { deleteProperty } from "@/lib/actions/property";
 import prisma from "@/lib/prisma";
 import { getUser } from "@/lib/supabase/server";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -42,7 +42,7 @@ async function DeletePropertyPage({ params }: Props) {
         <Link href={"/user/properties"}>
           <Button>Cancel</Button>
         </Link>
-        <SubmitButton type="submit" variant="danger-soft">
+        <SubmitButton type="submit" variant="destructive">
           Delete
         </SubmitButton>
       </div>

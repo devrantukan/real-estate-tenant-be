@@ -1,12 +1,24 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-  Input,
-  Button,
-  Modal,
-} from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PencilIcon, TrashIcon } from "@heroicons/react/16/solid";
+import { PencilIcon, TrashIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useDeleteContent } from "@/hooks/useDeleteContent";
 import { toast } from "sonner";
@@ -37,7 +49,9 @@ export default function ContentsTable({
 }: ContentsTableProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false); const onOpen = () => setIsOpen(true); const onClose = () => setIsOpen(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const [selectedContent, setSelectedContent] = useState<Content | null>(null);
   const { mutate: deleteContent, isLoading: isDeleting } = useDeleteContent();
 
@@ -83,75 +97,75 @@ export default function ContentsTable({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <Input
-          placeholder="İçerik ara..."
-          
-          onChange={(e) => handleSearch(e.target.value)}
-          className="w-64"
-        />
+        <div className="relative w-64">
+          {/* Added icon for better UX since HeroUI Input might have had one */}
+          <Input
+            placeholder="İçerik ara..."
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full"
+          />
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ANAHTAR</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DEĞER</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AÇIKLAMA</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SON GÜNCELLEME</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ANAHTAR</TableHead>
+              <TableHead>DEĞER</TableHead>
+              <TableHead>AÇIKLAMA</TableHead>
+              <TableHead>SON GÜNCELLEME</TableHead>
+              <TableHead>İŞLEMLER</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {contents.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-gray-500">
                   İçerik bulunamadı
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               contents.map((content) => (
-                <tr key={content.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{content.key}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                <TableRow key={content.id}>
+                  <TableCell className="font-medium text-gray-900">{content.key}</TableCell>
+                  <TableCell>
                     <div
-                      className="max-w-md line-clamp-2"
+                      className="max-w-md line-clamp-2 text-sm text-gray-500"
                       dangerouslySetInnerHTML={{ __html: content.value }}
                     />
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{content.description}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </TableCell>
+                  <TableCell className="text-sm text-gray-500">{content.description}</TableCell>
+                  <TableCell className="text-sm text-gray-500">
                     {new Date(content.updatedAt).toLocaleDateString("tr-TR")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  </TableCell>
+                  <TableCell>
                     <div className="flex gap-2">
                       <Button
-                        isIconOnly
-                        size="sm"
+                        size="icon"
                         variant="ghost"
-                        onPress={() => handleEdit(content)}
+                        onClick={() => handleEdit(content)}
                       >
                         <PencilIcon className="w-4 h-4" />
                       </Button>
                       <Button
-                        isIconOnly
-                        size="sm"
-                        variant="danger-soft"
-                        onPress={() => {
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => {
                           setSelectedContent(content);
                           onOpen();
                         }}
-                        isDisabled={isDeleting}
+                        disabled={isDeleting}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {totalPages > 1 && (
@@ -159,8 +173,8 @@ export default function ContentsTable({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
-            isDisabled={currentPage === 1}
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
           >
             Önceki
           </Button>
@@ -170,39 +184,39 @@ export default function ContentsTable({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-            isDisabled={currentPage === totalPages}
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
           >
             Sonraki
           </Button>
         </div>
       )}
 
-      <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <Modal.Container>
-          <Modal.Dialog>
-            <Modal.Header>İçerik Sil</Modal.Header>
-            <Modal.Body>
-              <p>
-                <strong>{selectedContent?.key}</strong> anahtarlı içeriği silmek
-                istediğinizden emin misiniz?
-              </p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="ghost" onPress={onClose}>
-                İptal
-              </Button>
-              <Button
-                variant="danger"
-                onPress={handleDelete}
-                isDisabled={isDeleting}
-              >
-                Sil
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>İçerik Sil</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>
+              <strong>{selectedContent?.key}</strong> anahtarlı içeriği silmek
+              istediğinizden emin misiniz?
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={onClose}>
+              İptal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              Sil
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

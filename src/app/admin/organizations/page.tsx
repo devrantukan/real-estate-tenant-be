@@ -3,7 +3,7 @@ import { getUserRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getAllOrganizations } from "@/lib/actions/organization";
 import OrganizationsTable from "./_components/OrganizationsTable";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function OrganizationsPage() {
@@ -24,7 +24,7 @@ export default async function OrganizationsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Organizasyonlar</h1>
         <Link href="/admin/organizations/add">
-          <Button variant="primary">Yeni Organizasyon Ekle</Button>
+          <Button>Yeni Organizasyon Ekle</Button>
         </Link>
       </div>
       <OrganizationsTable organizations={organizations as any} />

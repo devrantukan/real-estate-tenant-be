@@ -1,6 +1,19 @@
+import { Button } from "@/components/ui/button";
 import {
-  Button,
-} from "@heroui/react";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PencilSimple, Trash } from "@phosphor-icons/react";
 
 type Props = {
@@ -26,91 +39,98 @@ export default function CountryTable({
   onPageChange,
   onRowsPerPageChange,
 }: Props) {
+  const totalPages = Math.ceil(total / rowsPerPage);
+
   return (
-    <div className="mt-4">
-      <div className="flex justify-end mb-4">
-        <Button variant="primary" onPress={onAdd}>
+    <div className="mt-4 space-y-4">
+      <div className="flex justify-end">
+        <Button onClick={onAdd}>
           Yeni Ekle
         </Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ülke Adı</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+      <div className="border rounded-lg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Ülke Adı</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>İşlemler</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-gray-500">
                   Ülke bulunamadı
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               data.map((country) => (
-                <tr key={country.country_id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{country.country_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{country.slug}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <TableRow key={country.country_id}>
+                  <TableCell>{country.country_name}</TableCell>
+                  <TableCell>{country.slug}</TableCell>
+                  <TableCell>
                     <div className="flex gap-2">
                       <Button
-                        isIconOnly
+                        size="icon"
                         variant="ghost"
-                        onPress={() => onEdit(country)}
+                        onClick={() => onEdit(country)}
                       >
                         <PencilSimple size={20} />
                       </Button>
                       <Button
-                        isIconOnly
-                        variant="danger-soft"
-                        onPress={() => onDelete(country.country_id)}
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => onDelete(country.country_id)}
                       >
                         <Trash size={20} />
                       </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
-      <div className="flex w-full justify-between items-center mt-4">
+      <div className="flex flex-col sm:flex-row w-full justify-between items-center gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Sayfa başına:</span>
-          <select
-            value={rowsPerPage}
-            onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
-            className="border rounded p-1 text-sm"
+          <Select
+            value={rowsPerPage.toString()}
+            onValueChange={(value) => onRowsPerPageChange(Number(value))}
           >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
+            <SelectTrigger className="w-[70px]">
+              <SelectValue placeholder={rowsPerPage.toString()} />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex gap-2 items-center">
           <Button
-            isDisabled={page === 1}
-            onPress={() => onPageChange(page - 1)}
+            disabled={page === 1}
+            onClick={() => onPageChange(page - 1)}
             size="sm"
-            variant="ghost"
+            variant="outline"
           >
             Önceki
           </Button>
           <span className="text-sm text-gray-600">
-            Sayfa {page} / {Math.ceil(total / rowsPerPage)}
+            Sayfa {page} / {totalPages || 1}
           </span>
           <Button
-            isDisabled={page >= Math.ceil(total / rowsPerPage)}
-            onPress={() => onPageChange(page + 1)}
+            disabled={page >= totalPages}
+            onClick={() => onPageChange(page + 1)}
             size="sm"
-            variant="ghost"
+            variant="outline"
           >
             Sonraki
           </Button>

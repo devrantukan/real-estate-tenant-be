@@ -1,6 +1,5 @@
 "use client";
 import { HomeModernIcon } from "@heroicons/react/16/solid";
-import { Button } from "@heroui/react";
 import Link from "next/link";
 import React, { ReactNode } from "react";
 

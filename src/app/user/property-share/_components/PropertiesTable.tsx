@@ -3,13 +3,16 @@ import { ShareIcon } from "@heroicons/react/16/solid";
 import { EyeIcon } from "@heroicons/react/16/solid";
 import {
   Tooltip,
-  Button,
-} from "@heroui/react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { Prisma, Property } from "@prisma/client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { Input } from "@heroui/react";
+import { Input } from "@/components/ui/input";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
 
@@ -75,15 +78,12 @@ const PropertiesTable = ({
 
   return (
     <div className="flex flex-col items-center gap-4 w-full mt-8">
-      <div className="w-full max-w-md mb-4">
+      <div className="w-full max-w-md mb-4 relative">
+        <MagnifyingGlassIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
         <Input
           placeholder="İlan adı veya danışman adı ile arama yapın..."
-          
           onChange={(e) => handleSearch(e.target.value)}
-          startContent={
-            <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
-          }
-          className="w-full"
+          className="w-full pl-8"
         />
       </div>
       <div className="w-full text-sm text-gray-500 mb-4">
@@ -139,16 +139,30 @@ const PropertiesTable = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center justify-end gap-4">
-                      <Tooltip >
-                        <Link href={`/property/${property.id}`}>
-                          <EyeIcon className="w-5 text-slate-500" />
-                        </Link>
-                      </Tooltip>
-                      <Tooltip >
-                        <button onClick={() => handleShare(property.id)}>
-                          <ShareIcon className="w-5 text-blue-500" />
-                        </button>
-                      </Tooltip>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link href={`/property/${property.id}`}>
+                              <EyeIcon className="w-5 text-slate-500" />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Görüntüle</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button onClick={() => handleShare(property.id)}>
+                              <ShareIcon className="w-5 text-blue-500" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Paylaş</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </td>
                 </tr>
@@ -162,8 +176,8 @@ const PropertiesTable = ({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.max(0, currentPage - 1))}
-            isDisabled={currentPage === 0}
+            onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+            disabled={currentPage === 0}
           >
             Önceki
           </Button>
@@ -173,8 +187,8 @@ const PropertiesTable = ({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
-            isDisabled={currentPage >= totalPages - 1}
+            onClick={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
+            disabled={currentPage >= totalPages - 1}
           >
             Sonraki
           </Button>

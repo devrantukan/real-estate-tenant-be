@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -20,8 +20,8 @@ const PaginationContainer = ({ totalPages, currentPage, route = "/" }: Props) =>
       <Button
         size="sm"
         variant="ghost"
-        onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
-        isDisabled={currentPage === 1}
+        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+        disabled={currentPage === 1}
       >
         Önceki
       </Button>
@@ -31,8 +31,8 @@ const PaginationContainer = ({ totalPages, currentPage, route = "/" }: Props) =>
       <Button
         size="sm"
         variant="ghost"
-        onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-        isDisabled={currentPage === totalPages}
+        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+        disabled={currentPage === totalPages}
       >
         Sonraki
       </Button>

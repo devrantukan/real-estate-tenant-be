@@ -1,12 +1,20 @@
 "use client";
 
 import {
-  Dropdown,
-  DropdownTrigger,
   DropdownMenu,
-  DropdownItem,
-  Button,
-} from "@heroui/react";
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -14,6 +22,7 @@ import {
   updateContactForm,
 } from "@/lib/actions/contact-form";
 import { toast } from "sonner";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export default function ContactFormsTable({
   contactForms,
@@ -34,6 +43,7 @@ export default function ContactFormsTable({
     try {
       await updateContactForm(id, { status });
       toast.success("Durum güncellendi");
+      router.refresh();
     } catch (error) {
       toast.error("Bir hata oluştu");
     }
@@ -45,6 +55,7 @@ export default function ContactFormsTable({
       try {
         await deleteContactForm(id);
         toast.success("Form silindi");
+        router.refresh();
       } catch (error) {
         toast.error("Bir hata oluştu");
       } finally {
@@ -59,77 +70,76 @@ export default function ContactFormsTable({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İsim</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefon</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mesaj</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>İsim</TableHead>
+              <TableHead>Telefon</TableHead>
+              <TableHead>Mesaj</TableHead>
+              <TableHead>Durum</TableHead>
+              <TableHead>Tarih</TableHead>
+              <TableHead>İşlemler</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {contactForms.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-gray-500">
                   Form bulunamadı
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               contactForms.map((form) => (
-                <tr key={form.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <TableRow key={form.id}>
+                  <TableCell className="font-medium">
                     {`${form.firstName} ${form.lastName}`}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {form.phone}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {form.message}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <Button variant="secondary" size="sm">
-                          {form.status}
+                  </TableCell>
+                  <TableCell>{form.phone}</TableCell>
+                  <TableCell className="max-w-xs truncate">{form.message}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="w-[100px] justify-between">
+                          {form.status === "PENDING"
+                            ? "Bekliyor"
+                            : form.status === "PROCESSED"
+                              ? "İşlendi"
+                              : "Reddedildi"}
+                          <ChevronDownIcon className="h-4 w-4 opacity-50" />
                         </Button>
-                      </DropdownTrigger>
-                      <DropdownMenu
-                        aria-label="Status actions"
-                        onAction={(key) =>
-                          handleStatusChange(
-                            form.id,
-                            key.toString() as "PENDING" | "PROCESSED" | "REJECTED"
-                          )
-                        }
-                      >
-                        <DropdownItem key="PENDING">Bekliyor</DropdownItem>
-                        <DropdownItem key="PROCESSED">İşlendi</DropdownItem>
-                        <DropdownItem key="REJECTED">Reddedildi</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleStatusChange(form.id, "PENDING")}>
+                          Bekliyor
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(form.id, "PROCESSED")}>
+                          İşlendi
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(form.id, "REJECTED")}>
+                          Reddedildi
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                  <TableCell>
                     {new Date(form.createdAt).toLocaleDateString("tr-TR")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  </TableCell>
+                  <TableCell>
                     <Button
-                      variant="danger"
+                      variant="destructive"
                       size="sm"
-                      isDisabled={isDeleting}
-                      onPress={() => handleDelete(form.id)}
+                      disabled={isDeleting}
+                      onClick={() => handleDelete(form.id)}
                     >
                       {isDeleting ? "Siliniyor..." : "Sil"}
                     </Button>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {totalPages > 1 && (
@@ -137,8 +147,8 @@ export default function ContactFormsTable({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.max(1, currentPage - 1))}
-            isDisabled={currentPage === 1}
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
           >
             Önceki
           </Button>
@@ -148,8 +158,8 @@ export default function ContactFormsTable({
           <Button
             size="sm"
             variant="ghost"
-            onPress={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-            isDisabled={currentPage === totalPages}
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
           >
             Sonraki
           </Button>

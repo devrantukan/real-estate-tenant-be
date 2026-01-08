@@ -1,9 +1,20 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import {
-  Button,
   Tooltip,
-  Switch,
-} from "@heroui/react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { EyeIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -64,81 +75,94 @@ export default function ReviewsTable({ reviews }: { reviews: Review[] }) {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DEĞERLENDİRİLEN</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DEĞERLENDİREN</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ORTALAMA PUAN</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TARİH</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ONAY DURUMU</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>DEĞERLENDİRİLEN</TableHead>
+              <TableHead>DEĞERLENDİREN</TableHead>
+              <TableHead>ORTALAMA PUAN</TableHead>
+              <TableHead>TARİH</TableHead>
+              <TableHead>ONAY DURUMU</TableHead>
+              <TableHead>İŞLEMLER</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {reviews.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-gray-500">
                   Değerlendirme bulunamadı
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               reviews.map((review) => (
-                <tr key={review.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <TableRow key={review.id}>
+                  <TableCell className="font-medium text-gray-900">
                     {`${review.officeWorker.firstName} ${review.officeWorker.lastName}`}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  </TableCell>
+                  <TableCell>
                     <div className="text-sm text-gray-900">
                       <div>{`${review.firstName} ${review.lastName}`}</div>
                       <div className="text-gray-500">{review.email}</div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </TableCell>
+                  <TableCell className="text-gray-500">
                     {review.avg}/5
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </TableCell>
+                  <TableCell className="text-gray-500">
                     {formatDate(review.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  </TableCell>
+                  <TableCell>
                     <Switch
-                      isSelected={review.isApproved === 1}
-                      onChange={() =>
+                      checked={review.isApproved === 1}
+                      onCheckedChange={() =>
                         handleApprovalChange(review.id, review.isApproved)
                       }
                       aria-label="Onay Durumu"
                     />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  </TableCell>
+                  <TableCell>
                     <div className="flex gap-2">
-                      <Tooltip>
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="ghost"
-                          onPress={() => setSelectedReview(review)}
-                        >
-                          <EyeIcon className="h-5 w-5" />
-                        </Button>
-                      </Tooltip>
-                      <Tooltip >
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          variant="danger-soft"
-                          onPress={() => handleDelete(review.id)}
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                        </Button>
-                      </Tooltip>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => setSelectedReview(review)}
+                            >
+                              <EyeIcon className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>İncele</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              onClick={() => handleDelete(review.id)}
+                            >
+                              <TrashIcon className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Sil</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {selectedReview && (

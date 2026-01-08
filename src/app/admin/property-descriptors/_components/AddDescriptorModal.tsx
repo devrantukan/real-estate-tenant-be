@@ -2,18 +2,22 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Modal,
-} from "@heroui/react";
-import { Button } from "@heroui/react";
-import { Input } from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DescriptorFormData,
   descriptorSchema,
 } from "@/lib/validations/property-descriptor";
 import { createDescriptor } from "@/lib/actions/property-descriptor";
-import { PropertyDescriptorCategory, PropertyType } from "@prisma/client";
+import { PropertyDescriptorCategory } from "@prisma/client";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -34,7 +38,6 @@ export default function AddDescriptorModal({
 }: Props) {
   const router = useRouter();
   const {
-    register,
     handleSubmit,
     setValue,
     reset,
@@ -63,81 +66,89 @@ export default function AddDescriptorModal({
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) onClose();
+  };
+
   return (
-    <Modal isOpen={open} onOpenChange={(open) => !open && onClose()}>
-      <Modal.Container>
-        <Modal.Dialog>
-          {(renderProps) => {
-            const handleClose = () => {
-              onClose();
-            };
-            return (
-              <>
-                <Modal.Header>Yeni Tanımlayıcı Ekle</Modal.Header>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                  <Modal.Body>
-                    <div>
-                      <label htmlFor="value" className="block text-sm font-medium mb-2">Tanımlayıcı Adı</label>
-                      <Input
-                        id="value"
-                        value={watch("value") || ""}
-                        onChange={(e) => setValue("value", e.target.value)}
-                        onBlur={() => trigger("value")}
-                      />
-                      {errors.value && (
-                        <p className="text-danger text-sm mt-1">{errors.value.message}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label htmlFor="slug" className="block text-sm font-medium mb-2">Slug</label>
-                      <Input
-                        id="slug"
-                        value={watch("slug") || ""}
-                        onChange={(e) => setValue("slug", e.target.value)}
-                        onBlur={() => trigger("slug")}
-                      />
-                      {errors.slug && (
-                        <p className="text-danger text-sm mt-1">{errors.slug.message}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label htmlFor="categoryId" className="block text-sm font-medium mb-2">Kategori</label>
-                      <Select
-                        value={watch("categoryId")?.toString() || ""}
-                        onValueChange={(value) => {
-                          setValue("categoryId", value ? Number(value) : 0);
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Kategori seçin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id.toString()}>
-                              {category.value}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {errors.categoryId && (
-                        <p className="text-danger text-sm mt-1">{errors.categoryId.message}</p>
-                      )}
-                    </div>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button variant="danger-soft" onClick={handleClose}>
-                      İptal
-                    </Button>
-                    <Button variant="primary" type="submit">
-                      Ekle
-                    </Button>
-                  </Modal.Footer>
-                </form>
-              </>
-            );
-          }}
-        </Modal.Dialog>
-      </Modal.Container>
-    </Modal>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Yeni Tanımlayıcı Ekle</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-4 py-4">
+            <div>
+              <label htmlFor="value" className="block text-sm font-medium mb-2">
+                Tanımlayıcı Adı
+              </label>
+              <Input
+                id="value"
+                value={watch("value") || ""}
+                onChange={(e) => setValue("value", e.target.value)}
+                onBlur={() => trigger("value")}
+              />
+              {errors.value && (
+                <p className="text-destructive text-sm mt-1">
+                  {errors.value.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="slug" className="block text-sm font-medium mb-2">
+                Slug
+              </label>
+              <Input
+                id="slug"
+                value={watch("slug") || ""}
+                onChange={(e) => setValue("slug", e.target.value)}
+                onBlur={() => trigger("slug")}
+              />
+              {errors.slug && (
+                <p className="text-destructive text-sm mt-1">
+                  {errors.slug.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="categoryId" className="block text-sm font-medium mb-2">
+                Kategori
+              </label>
+              <Select
+                value={watch("categoryId")?.toString() || ""}
+                onValueChange={(value) => {
+                  setValue("categoryId", value ? Number(value) : 0);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Kategori seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
+                      {category.value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.categoryId && (
+                <p className="text-destructive text-sm mt-1">
+                  {errors.categoryId.message}
+                </p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose} type="button">
+              İptal
+            </Button>
+            <Button type="submit">Ekle</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
-import { Button } from "@heroui/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CountryTable from "./_components/CountryTable";
@@ -175,10 +174,9 @@ export default function LocationManagement() {
             }}
             className={`
               px-4 py-2 font-medium transition-colors border-b-2
-              ${
-                selectedTab === tab.key
-                  ? "border-primary text-primary"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+              ${selectedTab === tab.key
+                ? "border-primary text-primary"
+                : "border-transparent text-gray-600 hover:text-gray-900"
               }
             `}
           >
@@ -186,7 +184,7 @@ export default function LocationManagement() {
           </button>
         ))}
       </div>
-      
+
       <div className="p-4">
         <h2 className="text-xl font-bold mb-4">
           {tabs.find((t) => t.key === selectedTab)?.label}

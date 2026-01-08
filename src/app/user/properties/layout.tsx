@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { ReactNode } from "react";
@@ -18,9 +18,8 @@ const PropertiesLayout = ({ children, modalDelete }: Props) => {
       <div className="bg-primary-400 flex justify-between items-center px-4 py-2">
         <h2 className="text-white text-xl font-semibold px-2">İlanlarım</h2>
         <Button
-          color="secondary"
-          className="bg-blue-950 text-white"
-          onPress={() => router.push("/user/properties/add")}
+          className="bg-blue-950 text-white hover:bg-blue-900"
+          onClick={() => router.push("/user/properties/add")}
         >
           İlan Ekle
         </Button>

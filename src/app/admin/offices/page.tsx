@@ -3,7 +3,7 @@ import { getUserRole } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import OfficesTable from "./_components/OfficesTable";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function OfficesPage() {
@@ -45,7 +45,7 @@ export default async function OfficesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Ofisler</h1>
         <Link href="/admin/offices/add">
-          <Button variant="primary">Yeni Ofis Ekle</Button>
+          <Button>Yeni Ofis Ekle</Button>
         </Link>
       </div>
       <OfficesTable offices={offices as any} />

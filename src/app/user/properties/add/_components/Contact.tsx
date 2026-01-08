@@ -3,10 +3,8 @@ import {
   ChevronRightIcon,
   PlusCircleIcon,
 } from "@heroicons/react/16/solid";
-import {
-  Card,
-  cn,
-} from "@heroui/react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,

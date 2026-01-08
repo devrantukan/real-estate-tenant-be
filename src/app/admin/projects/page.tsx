@@ -1,6 +1,6 @@
 import { getProjects } from "@/app/actions/project";
 import ProjectsTable from "./_components/ProjectsTable";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { getUser } from "@/lib/supabase/server";
@@ -38,7 +38,7 @@ export default async function ProjectsPage({
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Projeler</h1>
         <Link href="/admin/projects/new">
-          <Button variant="primary">
+          <Button>
             <PlusIcon className="w-5 h-5 mr-2" />
             Yeni Proje
           </Button>

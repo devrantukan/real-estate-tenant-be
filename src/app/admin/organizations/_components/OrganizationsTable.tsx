@@ -1,8 +1,19 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import {
-  Button,
   Tooltip,
-} from "@heroui/react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { deleteOrganization } from "@/lib/actions/organization";
 import { toast } from "react-toastify";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -36,74 +47,81 @@ export default function OrganizationsTable({
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AD</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SLUG</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AÇIKLAMA</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">OLUŞTURULMA TARİHİ</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İŞLEMLER</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+    <div className="border rounded-lg overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>AD</TableHead>
+            <TableHead>SLUG</TableHead>
+            <TableHead>AÇIKLAMA</TableHead>
+            <TableHead>OLUŞTURULMA TARİHİ</TableHead>
+            <TableHead>İŞLEMLER</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {organizations.length === 0 ? (
-            <tr>
-              <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+            <TableRow>
+              <TableCell colSpan={5} className="text-center text-gray-500">
                 Organizasyon bulunamadı
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             organizations.map((organization) => (
-              <tr key={organization.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-semibold text-gray-900">{organization.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-600">{organization.slug}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-600 max-w-md truncate">
-                    {organization.description || "-"}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {new Date(organization.createdAt).toLocaleDateString("tr-TR")}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <TableRow key={organization.id}>
+                <TableCell className="font-medium">{organization.name}</TableCell>
+                <TableCell className="text-gray-500">{organization.slug}</TableCell>
+                <TableCell className="text-gray-500 max-w-md truncate">
+                  {organization.description || "-"}
+                </TableCell>
+                <TableCell className="text-gray-500">
+                  {new Date(organization.createdAt).toLocaleDateString("tr-TR")}
+                </TableCell>
+                <TableCell>
                   <div className="flex gap-2">
-                    <Tooltip >
-                      <Button
-                        isIconOnly
-                        size="sm"
-                        variant="ghost"
-                        onPress={() =>
-                          router.push(`/admin/organizations/edit/${organization.id}`)
-                        }
-                      >
-                        <PencilIcon className="h-5 w-5" />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip >
-                      <Button
-                        isIconOnly
-                        size="sm"
-                          variant="danger-soft"
-                          onPress={() => handleDelete(organization.id)}
-                      >
-                        <TrashIcon className="h-5 w-5" />
-                      </Button>
-                    </Tooltip>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() =>
+                              router.push(
+                                `/admin/organizations/edit/${organization.id}`
+                              )
+                            }
+                          >
+                            <PencilIcon className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Düzenle</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => handleDelete(organization.id)}
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Sil</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

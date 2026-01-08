@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -117,9 +117,8 @@ export default function ProjectImagesUploader({
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className={`relative group aspect-[16/9] w-[300px] flex-shrink-0 ${
-                        snapshot.isDragging ? "z-50" : ""
-                      }`}
+                      className={`relative group aspect-[16/9] w-[300px] flex-shrink-0 ${snapshot.isDragging ? "z-50" : ""
+                        }`}
                       style={{
                         ...provided.draggableProps.style,
                         transform: snapshot.isDragging

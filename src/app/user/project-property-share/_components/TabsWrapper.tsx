@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, Tab } from "@heroui/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PropertyShare from "./PropertyShare";
 import ProjectShare from "./ProjectShare";
 import { Prisma } from "@prisma/client";
@@ -34,13 +34,17 @@ interface TabsWrapperProps {
 
 export default function TabsWrapper({ user, initialData }: TabsWrapperProps) {
   return (
-    <Tabs defaultSelectedKey="properties" className="mb-8">
-      <Tab key="properties" title="Emlaklar">
+    <Tabs defaultValue="properties" className="mb-8 w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="properties">Emlaklar</TabsTrigger>
+        <TabsTrigger value="projects">Projeler</TabsTrigger>
+      </TabsList>
+      <TabsContent value="properties">
         <PropertyShare user={user} />
-      </Tab>
-      <Tab key="projects" title="Projeler">
+      </TabsContent>
+      <TabsContent value="projects">
         <ProjectShare user={user} initialData={initialData} />
-      </Tab>
+      </TabsContent>
     </Tabs>
   );
 }

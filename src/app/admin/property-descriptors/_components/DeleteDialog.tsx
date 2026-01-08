@@ -1,7 +1,12 @@
 import {
-  Modal,
-  Button,
-} from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   open: boolean;
@@ -18,34 +23,26 @@ export default function DeleteDialog({
   title,
   description,
 }: Props) {
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) onClose();
+  };
+
   return (
-    <Modal isOpen={open} onOpenChange={onClose}>
-      <Modal.Container>
-          <Modal.Dialog>
-        {(renderProps) => {
-          const handleClose = () => {
-            onClose();
-          };
-          const handleConfirm = () => {
-            onConfirm();
-          };
-          return (
-            <>
-              <Modal.Header>{title}</Modal.Header>
-              <Modal.Body>{description}</Modal.Body>
-              <Modal.Footer>
-                <Button variant="ghost" onClick={handleClose}>
-                  İptal
-                </Button>
-                <Button variant="danger" onClick={handleConfirm}>
-                  Sil
-                </Button>
-              </Modal.Footer>
-            </>
-          );
-        }}
-      </Modal.Dialog>
-        </Modal.Container>
-    </Modal>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
+            İptal
+          </Button>
+          <Button variant="destructive" onClick={onConfirm}>
+            Sil
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
