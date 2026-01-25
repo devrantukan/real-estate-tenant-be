@@ -10,10 +10,13 @@ import ShowOnMapButton from "@/app/components/ShowOnMapButton";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import {
-  Modal,
-  Button,
-  Card,
-} from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { X, EnvelopeSimple, Phone } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -283,30 +286,30 @@ const PropertyPageClient = ({ params }: { params: { id: string } }) => {
               <>
                 <Attribute
                   label="Oda Sayısı"
-                  
+
                 />
                 <Attribute
                   label="Banyo Sayısı"
-                  
+
                 />
                 <Attribute
                   label="Bulunduğu kat"
-                  
+
                 />
                 <Attribute
                   label="Binadaki kat sayısı"
-                  
+
                 />
               </>
             )}
-            <Attribute label="Alan"  />
+            <Attribute label="Alan" />
 
             <Title title="Adres Bilgileri" className="mt-7" />
-            <Attribute label="Şehir"  />
-            <Attribute label="İlçe"  />
+            <Attribute label="Şehir" />
+            <Attribute label="İlçe" />
             <Attribute
               label="Mahalle"
-              
+
             />
             <div className="mt-6 w-full flex flex-row gap-1 justify-between items-center">
               <div className="lg:w-1/2">
@@ -322,7 +325,7 @@ const PropertyPageClient = ({ params }: { params: { id: string } }) => {
                 property.threeDSource.startsWith("http") && (
                   <div className="lg:w-1/2">
                     <Button
-                      onPress={onOpen}
+                      onClick={onOpen}
                       className="w-full bg-blue-950 text-white py-2 rounded-xl hover:bg-blue-900 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center gap-2 group"
                     >
                       <span>3D Sanal Tur</span>
@@ -384,65 +387,21 @@ const PropertyPageClient = ({ params }: { params: { id: string } }) => {
           <DescriptorsAccordion descriptorsGrouped={descriptorsGrouped} />
         </div>
       )}
-      <Modal
-        isOpen={isOpen}
-        onClose={onOpenChange}
-        size="5xl"
-        scrollBehavior="inside"
-        hideCloseButton={true}
-        placement="top-center"
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        motionProps={{
-          variants: {
-            enter: {
-              y: 0,
-              opacity: 1,
-              transition: {
-                duration: 0.3,
-                ease: "easeOut",
-              },
-            },
-            exit: {
-              y: -20,
-              opacity: 0,
-              transition: {
-                duration: 0.2,
-                ease: "easeIn",
-              },
-            },
-          },
-        }}
-        classNames={{
-          base: "mt-0 !rounded-b-xl",
-          wrapper: "mt-0",
-          body: "!rounded-b-xl overflow-hidden",
-        }}
-      >
-        <Modal.Container>
-          <Modal.Dialog className="lg:h-[90vh] h-auto mt-0">
-            <Modal.Header className="flex justify-between items-center">
-              3D Sanal Tur
-              <button
-                onClick={onOpenChange}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </Modal.Header>
-            <Modal.Body className="p-0 rounded-b-xl overflow-hidden">
-              <div className="w-full aspect-[16/9]">
-                <iframe
-                  src={property.threeDSource}
-                  className="w-full h-full"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
-            </Modal.Body>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal>
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-5xl lg:h-[90vh] h-auto p-0 overflow-hidden">
+          <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
+            <DialogTitle className="text-lg font-bold">3D Sanal Tur</DialogTitle>
+          </DialogHeader>
+          <div className="w-full aspect-[16/9]">
+            <iframe
+              src={property.threeDSource}
+              className="w-full h-full"
+              allowFullScreen
+              loading="lazy"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

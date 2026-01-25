@@ -11,8 +11,8 @@ export async function getUserRole(userId: string): Promise<string | null> {
       include: { role: true },
     });
 
+    // User tablosunda rol varsa onu kullan
     if (user?.role) {
-      // User tablosunda rol varsa onu kullan
       if (user.role.slug === "site-admin") {
         return "site-admin";
       }
@@ -53,7 +53,7 @@ export async function getCurrentUserWithRole() {
 
   if (!dbUser) {
     const userMetadata = supabaseUser.user_metadata || {};
-    
+
     // Default role ID'yi bul (örneğin "user" rolü)
     const defaultRole = await prisma.role.findFirst({
       where: { slug: "user" },

@@ -113,7 +113,7 @@ export async function saveProperty(
       ? Number(propertyData.discountedPrice)
       : 0,
     statusId: propertyData.statusId,
-    deedStatusId: propertyData.deedStatusId,
+    deedStatusId: propertyData.deedStatusId ?? 0,
     typeId: propertyData.typeId,
     subTypeId: propertyData.subTypeId ?? 0,
     contractId: propertyData.contractId,
@@ -171,10 +171,9 @@ export async function saveProperty(
         },
       },
       descriptors: {
-        create:
-          descriptorData?.updateData.map(({ descriptorId }) => ({
-            descriptorId,
-          })) || [],
+        create: descriptorData?.updateData[0]
+          ? { descriptorId: descriptorData.updateData[0].descriptorId }
+          : undefined,
       },
       userId: userId,
       images: {

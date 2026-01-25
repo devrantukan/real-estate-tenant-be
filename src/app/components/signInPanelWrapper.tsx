@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import UserProfilePanel from "./UserProfilePanel";
 import { User } from "@prisma/client";
@@ -70,12 +70,16 @@ export default function SignInPanelWrapper() {
 
   return (
     <div className="flex gap-3">
-      <Button color="primary" as={Link} href="/login">
-        Giriş Yap
-      </Button>
-      <Button as={Link} href="/signup">
-        Kayıt Ol
-      </Button>
+      <Link href="/login">
+        <Button>
+          Giriş Yap
+        </Button>
+      </Link>
+      <Link href="/signup">
+        <Button variant="outline">
+          Kayıt Ol
+        </Button>
+      </Link>
     </div>
   );
 }

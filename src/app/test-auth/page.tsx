@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUserWithRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function TestAuthPage() {
@@ -7,7 +7,7 @@ export default async function TestAuthPage() {
     data: { user: authUser },
   } = await supabase.auth.getUser();
 
-  const currentUser = await getCurrentUser();
+  const currentUser = await getCurrentUserWithRole();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -24,16 +24,21 @@ export default async function TestAuthPage() {
           <pre className="text-sm overflow-auto">
             {currentUser
               ? JSON.stringify(
-                  {
-                    authUser: {
-                      id: currentUser.authUser.id,
-                      email: currentUser.authUser.email,
-                    },
-                    dbUser: currentUser.dbUser,
+                {
+                  authUser: currentUser.supabaseUser ? {
+                    id: currentUser.supabaseUser.id,
+                    email: currentUser.supabaseUser.email,
+                  } : null,
+                  dbUser: {
+                    id: currentUser.id,
+                    email: currentUser.email,
+                    firstName: currentUser.firstName,
+                    lastName: currentUser.lastName,
                   },
-                  null,
-                  2
-                )
+                },
+                null,
+                2
+              )
               : "Not authenticated"}
           </pre>
         </div>

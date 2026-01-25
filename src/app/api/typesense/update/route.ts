@@ -5,9 +5,9 @@ import { Client } from "typesense";
 const client = new Client({
   nodes: [
     {
-      host: "search.m1nd.xyz",
-      port: 443,
-      protocol: "https",
+      host: process.env.TYPESENSE_HOST || "search.m1nd.xyz",
+      port: parseInt(process.env.TYPESENSE_PORT || "443"),
+      protocol: process.env.TYPESENSE_PROTOCOL || "https",
     },
   ],
   apiKey: process.env.TYPESENSE_API_KEY || "xyz",

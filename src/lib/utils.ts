@@ -2,10 +2,16 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+let _supabase: any;
+function getSupabaseClient() {
+  if (!_supabase) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  }
+  return _supabase;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -28,7 +34,7 @@ export async function uploadToSupabase(
     const fileExt = file.name.split(".").pop();
     const filePath = fileName || `${Math.random()}.${fileExt}`;
 
-    const { data, error } = await supabase.storage
+    const { data, error } = await getSupabaseClient().storage
       .from(bucket)
       .upload(filePath, file, {
         upsert: true,
@@ -38,7 +44,7 @@ export async function uploadToSupabase(
 
     if (error) throw error;
 
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = getSupabaseClient().storage
       .from(bucket)
       .getPublicUrl(filePath);
 
@@ -84,7 +90,7 @@ export async function uploadProjectImage(file: File, projectName?: string) {
       : `${uniqueId}.${fileExt}`;
 
     // First check if the file already exists
-    const { data: existingFile } = await supabase.storage
+    const { data: existingFile } = await getSupabaseClient().storage
       .from("project-images")
       .list(fileName);
 
@@ -97,7 +103,7 @@ export async function uploadProjectImage(file: File, projectName?: string) {
         ? `${sanitizedProjectName}-${newUniqueId}.${fileExt}`
         : `${newUniqueId}.${fileExt}`;
 
-      const { data, error } = await supabase.storage
+      const { data, error } = await getSupabaseClient().storage
         .from("project-images")
         .upload(newFileName, file, {
           upsert: true,
@@ -110,7 +116,7 @@ export async function uploadProjectImage(file: File, projectName?: string) {
         throw new Error(`Upload failed: ${error.message}`);
       }
 
-      const { data: urlData } = supabase.storage
+      const { data: urlData } = getSupabaseClient().storage
         .from("project-images")
         .getPublicUrl(newFileName);
 
@@ -118,7 +124,7 @@ export async function uploadProjectImage(file: File, projectName?: string) {
     }
 
     // If file doesn't exist, proceed with normal upload
-    const { data, error } = await supabase.storage
+    const { data, error } = await getSupabaseClient().storage
       .from("project-images")
       .upload(fileName, file, {
         upsert: true,
@@ -131,7 +137,7 @@ export async function uploadProjectImage(file: File, projectName?: string) {
       throw new Error(`Upload failed: ${error.message}`);
     }
 
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = getSupabaseClient().storage
       .from("project-images")
       .getPublicUrl(fileName);
 
@@ -152,7 +158,7 @@ export async function deleteFromSupabase(url: string) {
     const path = url.split("siteImages/")[1];
     if (!path) return;
 
-    const { error } = await supabase.storage.from("siteImages").remove([path]);
+    const { error } = await getSupabaseClient().storage.from("siteImages").remove([path]);
 
     if (error) {
       throw error;

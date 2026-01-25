@@ -17,6 +17,7 @@ import {
   Neighborhood,
   PropertyDescriptorCategory,
   PropertyDeedStatus,
+  PropertyDescriptor,
 } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import Location from "./Location";
@@ -278,7 +279,7 @@ const AddPropertyForm = ({ role, isEdit = false, ...props }: Props) => {
             user={dbUser}
             agents={props.agents}
             dbDescriptors={
-              (props.property?.descriptors as PropertyDescriptor[]) ?? []
+              props.property?.descriptors ? [props.property.descriptors] : []
             }
             //  descriptorCategories={props.descriptorCategories}
             prev={() => setStep((prev) => prev - 1)}
