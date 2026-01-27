@@ -117,6 +117,9 @@
     "react": "$react",
     "react-dom": "$react-dom"
   },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@types/google-map-react": "^2.1.10",
